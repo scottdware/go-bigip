@@ -1,4 +1,5 @@
 ## go-bigip
+[![GoDoc](https://godoc.org/github.com/scottdware/go-bigip?status.svg)](https://godoc.org/github.com/scottdware/go-bigip) [![Travis-CI](https://travis-ci.org/scottdware/go-bigip.svg?branch=master)](https://travis-ci.org/scottdware/go-bigip)
 
 A Go package that interacts with F5 BIG-IP systems using the REST API.
 
