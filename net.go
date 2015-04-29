@@ -183,11 +183,11 @@ func (b *BigIP) SelfIPs() (*SelfIPs, error) {
 	return &self, nil
 }
 
-func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
+func (b *BigIP) CreateSelfIP(name, address, vlan, partition string) error {
 	config := &SelfIP{
 		Name:    name,
 		Address: address,
-		Vlan:    vlan,
+		Vlan:    fmt.Sprintf("/%s/%s", partition, vlan),
 	}
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
@@ -308,6 +308,63 @@ func (b *BigIP) Vlans() (*Vlans, error) {
 	}
 
 	return &vlans, nil
+}
+
+func (b *BigIP) CreateVlan(name string) error {
+	config := &Vlan{
+		Name: name,
+	}
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "post",
+		URL:         uriVlan,
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (b *BigIP) DeleteVlan(name string) error {
+	req := &APIRequest{
+		Method: "delete",
+		URL:    fmt.Sprintf("%s/%s", uriVlan, name),
+	}
+	_, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (b *BigIP) ModifyVlan(name string, config *Vlan) error {
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s", uriVlan, name),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (b *BigIP) Routes() (*Routes, error) {
