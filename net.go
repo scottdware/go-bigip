@@ -230,7 +230,7 @@ func (b *BigIP) ModifySelfIP(name string, config *SelfIP) error {
 	req := &APIRequest{
 		Method:      "put",
 		URL:         fmt.Sprintf("%s/%s", uriSelf, name),
-		Body:        marshalJSON,
+		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
 	_, err = b.APICall(req)
@@ -259,6 +259,35 @@ func (b *BigIP) Trunks() (*Trunks, error) {
 	}
 
 	return &trunks, nil
+}
+
+func (b *BigIP) CreateTrunk(name string, interfaces []string, lacp bool) error {
+	config := &Trunk{
+		Name:       name,
+		Interfaces: interfaces,
+	}
+
+	if lacp {
+		config.LACP = "enabled"
+	}
+
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "post",
+		URL:         uriTrunk,
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (b *BigIP) Vlans() (*Vlans, error) {
