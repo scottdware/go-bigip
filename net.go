@@ -10,31 +10,31 @@ type Interfaces struct {
 }
 
 type Interface struct {
-	Name              string `json:"name"`
-	FullPath          string `json:"fullPath"`
-	Generation        int    `json:"generation"`
-	Bundle            string `json:"bundle"`
-	Enabled           bool   `json:"enabled"`
-	FlowControl       string `json:"flowControl"`
-	ForceGigabitFiber string `json:"forceGigabitFiber"`
-	IfIndex           int    `json:"ifIndex"`
-	LLDPAdmin         string `json:"lldpAdmin"`
-	LLDPTlvmap        int    `json:"lldpTlvmap"`
-	MACAddress        string `json:"macAddress"`
-	MediaActive       string `json:"mediaActive"`
-	MediaFixed        string `json:"mediaFixed"`
-	MediaMax          string `json:"mediaMax"`
-	MediaSFP          string `json:"mediaSfp"`
-	MTU               int    `json:"mtu"`
-	PreferPort        string `json:"preferPort"`
+	Name              string `json:"name,omitempty"`
+	FullPath          string `json:"fullPath,omitempty"`
+	Generation        int    `json:"generation,omitempty"`
+	Bundle            string `json:"bundle,omitempty"`
+	Enabled           bool   `json:"enabled,omitempty"`
+	FlowControl       string `json:"flowControl,omitempty"`
+	ForceGigabitFiber string `json:"forceGigabitFiber,omitempty"`
+	IfIndex           int    `json:"ifIndex,omitempty"`
+	LLDPAdmin         string `json:"lldpAdmin,omitempty"`
+	LLDPTlvmap        int    `json:"lldpTlvmap,omitempty"`
+	MACAddress        string `json:"macAddress,omitempty"`
+	MediaActive       string `json:"mediaActive,omitempty"`
+	MediaFixed        string `json:"mediaFixed,omitempty"`
+	MediaMax          string `json:"mediaMax,omitempty"`
+	MediaSFP          string `json:"mediaSfp,omitempty"`
+	MTU               int    `json:"mtu,omitempty"`
+	PreferPort        string `json:"preferPort,omitempty"`
 	SFlow             struct {
-		PollInterval       int    `json:"pollInterval"`
-		PollIntervalGlobal string `json:"pollIntervalGlobal"`
-	} `json:"sflow"`
-	STP             string `json:"stp"`
-	STPAutoEdgePort string `json:"stpAutoEdgePort"`
-	STPEdgePort     string `json:"stpEdgePort"`
-	STPLinkType     string `json:"stpLinkType"`
+		PollInterval       int    `json:"pollInterval,omitempty"`
+		PollIntervalGlobal string `json:"pollIntervalGlobal,omitempty"`
+	} `json:"sflow,omitempty"`
+	STP             string `json:"stp,omitempty"`
+	STPAutoEdgePort string `json:"stpAutoEdgePort,omitempty"`
+	STPEdgePort     string `json:"stpEdgePort,omitempty"`
+	STPLinkType     string `json:"stpLinkType,omitempty"`
 }
 
 type SelfIPs struct {
@@ -42,16 +42,16 @@ type SelfIPs struct {
 }
 
 type SelfIP struct {
-	Name                  string `json:"name"`
-	Partition             string `json:"partition"`
-	FullPath              string `json:"fullPath"`
-	Generation            int    `json:"generation"`
-	Address               string `json:"address"`
-	Floating              string `json:"floating"`
-	InheritedTrafficGroup string `json:"inheritedTrafficGroup"`
-	TrafficGroup          string `json:"trafficGroup"`
-	Unit                  int    `json:"unit"`
-	Vlan                  string `json:"vlan"`
+	Name                  string `json:"name,omitempty"`
+	Partition             string `json:"partition,omitempty"`
+	FullPath              string `json:"fullPath,omitempty"`
+	Generation            int    `json:"generation,omitempty"`
+	Address               string `json:"address,omitempty"`
+	Floating              string `json:"floating,omitempty"`
+	InheritedTrafficGroup string `json:"inheritedTrafficGroup,omitempty"`
+	TrafficGroup          string `json:"trafficGroup,omitempty"`
+	Unit                  int    `json:"unit,omitempty"`
+	Vlan                  string `json:"vlan,omitempty"`
 	// AllowService          []string `json:"allowService"`
 }
 
@@ -60,22 +60,22 @@ type Trunks struct {
 }
 
 type Trunk struct {
-	Name               string   `json:"name"`
-	FullPath           string   `json:"fullPath"`
-	Generation         int      `json:"generation"`
-	Bandwidth          int      `json:"bandwidth"`
-	MemberCount        int      `json:"cfgMbrCount"`
-	DistributionHash   string   `json:"distributionHash"`
-	ID                 int      `json:"id"`
-	LACP               string   `json:"lacp"`
-	LACPMode           string   `json:"lacpMode"`
-	LACPTimeout        string   `json:"lacpTimeout"`
-	LinkSelectPolicy   string   `json:"linkSelectPolicy"`
-	MACAddress         string   `json:"macAddress"`
-	STP                string   `json:"stp"`
-	Type               string   `json:"type"`
-	WorkingMemberCount int      `json:"workingMbrCount"`
-	Interfaces         []string `json:"interfaces"`
+	Name               string   `json:"name,omitempty"`
+	FullPath           string   `json:"fullPath,omitempty"`
+	Generation         int      `json:"generation,omitempty"`
+	Bandwidth          int      `json:"bandwidth,omitempty"`
+	MemberCount        int      `json:"cfgMbrCount,omitempty"`
+	DistributionHash   string   `json:"distributionHash,omitempty"`
+	ID                 int      `json:"id,omitempty"`
+	LACP               string   `json:"lacp,omitempty"`
+	LACPMode           string   `json:"lacpMode,omitempty"`
+	LACPTimeout        string   `json:"lacpTimeout,omitempty"`
+	LinkSelectPolicy   string   `json:"linkSelectPolicy,omitempty"`
+	MACAddress         string   `json:"macAddress,omitempty"`
+	STP                string   `json:"stp,omitempty"`
+	Type               string   `json:"type,omitempty"`
+	WorkingMemberCount int      `json:"workingMbrCount,omitempty"`
+	Interfaces         []string `json:"interfaces,omitempty"`
 }
 
 type Vlans struct {
@@ -83,27 +83,27 @@ type Vlans struct {
 }
 
 type Vlan struct {
-	Name            string `json:"name"`
-	Partition       string `json:"partition"`
-	FullPath        string `json:"fullPath"`
-	Generation      int    `json:"generation"`
-	AutoLastHop     string `json:"autoLastHop"`
-	CMPHash         string `json:"cmpHash"`
-	DAGRoundRobin   string `json:"dagRoundRobin"`
-	Failsafe        string `json:"failsafe"`
-	FailsafeAction  string `json:"failsafeAction"`
-	FailsafeTimeout int    `json:"failsafeTimeout"`
-	IfIndex         int    `json:"ifIndex"`
-	Learning        string `json:"learning"`
-	MTU             int    `json:"mtu"`
+	Name            string `json:"name,omitempty"`
+	Partition       string `json:"partition,omitempty"`
+	FullPath        string `json:"fullPath,omitempty"`
+	Generation      int    `json:"generation,omitempty"`
+	AutoLastHop     string `json:"autoLastHop,omitempty"`
+	CMPHash         string `json:"cmpHash,omitempty"`
+	DAGRoundRobin   string `json:"dagRoundRobin,omitempty"`
+	Failsafe        string `json:"failsafe,omitempty"`
+	FailsafeAction  string `json:"failsafeAction,omitempty"`
+	FailsafeTimeout int    `json:"failsafeTimeout,omitempty"`
+	IfIndex         int    `json:"ifIndex,omitempty"`
+	Learning        string `json:"learning,omitempty"`
+	MTU             int    `json:"mtu,omitempty"`
 	SFlow           struct {
-		PollInterval       int    `json:"pollInterval"`
-		PollIntervalGlobal string `json:"pollIntervalGlobal"`
-		SamplingRate       int    `json:"samplingRate"`
-		SamplingRateGlobal string `json:"samplingRateGlobal"`
-	} `json:"sflow"`
-	SourceChecking string `json:"sourceChecking"`
-	Tag            int    `json:"tag"`
+		PollInterval       int    `json:"pollInterval,omitempty"`
+		PollIntervalGlobal string `json:"pollIntervalGlobal,omitempty"`
+		SamplingRate       int    `json:"samplingRate,omitempty"`
+		SamplingRateGlobal string `json:"samplingRateGlobal,omitempty"`
+	} `json:"sflow,omitempty"`
+	SourceChecking string `json:"sourceChecking,omitempty"`
+	Tag            int    `json:"tag,omitempty"`
 }
 
 type Routes struct {
@@ -111,13 +111,13 @@ type Routes struct {
 }
 
 type Route struct {
-	Name       string `json:"name"`
-	Partition  string `json:"partition"`
-	FullPath   string `json:"fullPath"`
-	Generation int    `json:"generation"`
-	Gateway    string `json:"gw"`
-	MTU        int    `json:"mtu"`
-	Network    string `json:"network"`
+	Name       string `json:"name,omitempty"`
+	Partition  string `json:"partition,omitempty"`
+	FullPath   string `json:"fullPath,omitempty"`
+	Generation int    `json:"generation,omitempty"`
+	Gateway    string `json:"gw,omitempty"`
+	MTU        int    `json:"mtu,omitempty"`
+	Network    string `json:"network,omitempty"`
 }
 
 type RouteDomains struct {
@@ -125,13 +125,13 @@ type RouteDomains struct {
 }
 
 type RouteDomain struct {
-	Name       string   `json:"name"`
-	Partition  string   `json:"partition"`
-	FullPath   string   `json:"fullPath"`
-	Generation int      `json:"generation"`
-	ID         int      `json:"id"`
-	Strict     string   `json:"strict"`
-	Vlans      []string `json:"vlans"`
+	Name       string   `json:"name,omitempty"`
+	Partition  string   `json:"partition,omitempty"`
+	FullPath   string   `json:"fullPath,omitempty"`
+	Generation int      `json:"generation,omitempty"`
+	ID         int      `json:"id,omitempty"`
+	Strict     string   `json:"strict,omitempty"`
+	Vlans      []string `json:"vlans,omitempty"`
 }
 
 var (
@@ -212,6 +212,26 @@ func (b *BigIP) DeleteSelfIP(name string) error {
 	req := &APIRequest{
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriSelf, name),
+	}
+	_, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (b *BigIP) ModifySelfIP(name string, config *SelfIP) error {
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s", uriSelf, name),
+		Body:        marshalJSON,
+		ContentType: "application/json",
 	}
 	_, err := b.APICall(req)
 	if err != nil {
