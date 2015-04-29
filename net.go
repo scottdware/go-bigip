@@ -233,7 +233,7 @@ func (b *BigIP) ModifySelfIP(name string, config *SelfIP) error {
 		Body:        marshalJSON,
 		ContentType: "application/json",
 	}
-	_, err := b.APICall(req)
+	_, err = b.APICall(req)
 	if err != nil {
 		return err
 	}
