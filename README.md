@@ -1,6 +1,6 @@
 ## go-bigip
 
-A Go package that interacts with the F5 BIG-IP web API (version 11.4+).
+A Go package that interacts with F5 BIG-IP systems using the REST API.
 
 ### Examples & Documentation
 Visit the [GoDoc][godoc-go-bigip] page for package documentation and examples.
