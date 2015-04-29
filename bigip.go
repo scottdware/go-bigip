@@ -53,11 +53,11 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	}
 
 	res, err := client.Do(req)
-	defer res.Body.Close()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer res.Body.Close()
 
 	data, _ := ioutil.ReadAll(res.Body)
 
