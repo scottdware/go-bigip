@@ -1,3 +1,4 @@
+// Package bigip interacts with F5 BIG-IP systems using the REST API.
 package bigip
 
 import (
@@ -25,7 +26,7 @@ type APIRequest struct {
 	ContentType string
 }
 
-// NewServer sets up our connection to the BIG-IP.
+// NewServer sets up our connection to the BIG-IP system.
 func NewSession(host, user, passwd string) *BigIP {
 	return &BigIP{
 		Host:     host,
