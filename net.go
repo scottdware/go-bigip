@@ -5,10 +5,12 @@ import (
 	"fmt"
 )
 
+// Interfaces contains a list of every interface on the BIG-IP system.
 type Interfaces struct {
 	Interfaces []Interface `json:"items"`
 }
 
+// Interface contains information about each individual interface.
 type Interface struct {
 	Name              string `json:"name,omitempty"`
 	FullPath          string `json:"fullPath,omitempty"`
@@ -37,10 +39,13 @@ type Interface struct {
 	STPLinkType     string `json:"stpLinkType,omitempty"`
 }
 
+// SelfIPs contains a list of every self IP on the BIG-IP system.
 type SelfIPs struct {
 	SelfIPs []SelfIP `json:"items"`
 }
 
+// SelfIP contains information about each individual self IP. You can use all of
+// these fields when modifying a self IP.
 type SelfIP struct {
 	Name                  string `json:"name,omitempty"`
 	Partition             string `json:"partition,omitempty"`
@@ -55,10 +60,13 @@ type SelfIP struct {
 	// AllowService          []string `json:"allowService"`
 }
 
+// Trunks contains a list of every trunk on the BIG-IP system.
 type Trunks struct {
 	Trunks []Trunk `json:"items"`
 }
 
+// Trunk contains information about each individual trunk. You can use all of
+// these fields when modifying a trunk.
 type Trunk struct {
 	Name               string   `json:"name,omitempty"`
 	FullPath           string   `json:"fullPath,omitempty"`
@@ -78,10 +86,13 @@ type Trunk struct {
 	Interfaces         []string `json:"interfaces,omitempty"`
 }
 
+// Vlans contains a list of every VLAN on the BIG-IP system.
 type Vlans struct {
 	Vlans []Vlan `json:"items"`
 }
 
+// Vlan contains information about each individual VLAN. You can use all of
+// these fields when modifying a VLAN.
 type Vlan struct {
 	Name            string `json:"name,omitempty"`
 	Partition       string `json:"partition,omitempty"`
@@ -106,10 +117,13 @@ type Vlan struct {
 	Tag            int    `json:"tag,omitempty"`
 }
 
+// Routes contains a list of every route on the BIG-IP system.
 type Routes struct {
 	Routes []Route `json:"items"`
 }
 
+// Route contains information about each individual route. You can use all
+// of these fields when modifying a route.
 type Route struct {
 	Name       string `json:"name,omitempty"`
 	Partition  string `json:"partition,omitempty"`
@@ -120,10 +134,13 @@ type Route struct {
 	Network    string `json:"network,omitempty"`
 }
 
+// RouteDomains contains a list of every route domain on the BIG-IP system.
 type RouteDomains struct {
 	RouteDomains []RouteDomain `json:"items"`
 }
 
+// RouteDomain contains information about each individual route domain. You can use all
+// of these fields when modifying a route domain.
 type RouteDomain struct {
 	Name       string   `json:"name,omitempty"`
 	Partition  string   `json:"partition,omitempty"`
@@ -143,6 +160,7 @@ var (
 	uriRouteDomain = "net/route-domain"
 )
 
+// Interfaces returns a list of interfaces.
 func (b *BigIP) Interfaces() (*Interfaces, error) {
 	var interfaces Interfaces
 	req := &APIRequest{
@@ -163,6 +181,7 @@ func (b *BigIP) Interfaces() (*Interfaces, error) {
 	return &interfaces, nil
 }
 
+// SelfIPs returns a list of self IP's.
 func (b *BigIP) SelfIPs() (*SelfIPs, error) {
 	var self SelfIPs
 	req := &APIRequest{
@@ -183,6 +202,7 @@ func (b *BigIP) SelfIPs() (*SelfIPs, error) {
 	return &self, nil
 }
 
+// CreateSelfIP adds a new self IP to the BIG-IP system.
 func (b *BigIP) CreateSelfIP(name, address, vlan, partition string) error {
 	config := &SelfIP{
 		Name:    name,
@@ -208,6 +228,7 @@ func (b *BigIP) CreateSelfIP(name, address, vlan, partition string) error {
 	return nil
 }
 
+// DeleteSelfIP removes a self IP.
 func (b *BigIP) DeleteSelfIP(name string) error {
 	req := &APIRequest{
 		Method: "delete",
@@ -221,6 +242,8 @@ func (b *BigIP) DeleteSelfIP(name string) error {
 	return nil
 }
 
+// ModifySelfIP allows you to change any attribute of a self IP. Fields that
+// can be modified are referenced in the SelfIP struct.
 func (b *BigIP) ModifySelfIP(name string, config *SelfIP) error {
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
@@ -241,6 +264,7 @@ func (b *BigIP) ModifySelfIP(name string, config *SelfIP) error {
 	return nil
 }
 
+// Trunks returns a list of trunks.
 func (b *BigIP) Trunks() (*Trunks, error) {
 	var trunks Trunks
 	req := &APIRequest{
@@ -261,6 +285,7 @@ func (b *BigIP) Trunks() (*Trunks, error) {
 	return &trunks, nil
 }
 
+// CreateTrunk adds a new trunk to the BIG-IP system.
 func (b *BigIP) CreateTrunk(name string, interfaces []string, lacp bool) error {
 	config := &Trunk{
 		Name:       name,
@@ -290,6 +315,7 @@ func (b *BigIP) CreateTrunk(name string, interfaces []string, lacp bool) error {
 	return nil
 }
 
+// Vlans returns a list of vlans.
 func (b *BigIP) Vlans() (*Vlans, error) {
 	var vlans Vlans
 	req := &APIRequest{
@@ -310,6 +336,7 @@ func (b *BigIP) Vlans() (*Vlans, error) {
 	return &vlans, nil
 }
 
+// CreateVlan adds a new VLAN to the BIG-IP system.
 func (b *BigIP) CreateVlan(name string) error {
 	config := &Vlan{
 		Name: name,
@@ -334,6 +361,7 @@ func (b *BigIP) CreateVlan(name string) error {
 	return nil
 }
 
+// DeleteVlan removes a vlan.
 func (b *BigIP) DeleteVlan(name string) error {
 	req := &APIRequest{
 		Method: "delete",
@@ -347,6 +375,8 @@ func (b *BigIP) DeleteVlan(name string) error {
 	return nil
 }
 
+// ModifyVlan allows you to change any attribute of a VLAN. Fields that
+// can be modified are referenced in the Vlan struct.
 func (b *BigIP) ModifyVlan(name string, config *Vlan) error {
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
@@ -367,6 +397,7 @@ func (b *BigIP) ModifyVlan(name string, config *Vlan) error {
 	return nil
 }
 
+// Routes returns a list of routes.
 func (b *BigIP) Routes() (*Routes, error) {
 	var routes Routes
 	req := &APIRequest{
@@ -387,6 +418,7 @@ func (b *BigIP) Routes() (*Routes, error) {
 	return &routes, nil
 }
 
+// RouteDomains returns a list of route domains.
 func (b *BigIP) RouteDomains() (*RouteDomains, error) {
 	var rd RouteDomains
 	req := &APIRequest{
