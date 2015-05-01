@@ -315,6 +315,42 @@ func (b *BigIP) CreateTrunk(name string, interfaces []string, lacp bool) error {
 	return nil
 }
 
+// DeleteTrunk removes a trunk.
+func (b *BigIP) DeleteTrunk(name string) error {
+	req := &APIRequest{
+		Method: "delete",
+		URL:    uriTrunk,
+	}
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ModifyTrunk allows you to change any attribute of a trunk. Fields that
+// can be modified are referenced in the Trunk struct.
+func (b *BigIP) ModifyTrunk(name string, config *Trunk) error {
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s", uriTrunk, name),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Vlans returns a list of vlans.
 func (b *BigIP) Vlans() (*Vlans, error) {
 	var vlans Vlans
