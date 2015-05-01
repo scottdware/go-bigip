@@ -501,3 +501,77 @@ func (b *BigIP) RouteDomains() (*RouteDomains, error) {
 
 	return &rd, nil
 }
+
+// CreateRouteDomain adds a new route domain to the BIG-IP system.
+func (b *BigIP) CreateRouteDomain(name, partition string, id int, strict bool, vlans []string) error {
+	strictIsolation := "enabled"
+	vlanMembers := []string{}
+
+	for _, v := range vlans {
+		vlanMembers = append(vlanMembers, fmt.Sprintf("/%s/%s", partition, v))
+	}
+
+	if !strict {
+		strictIsolation = "disabled"
+	}
+	config := &RouteDomain{
+		Name:   name,
+		ID:     id,
+		Strict: strictIsolation,
+		Vlans:  vlanMembers,
+	}
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "post",
+		URL:         uriRouteDomain,
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteRouteDomain removes a route domain.
+func (b *BigIP) DeleteRouteDomain(name string) error {
+	req := &APIRequest{
+		Method: "delete",
+		URL:    fmt.Sprintf("%s/%s", uriRouteDomain, name),
+	}
+	_, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ModifyRoute allows you to change any attribute of a route domain. Fields that
+// can be modified are referenced in the RouteDomain struct.
+func (b *BigIP) ModifyRouteDomain(name string, config *RouteDomain) error {
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s", uriRouteDomain, name),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
