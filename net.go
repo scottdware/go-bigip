@@ -418,6 +418,69 @@ func (b *BigIP) Routes() (*Routes, error) {
 	return &routes, nil
 }
 
+// CreateRoute adds a new static route to the BIG-IP system.
+func (b *BigIP) CreateRoute(name, dest, gateway string) error {
+	config := &Route{
+		Name:    name,
+		Network: dest,
+		Gateway: gateway,
+	}
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "post",
+		URL:         uriRoute,
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteRoute removes a static route.
+func (b *BigIP) DeleteRoute(name string) error {
+	req := &APIRequest{
+		Method: "delete",
+		URL:    fmt.Sprintf("%s/%s", uriRoute, name),
+	}
+	_, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ModifyRoute allows you to change any attribute of a static route. Fields that
+// can be modified are referenced in the Route struct.
+func (b *BigIP) ModifyRoute(name string, config *Route) error {
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s", uriRoute, name),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // RouteDomains returns a list of route domains.
 func (b *BigIP) RouteDomains() (*RouteDomains, error) {
 	var rd RouteDomains
