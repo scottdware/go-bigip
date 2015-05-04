@@ -117,6 +117,13 @@ type Vlan struct {
 	Tag            int    `json:"tag,omitempty"`
 }
 
+// VlanInterface contains fields to be used when adding an interface to a VLAN.
+type VlanInterface struct {
+	Name     string `json:"name,omitempty"`
+	Tagged   bool   `json:"tagged,omitempty"`
+	Untagged bool   `json:"untagged,omitempty"`
+}
+
 // Routes contains a list of every route on the BIG-IP system.
 type Routes struct {
 	Routes []Route `json:"items"`
@@ -181,6 +188,38 @@ func (b *BigIP) Interfaces() (*Interfaces, error) {
 	return &interfaces, nil
 }
 
+// AddInterfaceToVlan associates the given interface to the specified VLAN.
+func (b *BigIP) AddInterfaceToVlan(vlan, iface string, tagged bool) error {
+	config := &VlanInterface{}
+
+	if tagged {
+		config.Name = vlan
+		config.Tagged = true
+	} else {
+		config.Name = vlan
+		config.Untagged = true
+	}
+
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s/interfaces", uriVlan, vlan),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SelfIPs returns a list of self IP's.
 func (b *BigIP) SelfIPs() (*SelfIPs, error) {
 	var self SelfIPs
@@ -203,11 +242,11 @@ func (b *BigIP) SelfIPs() (*SelfIPs, error) {
 }
 
 // CreateSelfIP adds a new self IP to the BIG-IP system.
-func (b *BigIP) CreateSelfIP(name, address, vlan, partition string) error {
+func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
 	config := &SelfIP{
 		Name:    name,
 		Address: address,
-		Vlan:    fmt.Sprintf("/%s/%s", partition, vlan),
+		Vlan:    vlan,
 	}
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
