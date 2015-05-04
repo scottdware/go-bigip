@@ -259,6 +259,43 @@ func (b *BigIP) ModifyNode(name string, config *Vlan) error {
 	return nil
 }
 
+// NodeStatus changes the status of a node. <state> can be either
+// "enable" or "disable".
+func (b *BigIP) NodeStatus(name, state string) error {
+	config := &Node{}
+
+	switch state {
+	case "enable":
+		// config.State = "unchecked"
+		config.Session = "user-enabled"
+	case "disable":
+		// config.State = "unchecked"
+		config.Session = "user-disabled"
+		// case "offline":
+		// 	config.State = "user-down"
+		// 	config.Session = "user-disabled"
+	}
+
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s", uriNode, name),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	_, err = b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Pools returns a list of pools.
 func (b *BigIP) Pools() (*Pools, error) {
 	var pools Pools
