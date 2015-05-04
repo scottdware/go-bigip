@@ -3,9 +3,6 @@
 
 A Go package that interacts with F5 BIG-IP systems using the REST API.
 
-Currently, only the Network and Local Traffic (LTM) modules are supported, but I'm actively working on adding
-other modules to the list (System, etc.).
-
 Some of the tasks you can do are as follows:
 
 * Get a detailed list of all nodes, pools, vlans, routes, trunks, route domains, virtual servers on the BIG-IP system.
