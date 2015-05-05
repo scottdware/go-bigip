@@ -20,7 +20,7 @@ func main() {
 	}
 
 	// Create a VLAN
-	b.CreateVlan("vlan1138")
+	b.CreateVlan("vlan1138", 1138)
 
 	// Add an untagged interface to a VLAN.
 	b.AddInterfaceToVlan("vlan1138", "1.2", false)
