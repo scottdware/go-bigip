@@ -10,7 +10,7 @@ func main() {
 	f5 := bigip.NewSession("ltm.company.com", "admin", "secret")
 
 	// Get a list of all VLAN's, and print their names to the console.
-	vlans, err := b.Vlans()
+	vlans, err := f5.Vlans()
 	if err != nil {
 		fmt.Println(err)
 	}
