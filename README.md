@@ -10,6 +10,8 @@ Some of the tasks you can do are as follows:
 * Modify individual settings for all of the above.
 * Change the status of nodes and individual pool members (enable/disable).
 
+> **Note**: You must be on version 11.4+
+
 ### Examples & Documentation
 Visit the [GoDoc][godoc-go-bigip] page for package documentation and examples.
 
