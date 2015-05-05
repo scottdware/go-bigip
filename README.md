@@ -15,8 +15,11 @@ Some of the tasks you can do are as follows:
 ### Examples & Documentation
 Visit the [GoDoc][godoc-go-bigip] page for package documentation and examples.
 
+Here's a [blog post][blog] that goes a little more in-depth.
+
 ### License
 go-bigip is licensed under the [MIT License][license].
 
 [godoc-go-bigip]: http://godoc.org/github.com/scottdware/go-bigip
 [license]: https://github.com/scottdware/go-bigip/blob/master/LICENSE
+[blog]: http://sdubs.org/go-big-ip-or-go-home/
