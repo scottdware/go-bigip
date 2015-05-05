@@ -370,7 +370,7 @@ func (b *BigIP) AddPoolMember(pool string, member string) error {
 }
 
 // DeletePoolMember removes a member from the given pool.
-func (b *BigIP) DeletePoolMember(pool string, member string) error {
+func (b *BigIP) DeletePoolMember(pool, member string) error {
 	req := &APIRequest{
 		Method:      "delete",
 		URL:         fmt.Sprintf("%s/%s/members/%s", uriPool, pool, member),
