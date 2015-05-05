@@ -52,4 +52,17 @@ func main() {
 
 	// Remove a pool member.
 	b.DeletePoolMember("web_farm_80_pool", "web-server-2:80")
+
+	// Create a trunk, with LACP enabled.
+	interfaces := []string{"1.2", "1.4", "1.6"}
+	b.CreateTrunk("Aggregated", interfaces, true)
+
+	// Disable a virtual address.
+	b.VirtualAddressStatus("web_farm_VS", "disable")
+
+	// Disable a pool member.
+	b.PoolMemberStatus("ssl_443_pool", "ssl-web-server-1:443", "disable")
+
+	// Create a self IP.
+	b.CreateSelfIP("vlan1138", "10.10.10.1/24", "vlan1138")
 }
