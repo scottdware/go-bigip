@@ -3,6 +3,7 @@ package bigip
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // Interfaces contains a list of every interface on the BIG-IP system.
@@ -325,10 +326,17 @@ func (b *BigIP) Trunks() (*Trunks, error) {
 }
 
 // CreateTrunk adds a new trunk to the BIG-IP system.
-func (b *BigIP) CreateTrunk(name string, interfaces []string, lacp bool) error {
+func (b *BigIP) CreateTrunk(name, interfaces string, lacp bool) error {
+	rawInts := strings.Split(interfaces, ",")
+	ints := []string{}
+
+	for _, i := range rawInts {
+		ints = append(ints, strings.Trim(i, " "))
+	}
+
 	config := &Trunk{
 		Name:       name,
-		Interfaces: interfaces,
+		Interfaces: ints,
 	}
 
 	if lacp {
@@ -578,11 +586,12 @@ func (b *BigIP) RouteDomains() (*RouteDomains, error) {
 }
 
 // CreateRouteDomain adds a new route domain to the BIG-IP system.
-func (b *BigIP) CreateRouteDomain(name, partition string, id int, strict bool, vlans []string) error {
+func (b *BigIP) CreateRouteDomain(name, partition string, id int, strict bool, vlans string) error {
 	strictIsolation := "enabled"
 	vlanMembers := []string{}
+	rawVlans := strings.Split(vlans, ",")
 
-	for _, v := range vlans {
+	for _, v := range rawVlans {
 		vlanMembers = append(vlanMembers, fmt.Sprintf("/%s/%s", partition, v))
 	}
 
