@@ -54,8 +54,7 @@ func main() {
 	b.DeletePoolMember("web_farm_80_pool", "web-server-2:80")
 
 	// Create a trunk, with LACP enabled.
-	interfaces := []string{"1.2", "1.4", "1.6"}
-	b.CreateTrunk("Aggregated", interfaces, true)
+	b.CreateTrunk("Aggregated", "1.2, 1.4, 1.6", true)
 
 	// Disable a virtual address.
 	b.VirtualAddressStatus("web_farm_VS", "disable")
