@@ -345,7 +345,7 @@ func (b *BigIP) PoolMembers(name string) ([]string, error) {
 }
 
 // AddPoolMembers adds a node/member to the given pool.
-func (b *BigIP) AddPoolMember(pool string, member string) error {
+func (b *BigIP) AddPoolMember(pool, member string) error {
 	config := &poolMember{
 		Name: member,
 	}
@@ -504,7 +504,9 @@ func (b *BigIP) VirtualServers() (*VirtualServers, error) {
 	return &vs, nil
 }
 
-// CreateVirtualServer adds a new virtual server to the BIG-IP system.
+// CreateVirtualServer adds a new virtual server to the BIG-IP system. <mask> can either be
+// in CIDR notation or decimal, i.e.: "24" or "255.255.255.0". A CIDR mask of "0" is the same
+// as "0.0.0.0".
 func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, port int) error {
 	var subnetMask string
 
