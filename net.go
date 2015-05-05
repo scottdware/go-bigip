@@ -242,7 +242,8 @@ func (b *BigIP) SelfIPs() (*SelfIPs, error) {
 	return &self, nil
 }
 
-// CreateSelfIP adds a new self IP to the BIG-IP system.
+// CreateSelfIP adds a new self IP to the BIG-IP system. For <address>, you
+// must include the subnet mask in CIDR notation, i.e.: "10.1.1.1/24".
 func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
 	config := &SelfIP{
 		Name:    name,
@@ -325,7 +326,8 @@ func (b *BigIP) Trunks() (*Trunks, error) {
 	return &trunks, nil
 }
 
-// CreateTrunk adds a new trunk to the BIG-IP system.
+// CreateTrunk adds a new trunk to the BIG-IP system. <interfaces> must be
+// separated by a comma, i.e.: "1.4, 1.6, 1.8".
 func (b *BigIP) CreateTrunk(name, interfaces string, lacp bool) error {
 	rawInts := strings.Split(interfaces, ",")
 	ints := []string{}
@@ -420,9 +422,10 @@ func (b *BigIP) Vlans() (*Vlans, error) {
 }
 
 // CreateVlan adds a new VLAN to the BIG-IP system.
-func (b *BigIP) CreateVlan(name string) error {
+func (b *BigIP) CreateVlan(name string, tag int) error {
 	config := &Vlan{
 		Name: name,
+		Tag:  tag,
 	}
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
@@ -501,7 +504,8 @@ func (b *BigIP) Routes() (*Routes, error) {
 	return &routes, nil
 }
 
-// CreateRoute adds a new static route to the BIG-IP system.
+// CreateRoute adds a new static route to the BIG-IP system. <dest> must include the
+// subnet mask in CIDR notation, i.e.: "10.1.1.0/24".
 func (b *BigIP) CreateRoute(name, dest, gateway string) error {
 	config := &Route{
 		Name:    name,
@@ -585,14 +589,15 @@ func (b *BigIP) RouteDomains() (*RouteDomains, error) {
 	return &rd, nil
 }
 
-// CreateRouteDomain adds a new route domain to the BIG-IP system.
-func (b *BigIP) CreateRouteDomain(name, partition string, id int, strict bool, vlans string) error {
+// CreateRouteDomain adds a new route domain to the BIG-IP system. <vlans> must be separated
+// by a comma, i.e.: "vlan1010, vlan1020".
+func (b *BigIP) CreateRouteDomain(name string, id int, strict bool, vlans string) error {
 	strictIsolation := "enabled"
 	vlanMembers := []string{}
 	rawVlans := strings.Split(vlans, ",")
 
 	for _, v := range rawVlans {
-		vlanMembers = append(vlanMembers, fmt.Sprintf("/%s/%s", partition, v))
+		vlanMembers = append(vlanMembers, strings.Trim(v, " "))
 	}
 
 	if !strict {
