@@ -215,12 +215,12 @@ func (b *BigIP) CreateNode(name, address string) error {
 		ContentType: "application/json",
 	}
 
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // DeleteNode removes a node.
@@ -229,12 +229,12 @@ func (b *BigIP) DeleteNode(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriNode, name),
 	}
-	_, err := b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // ModifyNode allows you to change any attribute of a node. Fields that
@@ -251,12 +251,12 @@ func (b *BigIP) ModifyNode(name string, config *Vlan) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // NodeStatus changes the status of a node. <state> can be either
@@ -288,12 +288,12 @@ func (b *BigIP) NodeStatus(name, state string) error {
 		ContentType: "application/json",
 	}
 
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // Pools returns a list of pools.
@@ -361,12 +361,12 @@ func (b *BigIP) AddPoolMember(pool, member string) error {
 		ContentType: "application/json",
 	}
 
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // DeletePoolMember removes a member from the given pool.
@@ -377,12 +377,12 @@ func (b *BigIP) DeletePoolMember(pool, member string) error {
 		ContentType: "application/json",
 	}
 
-	_, err := b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // PoolMemberStatus changes the status of a pool member. <state> can be one of
@@ -414,12 +414,12 @@ func (b *BigIP) PoolMemberStatus(pool, member, state string) error {
 		ContentType: "application/json",
 	}
 
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // CreatePool adds a new pool to the BIG-IP system.
@@ -439,12 +439,12 @@ func (b *BigIP) CreatePool(name string) error {
 		ContentType: "application/json",
 	}
 
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // DeletePool removes a pool.
@@ -453,12 +453,12 @@ func (b *BigIP) DeletePool(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriPool, name),
 	}
-	_, err := b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // ModifyPool allows you to change any attribute of a pool. Fields that
@@ -475,12 +475,12 @@ func (b *BigIP) ModifyPool(name string, config *Pool) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // VirtualServers returns a list of virtual servers.
@@ -535,12 +535,12 @@ func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, port i
 		ContentType: "application/json",
 	}
 
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // DeleteVirtualServer removes a virtual server.
@@ -549,12 +549,12 @@ func (b *BigIP) DeleteVirtualServer(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriVirtual, name),
 	}
-	_, err := b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // ModifyVirtualServer allows you to change any attribute of a virtual server. Fields that
@@ -571,12 +571,12 @@ func (b *BigIP) ModifyVirtualServer(name string, config *VirtualServer) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
 
 // VirtualAddresses returns a list of virtual addresses.
@@ -624,10 +624,10 @@ func (b *BigIP) VirtualAddressStatus(vaddr, state string) error {
 		ContentType: "application/json",
 	}
 
-	_, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return b.checkError(resp)
 }
