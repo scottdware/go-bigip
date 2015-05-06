@@ -475,7 +475,7 @@ func (b *BigIP) ModifyVlan(name string, config *Vlan) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
-	resp, err = b.APICall(req)
+	resp, err := b.APICall(req)
 	if err != nil {
 		return err
 	}
