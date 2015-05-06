@@ -28,6 +28,7 @@ type APIRequest struct {
 	ContentType string
 }
 
+// RequestError contains information about any error we get from a request.
 type RequestError struct {
 	Code       int      `json:"code,omitempty"`
 	Message    string   `json:"message,omitempty"`
