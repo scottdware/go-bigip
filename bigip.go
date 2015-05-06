@@ -4,6 +4,8 @@ package bigip
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -24,6 +26,12 @@ type APIRequest struct {
 	URL         string
 	Body        string
 	ContentType string
+}
+
+type RequestError struct {
+	Code       int      `json:"code,omitempty"`
+	Message    string   `json:"message,omitempty"`
+	ErrorStack []string `json:"errorStack,omitempty"`
 }
 
 // NewServer sets up our connection to the BIG-IP system.
@@ -63,4 +71,20 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	data, _ := ioutil.ReadAll(res.Body)
 
 	return data, nil
+}
+
+// checkError handles any errors we get from our API requests. It returns either the
+// message of the error, if any, or nil.
+func (b *BigIP) checkError(resp []byte) error {
+	var reqError RequestError
+	err := json.Unmarshal(resp, &reqError)
+	if err != nil {
+		return err
+	}
+
+	if reqError.Message != "" {
+		return errors.New(reqError.Message)
+	}
+
+	return nil
 }
