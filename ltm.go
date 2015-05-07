@@ -344,7 +344,8 @@ func (b *BigIP) PoolMembers(name string) ([]string, error) {
 	return members, nil
 }
 
-// AddPoolMembers adds a node/member to the given pool.
+// AddPoolMembers adds a node/member to the given pool. <member> must be in the form
+// of <node>:<port>, i.e.: "web-server1:443".
 func (b *BigIP) AddPoolMember(pool, member string) error {
 	config := &poolMember{
 		Name: member,
@@ -369,7 +370,8 @@ func (b *BigIP) AddPoolMember(pool, member string) error {
 	return b.checkError(resp)
 }
 
-// DeletePoolMember removes a member from the given pool.
+// DeletePoolMember removes a member from the given pool. <member> must be in the form
+// of <node>:<port>, i.e.: "web-server1:443".
 func (b *BigIP) DeletePoolMember(pool, member string) error {
 	req := &APIRequest{
 		Method:      "delete",
@@ -386,7 +388,8 @@ func (b *BigIP) DeletePoolMember(pool, member string) error {
 }
 
 // PoolMemberStatus changes the status of a pool member. <state> can be one of
-// "enable", "disable", or "offline".
+// "enable", "disable", or "offline". <member> must be in the form of <node>:<port>,
+// i.e.: "web-server1:443".
 func (b *BigIP) PoolMemberStatus(pool, member, state string) error {
 	config := &Node{}
 
