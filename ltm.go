@@ -387,8 +387,8 @@ func (b *BigIP) DeletePoolMember(pool, member string) error {
 	return b.checkError(resp)
 }
 
-// PoolMemberStatus changes the status of a pool member. <state> can be one of
-// "enable", "disable", or "offline". <member> must be in the form of <node>:<port>,
+// PoolMemberStatus changes the status of a pool member. <state> can be either
+// "enable" or "disable". <member> must be in the form of <node>:<port>,
 // i.e.: "web-server1:443".
 func (b *BigIP) PoolMemberStatus(pool, member, state string) error {
 	config := &Node{}
