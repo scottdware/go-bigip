@@ -6,8 +6,8 @@ A Go package that interacts with F5 BIG-IP systems using the REST API.
 
 Some of the tasks you can do are as follows:
 
-* Get a detailed list of all nodes, pools, vlans, routes, trunks, route domains, self IP's, virtual servers on the BIG-IP system.
-* Create/delete nodes, pools, vlans, routes, trunks, route domains, self IP's, virtual servers, etc.
+* Get a detailed list of all nodes, pools, vlans, routes, trunks, route domains, self IP's, virtual servers, monitors on the BIG-IP system.
+* Create/delete nodes, pools, vlans, routes, trunks, route domains, self IP's, virtual servers, monitors, etc.
 * Modify individual settings for all of the above.
 * Change the status of nodes and individual pool members (enable/disable).
 
