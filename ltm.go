@@ -133,12 +133,40 @@ type VirtualAddress struct {
 	Unit                  int    `json:"unit,omitempty"`
 }
 
+// Monitors contains a list of all monitors on the BIG-IP system.
+type Monitors struct {
+	Monitors []Monitor `json:"items"`
+}
+
+// Monitor contains information about each individual monitor.
+type Monitor struct {
+	Name           string `json:"name,omitempty"`
+	Partition      string `json:"partition,omitempty"`
+	FullPath       string `json:"fullPath,omitempty"`
+	Generation     int    `json:"generation,omitempty"`
+	ParentMonitor  string `json:"defaultsFrom,omitempty"`
+	Description    string `json:"description,omitempty"`
+	Destination    string `json:"destination,omitempty"`
+	Interval       int    `json:"interval,omitempty"`
+	IPDSCP         int    `json:"ipDscp,omitempty"`
+	ManualResume   string `json:"manualResume,omitempty"`
+	ReceiveString  string `json:"recv,omitempty"`
+	ReceiveDisable string `json:"recvDisable,omitempty"`
+	Reverse        string `json:"reverse,omitempty"`
+	SendString     string `json:"send,omitempty"`
+	TimeUntilUp    int    `json:"timeUntilUp,omitempty"`
+	Timeout        int    `json:"timeout,omitempty"`
+	Transparent    string `json:"transparent,omitempty"`
+	UpInterval     int    `json:"upInterval,omitempty"`
+}
+
 var (
 	uriNode           = "ltm/node"
 	uriPolicy         = "ltm/policy"
 	uriPool           = "ltm/pool"
 	uriVirtual        = "ltm/virtual"
 	uriVirtualAddress = "ltm/virtual-address"
+	uriMonitor        = "ltm/monitor"
 	cidr              = map[string]string{
 		"0":  "0.0.0.0",
 		"1":  "128.0.0.0",
@@ -627,6 +655,112 @@ func (b *BigIP) VirtualAddressStatus(vaddr, state string) error {
 		ContentType: "application/json",
 	}
 
+	resp, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return b.checkError(resp)
+}
+
+// Monitors returns a list of all HTTP, HTTPS, Gateway ICMP, and ICMP monitors.
+func (b *BigIP) Monitors() ([]Monitor, error) {
+	var monitors []Monitor
+	monitorUris := []string{"http", "https", "icmp", "gateway-icmp"}
+
+	for _, name := range monitorUris {
+		var m Monitors
+		req := &APIRequest{
+			Method: "get",
+			URL:    fmt.Sprintf("%s/%s", uriMonitor, name),
+		}
+
+		resp, err := b.APICall(req)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(resp, &m)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, monitor := range m.Monitors {
+			monitors = append(monitors, monitor)
+		}
+	}
+
+	return monitors, nil
+}
+
+// CreateMonitor adds a new monitor to the BIG-IP system.
+func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive string) error {
+	if strings.Contains(send, "\r\n") {
+		send = strings.Replace(send, "\r\n", "\\r\\n", -1)
+	}
+
+	config := &Monitor{
+		Name:          name,
+		ParentMonitor: parent,
+		Interval:      interval,
+		Timeout:       timeout,
+		SendString:    send,
+		ReceiveString: receive,
+	}
+
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "post",
+		URL:         fmt.Sprintf("%s/%s", uriMonitor, parent),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	resp, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return b.checkError(resp)
+}
+
+// DeleteMonitor removes a monitor.
+func (b *BigIP) DeleteMonitor(name, parent string) error {
+	req := &APIRequest{
+		Method: "delete",
+		URL:    fmt.Sprintf("%s/%s/%s", uriMonitor, parent, name),
+	}
+
+	resp, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return b.checkError(resp)
+}
+
+// ModifyMonitor allows you to change any attribute of a monitor. Fields that
+// can be modified are referenced in the Monitor struct.
+func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
+	if strings.Contains(config.SendString, "\r\n") {
+		config.SendString = strings.Replace(config.SendString, "\r\n", "\\r\\n", -1)
+	}
+
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s/%s", uriMonitor, parent, name),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
