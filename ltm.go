@@ -693,10 +693,15 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 	return monitors, nil
 }
 
-// CreateMonitor adds a new monitor to the BIG-IP system.
+// CreateMonitor adds a new monitor to the BIG-IP system. <parent> must be one of "http", "https",
+// "icmp", or "gateway icmp".
 func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive string) error {
 	if strings.Contains(send, "\r\n") {
 		send = strings.Replace(send, "\r\n", "\\r\\n", -1)
+	}
+
+	if parent == "gateway icmp" {
+		parent = "gateway_icmp"
 	}
 
 	config := &Monitor{
@@ -743,11 +748,16 @@ func (b *BigIP) DeleteMonitor(name, parent string) error {
 	return b.checkError(resp)
 }
 
-// ModifyMonitor allows you to change any attribute of a monitor. Fields that
+// ModifyMonitor allows you to change any attribute of a monitor. <parent> must be
+// one of "http", "https", "icmp", or "gateway icmp". Fields that
 // can be modified are referenced in the Monitor struct.
 func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
 	if strings.Contains(config.SendString, "\r\n") {
 		config.SendString = strings.Replace(config.SendString, "\r\n", "\\r\\n", -1)
+	}
+
+	if parent == "gateway icmp" {
+		parent = "gateway_icmp"
 	}
 
 	marshalJSON, err := json.Marshal(config)
