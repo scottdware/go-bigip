@@ -778,3 +778,28 @@ func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
 
 	return b.checkError(resp)
 }
+
+// AddMonitorToPool assigns the monitor, <monitor> to the given <pool>.
+func (b *BigIP) AddMonitorToPool(monitor, pool string) error {
+	config := &Pool{
+		Monitor: monitor,
+	}
+
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s", uriPool, pool),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+	resp, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	return b.checkError(resp)
+}
