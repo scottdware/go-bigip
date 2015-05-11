@@ -372,7 +372,7 @@ func (b *BigIP) PoolMembers(name string) ([]string, error) {
 	return members, nil
 }
 
-// AddPoolMembers adds a node/member to the given pool. <member> must be in the form
+// AddPoolMember adds a node/member to the given pool. <member> must be in the form
 // of <node>:<port>, i.e.: "web-server1:443".
 func (b *BigIP) AddPoolMember(pool, member string) error {
 	config := &poolMember{
