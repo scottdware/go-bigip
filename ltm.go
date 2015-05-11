@@ -231,6 +231,7 @@ func (b *BigIP) CreateNode(name, address string) error {
 		Name:    name,
 		Address: address,
 	}
+
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
@@ -257,6 +258,7 @@ func (b *BigIP) DeleteNode(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriNode, name),
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -279,6 +281,7 @@ func (b *BigIP) ModifyNode(name string, config *Vlan) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -378,6 +381,7 @@ func (b *BigIP) AddPoolMember(pool, member string) error {
 	config := &poolMember{
 		Name: member,
 	}
+
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
@@ -458,6 +462,7 @@ func (b *BigIP) CreatePool(name string) error {
 	config := &Pool{
 		Name: name,
 	}
+
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
@@ -484,6 +489,7 @@ func (b *BigIP) DeletePool(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriPool, name),
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -506,6 +512,7 @@ func (b *BigIP) ModifyPool(name string, config *Pool) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -539,12 +546,10 @@ func (b *BigIP) VirtualServers() (*VirtualServers, error) {
 // in CIDR notation or decimal, i.e.: "24" or "255.255.255.0". A CIDR mask of "0" is the same
 // as "0.0.0.0".
 func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, port int) error {
-	var subnetMask string
+	subnetMask := cidr[mask]
 
 	if strings.Contains(mask, ".") {
 		subnetMask = mask
-	} else {
-		subnetMask = cidr[mask]
 	}
 
 	config := &VirtualServer{
@@ -580,6 +585,7 @@ func (b *BigIP) DeleteVirtualServer(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriVirtual, name),
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -602,6 +608,7 @@ func (b *BigIP) ModifyVirtualServer(name string, config *VirtualServer) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -771,6 +778,7 @@ func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -796,6 +804,7 @@ func (b *BigIP) AddMonitorToPool(monitor, pool string) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err

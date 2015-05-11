@@ -196,7 +196,9 @@ func (b *BigIP) AddInterfaceToVlan(vlan, iface string, tagged bool) error {
 	if tagged {
 		config.Name = vlan
 		config.Tagged = true
-	} else {
+	}
+
+	if !tagged {
 		config.Name = vlan
 		config.Untagged = true
 	}
@@ -250,6 +252,7 @@ func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
 		Address: address,
 		Vlan:    vlan,
 	}
+
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
@@ -261,6 +264,7 @@ func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -275,6 +279,7 @@ func (b *BigIP) DeleteSelfIP(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriSelf, name),
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -297,6 +302,7 @@ func (b *BigIP) ModifySelfIP(name string, config *SelfIP) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -356,6 +362,7 @@ func (b *BigIP) CreateTrunk(name, interfaces string, lacp bool) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -370,6 +377,7 @@ func (b *BigIP) DeleteTrunk(name string) error {
 		Method: "delete",
 		URL:    uriTrunk,
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -392,6 +400,7 @@ func (b *BigIP) ModifyTrunk(name string, config *Trunk) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -427,6 +436,7 @@ func (b *BigIP) CreateVlan(name string, tag int) error {
 		Name: name,
 		Tag:  tag,
 	}
+
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
@@ -453,6 +463,7 @@ func (b *BigIP) DeleteVlan(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriVlan, name),
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -475,6 +486,7 @@ func (b *BigIP) ModifyVlan(name string, config *Vlan) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -512,6 +524,7 @@ func (b *BigIP) CreateRoute(name, dest, gateway string) error {
 		Network: dest,
 		Gateway: gateway,
 	}
+
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
@@ -538,6 +551,7 @@ func (b *BigIP) DeleteRoute(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriRoute, name),
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -560,6 +574,7 @@ func (b *BigIP) ModifyRoute(name string, config *Route) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -603,12 +618,14 @@ func (b *BigIP) CreateRouteDomain(name string, id int, strict bool, vlans string
 	if !strict {
 		strictIsolation = "disabled"
 	}
+
 	config := &RouteDomain{
 		Name:   name,
 		ID:     id,
 		Strict: strictIsolation,
 		Vlans:  vlanMembers,
 	}
+
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
@@ -635,6 +652,7 @@ func (b *BigIP) DeleteRouteDomain(name string) error {
 		Method: "delete",
 		URL:    fmt.Sprintf("%s/%s", uriRouteDomain, name),
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err
@@ -657,6 +675,7 @@ func (b *BigIP) ModifyRouteDomain(name string, config *RouteDomain) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
+
 	resp, err := b.APICall(req)
 	if err != nil {
 		return err

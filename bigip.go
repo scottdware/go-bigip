@@ -78,6 +78,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 // message of the error, if any, or nil.
 func (b *BigIP) checkError(resp []byte) error {
 	var reqError RequestError
+
 	err := json.Unmarshal(resp, &reqError)
 	if err != nil {
 		return err
