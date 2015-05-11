@@ -700,7 +700,7 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 		send = strings.Replace(send, "\r\n", "\\r\\n", -1)
 	}
 
-	if parent == "gateway icmp" {
+	if strings.Contains(parent, "gateway") {
 		parent = "gateway_icmp"
 	}
 
@@ -756,7 +756,7 @@ func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
 		config.SendString = strings.Replace(config.SendString, "\r\n", "\\r\\n", -1)
 	}
 
-	if parent == "gateway icmp" {
+	if strings.Contains(parent, "gateway") {
 		parent = "gateway_icmp"
 	}
 
