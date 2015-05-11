@@ -44,6 +44,10 @@ func main() {
 	f5.AddPoolMember("ssl_443_pool", "ssl-web-server-1:443")
 	f5.AddPoolMember("ssl_443_pool", "ssl-web-server-2:443")
 
+	// Create a monitor, and assign it to a pool.
+	f5.CreateMonitor("web_http_monitor", "http", 5, 16, "GET /\r\n", "200 OK")
+	f5.AddMonitorToPool("web_http_monitor", "web_farm_80_pool")
+
 	// Create a virtual server, with the above pool. The third field is the subnet
 	// mask, and that can either be in CIDR notation or decimal. For any/all destinations
 	// and ports, use '0' for the mask and/or port.
