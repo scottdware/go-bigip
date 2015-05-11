@@ -35,7 +35,7 @@ type RequestError struct {
 	ErrorStack []string `json:"errorStack,omitempty"`
 }
 
-// NewServer sets up our connection to the BIG-IP system.
+// NewSession sets up our connection to the BIG-IP system.
 func NewSession(host, user, passwd string) *BigIP {
 	return &BigIP{
 		Host:     host,

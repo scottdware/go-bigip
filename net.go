@@ -661,7 +661,7 @@ func (b *BigIP) DeleteRouteDomain(name string) error {
 	return b.checkError(resp)
 }
 
-// ModifyRoute allows you to change any attribute of a route domain. Fields that
+// ModifyRouteDomain allows you to change any attribute of a route domain. Fields that
 // can be modified are referenced in the RouteDomain struct.
 func (b *BigIP) ModifyRouteDomain(name string, config *RouteDomain) error {
 	marshalJSON, err := json.Marshal(config)
