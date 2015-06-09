@@ -269,7 +269,7 @@ func (b *BigIP) DeleteNode(name string) error {
 
 // ModifyNode allows you to change any attribute of a node. Fields that
 // can be modified are referenced in the Node struct.
-func (b *BigIP) ModifyNode(name string, config *Vlan) error {
+func (b *BigIP) ModifyNode(name string, config *Node) error {
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
