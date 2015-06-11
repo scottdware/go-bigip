@@ -35,6 +35,13 @@ type RequestError struct {
 	ErrorStack []string `json:"errorStack,omitempty"`
 }
 
+func (r *RequestError) Error() error {
+	if(r.Message != "") {
+		return errors.New(r.Message)
+	}
+	return nil
+}
+
 // NewSession sets up our connection to the BIG-IP system.
 func NewSession(host, user, passwd string) *BigIP {
 	return &BigIP{
@@ -71,6 +78,14 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 
 	data, _ := ioutil.ReadAll(res.Body)
 
+	if res.StatusCode >= 400 {
+		if res.Header["Content-Type"][0] == "application/json" {
+			return data, b.checkError(data)
+		}
+
+		return data, errors.New(fmt.Sprintf("HTTP %d :: %s", res.StatusCode, string(data[:])))
+	}
+
 	return data, nil
 }
 
@@ -85,12 +100,34 @@ func (b *BigIP) checkError(resp []byte) error {
 
 	err := json.Unmarshal(resp, &reqError)
 	if err != nil {
+		return errors.New(fmt.Sprintf("%s\n%s", err.Error(), string(resp[:])))
+	}
+
+	err = reqError.Error()
+	if err != nil {
 		return err
 	}
 
-	if reqError.Message != "" {
-		return errors.New(reqError.Message)
+	return nil
+}
+
+// Perform a GET request and treat 404's as nil objects instead of errors.
+func (b *BigIP) SafeGet(url string) ([]byte, error) {
+	req := &APIRequest{
+		Method:      "get",
+		URL:         url,
+		ContentType: "application/json",
 	}
 
-	return nil
+	resp, err := b.APICall(req)
+	if err != nil {
+		var reqError RequestError
+		json.Unmarshal(resp, &reqError)
+		if reqError.Code == 404 {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return resp, nil
 }
