@@ -244,12 +244,27 @@ func (b *BigIP) CreateNode(name, address string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
+	_, callErr := b.APICall(req)
+	return callErr
+}
+
+// Get a Node by name. Returns nil if the node does not exist
+func (b *BigIP) GetNode(name string) (*Node, error) {
+	resp, err := b.SafeGet(fmt.Sprintf("%s/%s", uriNode, name))
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if resp == nil {
+		return nil, nil
 	}
 
-	return b.checkError(resp)
+	var node Node
+	err = json.Unmarshal(resp, &node)
+	if err != nil {
+		return nil, err
+	}
+
+	return &node, nil
 }
 
 // DeleteNode removes a node.
@@ -259,12 +274,8 @@ func (b *BigIP) DeleteNode(name string) error {
 		URL:    fmt.Sprintf("%s/%s", uriNode, name),
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifyNode allows you to change any attribute of a node. Fields that
@@ -282,12 +293,8 @@ func (b *BigIP) ModifyNode(name string, config *Node) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // NodeStatus changes the status of a node. <state> can be either
@@ -319,12 +326,8 @@ func (b *BigIP) NodeStatus(name, state string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // Pools returns a list of pools.
@@ -394,12 +397,8 @@ func (b *BigIP) AddPoolMember(pool, member string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // DeletePoolMember removes a member from the given pool. <member> must be in the form
@@ -411,12 +410,8 @@ func (b *BigIP) DeletePoolMember(pool, member string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // PoolMemberStatus changes the status of a pool member. <state> can be either
@@ -449,12 +444,8 @@ func (b *BigIP) PoolMemberStatus(pool, member, state string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // CreatePool adds a new pool to the BIG-IP system.
@@ -475,12 +466,27 @@ func (b *BigIP) CreatePool(name string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
+	_, callErr := b.APICall(req)
+	return callErr
+}
+
+// Get a Pool by name. Returns nil if the Pool does not exist
+func (b *BigIP) GetPool(name string) (*Pool, error) {
+	resp, err := b.SafeGet(fmt.Sprintf("%s/%s", uriPool, name))
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if resp == nil {
+		return nil, nil
 	}
 
-	return b.checkError(resp)
+	var pool Pool
+	err = json.Unmarshal(resp, &pool)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pool, nil
 }
 
 // DeletePool removes a pool.
@@ -490,12 +496,8 @@ func (b *BigIP) DeletePool(name string) error {
 		URL:    fmt.Sprintf("%s/%s", uriPool, name),
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifyPool allows you to change any attribute of a pool. Fields that
@@ -513,12 +515,8 @@ func (b *BigIP) ModifyPool(name string, config *Pool) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // VirtualServers returns a list of virtual servers.
@@ -571,12 +569,27 @@ func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, port i
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
+	_, callErr := b.APICall(req)
+	return callErr
+}
+
+// Get a VirtualServer by name. Returns nil if the VirtualServer does not exist
+func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
+	resp, err := b.SafeGet(fmt.Sprintf("%s/%s", uriVirtual, name))
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if resp == nil {
+		return nil, nil
+	}
+	
+	var vs VirtualServer
+	err = json.Unmarshal(resp, &vs)
+	if err != nil {
+		return nil, err
 	}
 
-	return b.checkError(resp)
+	return &vs, nil
 }
 
 // DeleteVirtualServer removes a virtual server.
@@ -586,12 +599,8 @@ func (b *BigIP) DeleteVirtualServer(name string) error {
 		URL:    fmt.Sprintf("%s/%s", uriVirtual, name),
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifyVirtualServer allows you to change any attribute of a virtual server. Fields that
@@ -609,12 +618,8 @@ func (b *BigIP) ModifyVirtualServer(name string, config *VirtualServer) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // VirtualAddresses returns a list of virtual addresses.
@@ -662,12 +667,8 @@ func (b *BigIP) VirtualAddressStatus(vaddr, state string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // Monitors returns a list of all HTTP, HTTPS, Gateway ICMP, and ICMP monitors.
@@ -732,12 +733,8 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // DeleteMonitor removes a monitor.
@@ -747,12 +744,8 @@ func (b *BigIP) DeleteMonitor(name, parent string) error {
 		URL:    fmt.Sprintf("%s/%s/%s", uriMonitor, parent, name),
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifyMonitor allows you to change any attribute of a monitor. <parent> must be
@@ -779,12 +772,8 @@ func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // AddMonitorToPool assigns the monitor, <monitor> to the given <pool>.
@@ -805,10 +794,6 @@ func (b *BigIP) AddMonitorToPool(monitor, pool string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
