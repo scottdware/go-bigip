@@ -35,8 +35,66 @@ type RequestError struct {
 	ErrorStack []string `json:"errorStack,omitempty"`
 }
 
+//Wrapper boolean type for "yes"/"no" values in F5 API
+type Yes bool
+
+func (v *Yes) MarshalJSON() ([]byte, error) {
+	if *v {
+		return json.Marshal("yes")
+	}
+	return json.Marshal("no")
+}
+
+func (v *Yes) UnmarshalJSON(b []byte) error {
+	var s string
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*v = (s == "yes")
+	return nil
+}
+
+//Wrapper boolean type for "enabled"/"disabled" values in F5 API
+type Enabled bool
+
+func (v *Enabled) MarshalJSON() ([]byte, error) {
+	if *v {
+		return json.Marshal("enabled")
+	}
+	return json.Marshal("disabled")
+}
+func (v *Enabled) UnmarshalJSON(b []byte) error {
+	var s string
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*v = (s == "enabled")
+	return nil
+}
+
+//Wrapper boolean type for "true"/"false" as strings
+type True bool
+
+func (v *True) MarshalJSON() ([]byte, error) {
+	if *v {
+		return json.Marshal("true")
+	}
+	return json.Marshal("false")
+}
+func (v *True) UnmarshalJSON(b []byte) error {
+	var s string
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*v = (s == "true")
+	return nil
+}
+
 func (r *RequestError) Error() error {
-	if(r.Message != "") {
+	if (r.Message != "") {
 		return errors.New(r.Message)
 	}
 	return nil
