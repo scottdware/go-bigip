@@ -215,12 +215,8 @@ func (b *BigIP) AddInterfaceToVlan(vlan, iface string, tagged bool) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // SelfIPs returns a list of self IP's.
@@ -265,12 +261,8 @@ func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // DeleteSelfIP removes a self IP.
@@ -280,12 +272,8 @@ func (b *BigIP) DeleteSelfIP(name string) error {
 		URL:    fmt.Sprintf("%s/%s", uriSelf, name),
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifySelfIP allows you to change any attribute of a self IP. Fields that
@@ -303,12 +291,8 @@ func (b *BigIP) ModifySelfIP(name string, config *SelfIP) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // Trunks returns a list of trunks.
@@ -363,12 +347,8 @@ func (b *BigIP) CreateTrunk(name, interfaces string, lacp bool) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // DeleteTrunk removes a trunk.
@@ -378,12 +358,8 @@ func (b *BigIP) DeleteTrunk(name string) error {
 		URL:    uriTrunk,
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifyTrunk allows you to change any attribute of a trunk. Fields that
@@ -401,12 +377,8 @@ func (b *BigIP) ModifyTrunk(name string, config *Trunk) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // Vlans returns a list of vlans.
@@ -449,12 +421,8 @@ func (b *BigIP) CreateVlan(name string, tag int) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // DeleteVlan removes a vlan.
@@ -464,12 +432,8 @@ func (b *BigIP) DeleteVlan(name string) error {
 		URL:    fmt.Sprintf("%s/%s", uriVlan, name),
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifyVlan allows you to change any attribute of a VLAN. Fields that
@@ -487,12 +451,8 @@ func (b *BigIP) ModifyVlan(name string, config *Vlan) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // Routes returns a list of routes.
@@ -537,12 +497,8 @@ func (b *BigIP) CreateRoute(name, dest, gateway string) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // DeleteRoute removes a static route.
@@ -552,12 +508,8 @@ func (b *BigIP) DeleteRoute(name string) error {
 		URL:    fmt.Sprintf("%s/%s", uriRoute, name),
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifyRoute allows you to change any attribute of a static route. Fields that
@@ -575,12 +527,8 @@ func (b *BigIP) ModifyRoute(name string, config *Route) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // RouteDomains returns a list of route domains.
@@ -638,12 +586,8 @@ func (b *BigIP) CreateRouteDomain(name string, id int, strict bool, vlans string
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // DeleteRouteDomain removes a route domain.
@@ -653,12 +597,8 @@ func (b *BigIP) DeleteRouteDomain(name string) error {
 		URL:    fmt.Sprintf("%s/%s", uriRouteDomain, name),
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
 
 // ModifyRouteDomain allows you to change any attribute of a route domain. Fields that
@@ -676,10 +616,6 @@ func (b *BigIP) ModifyRouteDomain(name string, config *RouteDomain) error {
 		ContentType: "application/json",
 	}
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return err
-	}
-
-	return b.checkError(resp)
+	_, callErr := b.APICall(req)
+	return callErr
 }
