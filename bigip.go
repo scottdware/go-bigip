@@ -10,6 +10,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"log"
+	"reflect"
 )
 
 // BigIP is a container for our session state.
@@ -33,64 +35,6 @@ type RequestError struct {
 	Code       int      `json:"code,omitempty"`
 	Message    string   `json:"message,omitempty"`
 	ErrorStack []string `json:"errorStack,omitempty"`
-}
-
-//Wrapper boolean type for "yes"/"no" values in F5 API
-type Yes bool
-
-func (v *Yes) MarshalJSON() ([]byte, error) {
-	if *v {
-		return json.Marshal("yes")
-	}
-	return json.Marshal("no")
-}
-
-func (v *Yes) UnmarshalJSON(b []byte) error {
-	var s string
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	*v = (s == "yes")
-	return nil
-}
-
-//Wrapper boolean type for "enabled"/"disabled" values in F5 API
-type Enabled bool
-
-func (v *Enabled) MarshalJSON() ([]byte, error) {
-	if *v {
-		return json.Marshal("enabled")
-	}
-	return json.Marshal("disabled")
-}
-func (v *Enabled) UnmarshalJSON(b []byte) error {
-	var s string
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	*v = (s == "enabled")
-	return nil
-}
-
-//Wrapper boolean type for "true"/"false" as strings
-type True bool
-
-func (v *True) MarshalJSON() ([]byte, error) {
-	if *v {
-		return json.Marshal("true")
-	}
-	return json.Marshal("false")
-}
-func (v *True) UnmarshalJSON(b []byte) error {
-	var s string
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	*v = (s == "true")
-	return nil
 }
 
 func (r *RequestError) Error() error {
@@ -122,6 +66,8 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	body := bytes.NewReader([]byte(options.Body))
 	req, _ = http.NewRequest(strings.ToUpper(options.Method), url, body)
 	req.SetBasicAuth(b.User, b.Password)
+
+	log.Println(options.Body)
 
 	if len(options.ContentType) > 0 {
 		req.Header.Set("Content-Type", options.ContentType)
@@ -188,4 +134,55 @@ func (b *BigIP) SafeGet(url string) ([]byte, error) {
 	}
 
 	return resp, nil
+}
+
+// Helper to copy between transfer objects and model objects to hide the myriad of boolean representations
+// in the iControlREST api. DTO fields can be tagged with bool:"yes|enabled|true" to set what true and false
+// marshal to
+func marshal(to, from interface{}) error {
+	toVal := reflect.ValueOf(to).Elem()
+	fromVal := reflect.ValueOf(from).Elem()
+	toType := toVal.Type()
+	for i := 0; i < toVal.NumField(); i++ {
+		toField := toVal.Field(i)
+		toFieldType := toType.Field(i)
+		fromField := fromVal.FieldByName(toFieldType.Name)
+		if fromField.Interface() != nil && fromField.Kind() == toField.Kind() {
+			toField.Set(fromField)
+		} else if toField.Kind() == reflect.Bool && fromField.Kind() == reflect.String {
+			switch fromField.Interface() {
+			case "yes", "enabled", "true":
+				toField.SetBool(true)
+				break
+			case "no", "disabled", "false", "":
+				toField.SetBool(false)
+				break
+			default:
+				return fmt.Errorf("Unknown boolean conversion for %s: %s", toFieldType.Name, fromField.Interface())
+			}
+		} else if fromField.Kind() == reflect.Bool && toField.Kind() == reflect.String {
+			tag := toFieldType.Tag.Get("bool")
+			switch tag {
+			case "yes":
+				toField.SetString(toBoolString(fromField.Interface().(bool), "yes", "no"))
+				break
+			case "enabled":
+				toField.SetString(toBoolString(fromField.Interface().(bool), "enabled", "disabled"))
+				break
+			case "true":
+				toField.SetString(toBoolString(fromField.Interface().(bool), "true", "false"))
+				break
+			}
+		} else {
+			return fmt.Errorf("Unknown type conversion %s -> %s", fromField.Kind(), toField.Kind())
+		}
+	}
+	return nil
+}
+
+func toBoolString(b bool, trueStr, falseStr string) (string) {
+	if b {
+		return trueStr
+	}
+	return falseStr
 }

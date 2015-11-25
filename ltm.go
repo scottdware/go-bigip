@@ -37,13 +37,39 @@ type Pools struct {
 // Pool contains information about each pool. You can use all of these
 // fields when modifying a pool.
 type Pool struct {
+	Name                   string
+	Partition              string
+	FullPath               string
+	Generation             int
+	AllowNAT               bool
+	AllowSNAT              bool
+	IgnorePersistedWeight  bool
+	IPTOSToClient          string
+	IPTOSToServer          string
+	LinkQoSToClient        string
+	LinkQoSToServer        string
+	LoadBalancingMode      string
+	MinActiveMembers       int
+	MinUpMembers           int
+	MinUpMembersAction     string
+	MinUpMembersChecking   string
+	Monitor                string
+	QueueDepthLimit        int
+	QueueOnConnectionLimit string
+	QueueTimeLimit         int
+	ReselectTries          int
+	SlowRampTime           int
+}
+
+// Pool transfer object so we can mask the boolean data munging
+type poolDTO struct {
 	Name                   string  `json:"name,omitempty"`
 	Partition              string  `json:"partition,omitempty"`
 	FullPath               string  `json:"fullPath,omitempty"`
 	Generation             int     `json:"generation,omitempty"`
-	AllowNAT               Yes     `json:"allowNat,omitempty"`
-	AllowSNAT              Yes     `json:"allowSnat,omitempty"`
-	IgnorePersistedWeight  Enabled `json:"ignorePersistedWeight,omitempty"`
+	AllowNAT               string  `json:"allowNat,omitempty" bool:"yes"`
+	AllowSNAT              string  `json:"allowSnat,omitempty" bool:"yes"`
+	IgnorePersistedWeight  string  `json:"ignorePersistedWeight,omitempty" bool:"enabled"`
 	IPTOSToClient          string  `json:"ipTosToClient,omitempty"`
 	IPTOSToServer          string  `json:"ipTosToServer,omitempty"`
 	LinkQoSToClient        string  `json:"linkQosToClient,omitempty"`
@@ -59,6 +85,21 @@ type Pool struct {
 	QueueTimeLimit         int     `json:"queueTimeLimit,omitempty"`
 	ReselectTries          int     `json:"reselectTries,omitempty"`
 	SlowRampTime           int     `json:"slowRampTime,omitempty"`
+}
+
+func (p *Pool) MarshalJSON() ([]byte, error) {
+	var dto poolDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
+}
+
+func (p *Pool) UnmarshalJSON(b []byte) error {
+	var dto poolDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
 }
 
 // poolMember is used only when adding members to a pool.
@@ -114,23 +155,58 @@ type VirtualAddresses struct {
 
 // VirtualAddress contains information about each individual virtual address.
 type VirtualAddress struct {
+	Name                  string
+	Partition             string
+	FullPath              string
+	Generation            int
+	Address               string
+	ARP                   bool
+	AutoDelete            string
+	ConnectionLimit       int
+	Enabled               bool
+	Floating              bool
+	ICMPEcho              bool
+	InheritedTrafficGroup bool
+	Mask                  string
+	RouteAdvertisement    bool
+	ServerScope           string
+	TrafficGroup          string
+	Unit                  int
+}
+
+type virtualAddressDTO struct {
 	Name                  string  `json:"name"`
 	Partition             string  `json:"partition,omitempty"`
 	FullPath              string  `json:"fullPath,omitempty"`
 	Generation            int     `json:"generation,omitempty"`
 	Address               string  `json:"address,omitempty"`
-	ARP                   Enabled `json:"arp,omitempty"`
+	ARP                   string  `json:"arp,omitempty" bool:"enabled"`
 	AutoDelete            string  `json:"autoDelete,omitempty"`
 	ConnectionLimit       int     `json:"connectionLimit,omitempty"`
-	Enabled               Yes     `json:"enabled,omitempty"`
-	Floating              Enabled `json:"floating,omitempty"`
-	ICMPEcho              Enabled `json:"icmpEcho,omitempty"`
-	InheritedTrafficGroup True    `json:"inheritedTrafficGroup,omitempty"`
+	Enabled               string  `json:"enabled,omitempty" bool:"yes"`
+	Floating              string  `json:"floating,omitempty" bool:"enabled"`
+	ICMPEcho              string  `json:"icmpEcho,omitempty" bool:"enabled"`
+	InheritedTrafficGroup string  `json:"inheritedTrafficGroup,omitempty" bool:"yes"`
 	Mask                  string  `json:"mask,omitempty"`
-	RouteAdvertisement    Enabled `json:"routeAdvertisement,omitempty"`
+	RouteAdvertisement    string  `json:"routeAdvertisement,omitempty" bool:"enabled"`
 	ServerScope           string  `json:"serverScope,omitempty"`
 	TrafficGroup          string  `json:"trafficGroup,omitempty"`
 	Unit                  int     `json:"unit,omitempty"`
+}
+
+func (p *VirtualAddress) MarshalJSON() ([]byte, error) {
+	var dto virtualAddressDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
+}
+
+func (p *VirtualAddress) UnmarshalJSON(b []byte) error {
+	var dto virtualAddressDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
 }
 
 // Monitors contains a list of all monitors on the BIG-IP system.
@@ -140,6 +216,27 @@ type Monitors struct {
 
 // Monitor contains information about each individual monitor.
 type Monitor struct {
+	Name           string
+	Partition      string
+	FullPath       string
+	Generation     int
+	ParentMonitor  string
+	Description    string
+	Destination    string
+	Interval       int
+	IPDSCP         int
+	ManualResume   bool
+	ReceiveString  string
+	ReceiveDisable string
+	Reverse        bool
+	SendString     string
+	TimeUntilUp    int
+	Timeout        int
+	Transparent    bool
+	UpInterval     int
+}
+
+type monitorDTO struct {
 	Name           string  `json:"name,omitempty"`
 	Partition      string  `json:"partition,omitempty"`
 	FullPath       string  `json:"fullPath,omitempty"`
@@ -149,15 +246,30 @@ type Monitor struct {
 	Destination    string  `json:"destination,omitempty"`
 	Interval       int     `json:"interval,omitempty"`
 	IPDSCP         int     `json:"ipDscp,omitempty"`
-	ManualResume   Enabled `json:"manualResume,omitempty"`
+	ManualResume   string  `json:"manualResume,omitempty" bool:"enabled"`
 	ReceiveString  string  `json:"recv,omitempty"`
 	ReceiveDisable string  `json:"recvDisable,omitempty"`
-	Reverse        Enabled `json:"reverse,omitempty"`
+	Reverse        string  `json:"reverse,omitempty" bool:"enabled"`
 	SendString     string  `json:"send,omitempty"`
 	TimeUntilUp    int     `json:"timeUntilUp,omitempty"`
 	Timeout        int     `json:"timeout,omitempty"`
-	Transparent    Enabled `json:"transparent,omitempty"`
+	Transparent    string  `json:"transparent,omitempty" bool:"enabled"`
 	UpInterval     int     `json:"upInterval,omitempty"`
+}
+
+func (p *Monitor) MarshalJSON() ([]byte, error) {
+	var dto monitorDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
+}
+
+func (p *Monitor) UnmarshalJSON(b []byte) error {
+	var dto monitorDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
 }
 
 var (
