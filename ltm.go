@@ -63,28 +63,28 @@ type Pool struct {
 
 // Pool transfer object so we can mask the boolean data munging
 type poolDTO struct {
-	Name                   string  `json:"name,omitempty"`
-	Partition              string  `json:"partition,omitempty"`
-	FullPath               string  `json:"fullPath,omitempty"`
-	Generation             int     `json:"generation,omitempty"`
-	AllowNAT               string  `json:"allowNat,omitempty" bool:"yes"`
-	AllowSNAT              string  `json:"allowSnat,omitempty" bool:"yes"`
-	IgnorePersistedWeight  string  `json:"ignorePersistedWeight,omitempty" bool:"enabled"`
-	IPTOSToClient          string  `json:"ipTosToClient,omitempty"`
-	IPTOSToServer          string  `json:"ipTosToServer,omitempty"`
-	LinkQoSToClient        string  `json:"linkQosToClient,omitempty"`
-	LinkQoSToServer        string  `json:"linkQosToServer,omitempty"`
-	LoadBalancingMode      string  `json:"loadBalancingMode,omitempty"`
-	MinActiveMembers       int     `json:"minActiveMembers,omitempty"`
-	MinUpMembers           int     `json:"minUpMembers,omitempty"`
-	MinUpMembersAction     string  `json:"minUpMembersAction,omitempty"`
-	MinUpMembersChecking   string  `json:"minUpMembersChecking,omitempty"`
-	Monitor                string  `json:"monitor"`
-	QueueDepthLimit        int     `json:"queueDepthLimit,omitempty"`
-	QueueOnConnectionLimit string  `json:"queueOnConnectionLimit,omitempty"`
-	QueueTimeLimit         int     `json:"queueTimeLimit,omitempty"`
-	ReselectTries          int     `json:"reselectTries,omitempty"`
-	SlowRampTime           int     `json:"slowRampTime,omitempty"`
+	Name                   string `json:"name,omitempty"`
+	Partition              string `json:"partition,omitempty"`
+	FullPath               string `json:"fullPath,omitempty"`
+	Generation             int    `json:"generation,omitempty"`
+	AllowNAT               string `json:"allowNat,omitempty" bool:"yes"`
+	AllowSNAT              string `json:"allowSnat,omitempty" bool:"yes"`
+	IgnorePersistedWeight  string `json:"ignorePersistedWeight,omitempty" bool:"enabled"`
+	IPTOSToClient          string `json:"ipTosToClient,omitempty"`
+	IPTOSToServer          string `json:"ipTosToServer,omitempty"`
+	LinkQoSToClient        string `json:"linkQosToClient,omitempty"`
+	LinkQoSToServer        string `json:"linkQosToServer,omitempty"`
+	LoadBalancingMode      string `json:"loadBalancingMode,omitempty"`
+	MinActiveMembers       int    `json:"minActiveMembers,omitempty"`
+	MinUpMembers           int    `json:"minUpMembers,omitempty"`
+	MinUpMembersAction     string `json:"minUpMembersAction,omitempty"`
+	MinUpMembersChecking   string `json:"minUpMembersChecking,omitempty"`
+	Monitor                string `json:"monitor"`
+	QueueDepthLimit        int    `json:"queueDepthLimit,omitempty"`
+	QueueOnConnectionLimit string `json:"queueOnConnectionLimit,omitempty"`
+	QueueTimeLimit         int    `json:"queueTimeLimit,omitempty"`
+	ReselectTries          int    `json:"reselectTries,omitempty"`
+	SlowRampTime           int    `json:"slowRampTime,omitempty"`
 }
 
 func (p *Pool) MarshalJSON() ([]byte, error) {
@@ -137,15 +137,15 @@ type VirtualServer struct {
 	RateLimitSourceMask      int    `json:"rateLimitSrcMask,omitempty"`
 	Source                   string `json:"source,omitempty"`
 	SourceAddressTranslation struct {
-								 Type string `json:"type,omitempty"`
-							 } `json:"sourceAddressTranslation,omitempty"`
-	SourcePort               string   `json:"sourcePort,omitempty"`
-	SYNCookieStatus          string   `json:"synCookieStatus,omitempty"`
-	TranslateAddress         string   `json:"translateAddress,omitempty"`
-	TranslatePort            string   `json:"translatePort,omitempty"`
-	VlansDisabled            bool     `json:"vlansDisabled,omitempty"`
-	VSIndex                  int      `json:"vsIndex,omitempty"`
-	Rules                    []string `json:"rules,omitempty"`
+		Type string `json:"type,omitempty"`
+	} `json:"sourceAddressTranslation,omitempty"`
+	SourcePort       string   `json:"sourcePort,omitempty"`
+	SYNCookieStatus  string   `json:"synCookieStatus,omitempty"`
+	TranslateAddress string   `json:"translateAddress,omitempty"`
+	TranslatePort    string   `json:"translatePort,omitempty"`
+	VlansDisabled    bool     `json:"vlansDisabled,omitempty"`
+	VSIndex          int      `json:"vsIndex,omitempty"`
+	Rules            []string `json:"rules,omitempty"`
 }
 
 // VirtualAddresses contains a list of all virtual addresses on the BIG-IP system.
@@ -175,23 +175,23 @@ type VirtualAddress struct {
 }
 
 type virtualAddressDTO struct {
-	Name                  string  `json:"name"`
-	Partition             string  `json:"partition,omitempty"`
-	FullPath              string  `json:"fullPath,omitempty"`
-	Generation            int     `json:"generation,omitempty"`
-	Address               string  `json:"address,omitempty"`
-	ARP                   string  `json:"arp,omitempty" bool:"enabled"`
-	AutoDelete            string  `json:"autoDelete,omitempty"`
-	ConnectionLimit       int     `json:"connectionLimit,omitempty"`
-	Enabled               string  `json:"enabled,omitempty" bool:"yes"`
-	Floating              string  `json:"floating,omitempty" bool:"enabled"`
-	ICMPEcho              string  `json:"icmpEcho,omitempty" bool:"enabled"`
-	InheritedTrafficGroup string  `json:"inheritedTrafficGroup,omitempty" bool:"yes"`
-	Mask                  string  `json:"mask,omitempty"`
-	RouteAdvertisement    string  `json:"routeAdvertisement,omitempty" bool:"enabled"`
-	ServerScope           string  `json:"serverScope,omitempty"`
-	TrafficGroup          string  `json:"trafficGroup,omitempty"`
-	Unit                  int     `json:"unit,omitempty"`
+	Name                  string `json:"name"`
+	Partition             string `json:"partition,omitempty"`
+	FullPath              string `json:"fullPath,omitempty"`
+	Generation            int    `json:"generation,omitempty"`
+	Address               string `json:"address,omitempty"`
+	ARP                   string `json:"arp,omitempty" bool:"enabled"`
+	AutoDelete            string `json:"autoDelete,omitempty"`
+	ConnectionLimit       int    `json:"connectionLimit,omitempty"`
+	Enabled               string `json:"enabled,omitempty" bool:"yes"`
+	Floating              string `json:"floating,omitempty" bool:"enabled"`
+	ICMPEcho              string `json:"icmpEcho,omitempty" bool:"enabled"`
+	InheritedTrafficGroup string `json:"inheritedTrafficGroup,omitempty" bool:"yes"`
+	Mask                  string `json:"mask,omitempty"`
+	RouteAdvertisement    string `json:"routeAdvertisement,omitempty" bool:"enabled"`
+	ServerScope           string `json:"serverScope,omitempty"`
+	TrafficGroup          string `json:"trafficGroup,omitempty"`
+	Unit                  int    `json:"unit,omitempty"`
 }
 
 func (p *VirtualAddress) MarshalJSON() ([]byte, error) {
@@ -237,24 +237,24 @@ type Monitor struct {
 }
 
 type monitorDTO struct {
-	Name           string  `json:"name,omitempty"`
-	Partition      string  `json:"partition,omitempty"`
-	FullPath       string  `json:"fullPath,omitempty"`
-	Generation     int     `json:"generation,omitempty"`
-	ParentMonitor  string  `json:"defaultsFrom,omitempty"`
-	Description    string  `json:"description,omitempty"`
-	Destination    string  `json:"destination,omitempty"`
-	Interval       int     `json:"interval,omitempty"`
-	IPDSCP         int     `json:"ipDscp,omitempty"`
-	ManualResume   string  `json:"manualResume,omitempty" bool:"enabled"`
-	ReceiveString  string  `json:"recv,omitempty"`
-	ReceiveDisable string  `json:"recvDisable,omitempty"`
-	Reverse        string  `json:"reverse,omitempty" bool:"enabled"`
-	SendString     string  `json:"send,omitempty"`
-	TimeUntilUp    int     `json:"timeUntilUp,omitempty"`
-	Timeout        int     `json:"timeout,omitempty"`
-	Transparent    string  `json:"transparent,omitempty" bool:"enabled"`
-	UpInterval     int     `json:"upInterval,omitempty"`
+	Name           string `json:"name,omitempty"`
+	Partition      string `json:"partition,omitempty"`
+	FullPath       string `json:"fullPath,omitempty"`
+	Generation     int    `json:"generation,omitempty"`
+	ParentMonitor  string `json:"defaultsFrom,omitempty"`
+	Description    string `json:"description,omitempty"`
+	Destination    string `json:"destination,omitempty"`
+	Interval       int    `json:"interval,omitempty"`
+	IPDSCP         int    `json:"ipDscp,omitempty"`
+	ManualResume   string `json:"manualResume,omitempty" bool:"enabled"`
+	ReceiveString  string `json:"recv,omitempty"`
+	ReceiveDisable string `json:"recvDisable,omitempty"`
+	Reverse        string `json:"reverse,omitempty" bool:"enabled"`
+	SendString     string `json:"send,omitempty"`
+	TimeUntilUp    int    `json:"timeUntilUp,omitempty"`
+	Timeout        int    `json:"timeout,omitempty"`
+	Transparent    string `json:"transparent,omitempty" bool:"enabled"`
+	UpInterval     int    `json:"upInterval,omitempty"`
 }
 
 func (p *Monitor) MarshalJSON() ([]byte, error) {
@@ -273,13 +273,13 @@ func (p *Monitor) UnmarshalJSON(b []byte) error {
 }
 
 var (
-	uriNode = "ltm/node"
-	uriPolicy = "ltm/policy"
-	uriPool = "ltm/pool"
-	uriVirtual = "ltm/virtual"
+	uriNode           = "ltm/node"
+	uriPolicy         = "ltm/policy"
+	uriPool           = "ltm/pool"
+	uriVirtual        = "ltm/virtual"
 	uriVirtualAddress = "ltm/virtual-address"
-	uriMonitor = "ltm/monitor"
-	cidr = map[string]string{
+	uriMonitor        = "ltm/monitor"
+	cidr              = map[string]string{
 		"0":  "0.0.0.0",
 		"1":  "128.0.0.0",
 		"2":  "192.0.0.0",
@@ -421,9 +421,9 @@ func (b *BigIP) NodeStatus(name, state string) error {
 	case "disable":
 		// config.State = "unchecked"
 		config.Session = "user-disabled"
-	// case "offline":
-	// 	config.State = "user-down"
-	// 	config.Session = "user-disabled"
+		// case "offline":
+		// 	config.State = "user-down"
+		// 	config.Session = "user-disabled"
 	}
 
 	marshalJSON, err := json.Marshal(config)
@@ -539,9 +539,9 @@ func (b *BigIP) PoolMemberStatus(pool, member, state string) error {
 	case "disable":
 		// config.State = "unchecked"
 		config.Session = "user-disabled"
-	// case "offline":
-	// 	config.State = "user-down"
-	// 	config.Session = "user-disabled"
+		// case "offline":
+		// 	config.State = "user-down"
+		// 	config.Session = "user-disabled"
 	}
 
 	marshalJSON, err := json.Marshal(config)
