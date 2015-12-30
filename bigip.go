@@ -36,7 +36,7 @@ type RequestError struct {
 }
 
 func (r *RequestError) Error() error {
-	if(r.Message != "") {
+	if r.Message != "" {
 		return errors.New(r.Message)
 	}
 	return nil
