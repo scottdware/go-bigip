@@ -8,10 +8,10 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
-	"strings"
 	"log"
+	"net/http"
 	"reflect"
+	"strings"
 )
 
 // BigIP is a container for our session state.
@@ -38,13 +38,10 @@ type RequestError struct {
 }
 
 func (r *RequestError) Error() error {
-<<<<<<< HEAD
 	if r.Message != "" {
-=======
-	if (r.Message != "") {
->>>>>>> origin/master
 		return errors.New(r.Message)
 	}
+
 	return nil
 }
 
@@ -139,8 +136,6 @@ func (b *BigIP) SafeGet(url string) ([]byte, error) {
 
 	return resp, nil
 }
-<<<<<<< HEAD
-=======
 
 // Helper to copy between transfer objects and model objects to hide the myriad of boolean representations
 // in the iControlREST api. DTO fields can be tagged with bool:"yes|enabled|true" to set what true and false
@@ -186,10 +181,9 @@ func marshal(to, from interface{}) error {
 	return nil
 }
 
-func toBoolString(b bool, trueStr, falseStr string) (string) {
+func toBoolString(b bool, trueStr, falseStr string) string {
 	if b {
 		return trueStr
 	}
 	return falseStr
 }
->>>>>>> origin/master
