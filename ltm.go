@@ -146,6 +146,7 @@ type VirtualServer struct {
 	VlansDisabled    bool     `json:"vlansDisabled,omitempty"`
 	VSIndex          int      `json:"vsIndex,omitempty"`
 	Rules            []string `json:"rules,omitempty"`
+	Profiles		 []Profile `json:"profiles,omitempty"`
 }
 
 // VirtualAddresses contains a list of all virtual addresses on the BIG-IP system.
@@ -255,6 +256,15 @@ type monitorDTO struct {
 	Timeout        int    `json:"timeout,omitempty"`
 	Transparent    string `json:"transparent,omitempty" bool:"enabled"`
 	UpInterval     int    `json:"upInterval,omitempty"`
+}
+
+type Profiles struct {
+	Profiles []Profile `json:"items"`
+}
+
+type Profile struct {
+	Name		   string `json:"name,omitempty"`
+	Partition      string `json:"partition,omitempty"`
 }
 
 func (p *Monitor) MarshalJSON() ([]byte, error) {
@@ -701,6 +711,12 @@ func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 		return nil, err
 	}
 
+	profiles,err := b.VirtualServerProfiles(name)
+	if err != nil {
+		return nil, err
+	}
+
+	vs.Profiles = profiles.Profiles
 	return &vs, nil
 }
 
@@ -732,6 +748,25 @@ func (b *BigIP) ModifyVirtualServer(name string, config *VirtualServer) error {
 
 	_, callErr := b.APICall(req)
 	return callErr
+}
+
+// VirtualServerProfiles gets the profiles currently associated with a virtual server.
+func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error){
+	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/profiles", uriVirtual, vs))
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, nil
+	}
+
+	var p Profiles
+	err = json.Unmarshal(resp, &p)
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
 }
 
 // VirtualAddresses returns a list of virtual addresses.

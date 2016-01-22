@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -68,7 +67,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	req, _ = http.NewRequest(strings.ToUpper(options.Method), url, body)
 	req.SetBasicAuth(b.User, b.Password)
 
-	log.Println(options.Body)
+	//log.Println("REQ -- ", url," -- ",options.Body)
 
 	if len(options.ContentType) > 0 {
 		req.Header.Set("Content-Type", options.ContentType)
