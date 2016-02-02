@@ -61,7 +61,7 @@ type Pool struct {
 	SlowRampTime           int
 }
 
-// Pool transfer object so we can mask the boolean data munging
+// Pool transfer object so we can mask the bool data munging
 type poolDTO struct {
 	Name                   string `json:"name,omitempty"`
 	Partition              string `json:"partition,omitempty"`
@@ -137,16 +137,16 @@ type VirtualServer struct {
 	RateLimitSourceMask      int    `json:"rateLimitSrcMask,omitempty"`
 	Source                   string `json:"source,omitempty"`
 	SourceAddressTranslation struct {
-		Type string `json:"type,omitempty"`
-	} `json:"sourceAddressTranslation,omitempty"`
-	SourcePort       string   `json:"sourcePort,omitempty"`
-	SYNCookieStatus  string   `json:"synCookieStatus,omitempty"`
-	TranslateAddress string   `json:"translateAddress,omitempty"`
-	TranslatePort    string   `json:"translatePort,omitempty"`
-	VlansDisabled    bool     `json:"vlansDisabled,omitempty"`
-	VSIndex          int      `json:"vsIndex,omitempty"`
-	Rules            []string `json:"rules,omitempty"`
-	Profiles		 []Profile `json:"profiles,omitempty"`
+								 Type string `json:"type,omitempty"`
+							 } `json:"sourceAddressTranslation,omitempty"`
+	SourcePort               string   `json:"sourcePort,omitempty"`
+	SYNCookieStatus          string   `json:"synCookieStatus,omitempty"`
+	TranslateAddress         string   `json:"translateAddress,omitempty"`
+	TranslatePort            string   `json:"translatePort,omitempty"`
+	VlansDisabled            bool     `json:"vlansDisabled,omitempty"`
+	VSIndex                  int      `json:"vsIndex,omitempty"`
+	Rules                    []string `json:"rules,omitempty"`
+	Profiles                 []Profile `json:"profiles,omitempty"`
 }
 
 // VirtualAddresses contains a list of all virtual addresses on the BIG-IP system.
@@ -193,6 +193,224 @@ type virtualAddressDTO struct {
 	ServerScope           string `json:"serverScope,omitempty"`
 	TrafficGroup          string `json:"trafficGroup,omitempty"`
 	Unit                  int    `json:"unit,omitempty"`
+}
+
+type Policies struct {
+	Policies []Policy `json:"items"`
+}
+
+type Policy struct {
+	Name      string      `json:"name"`
+	Partition string      `json:"partition,omitempty"`
+	Controls  []string    `json:"controls,omitempty"`
+	Requires  []string    `json:"requires,omitempty"`
+	Strategy  string      `json:"strategy,omitempty"`
+}
+
+type PolicyRule struct {
+	Name    string        `json:"name"`
+	Ordinal int           `json:"ordinal"`
+}
+
+type PolicyRuleAction struct {
+	Name               string    `json:"name,omitempty"`
+	AppService         string    `json:"appService,omitempty"`
+	Application        string    `json:"application,omitempty"`
+	Asm                bool    `json:"asm,omitempty"`
+	Avr                bool    `json:"avr,omitempty"`
+	Cache              bool    `json:"cache,omitempty"`
+	Carp               bool    `json:"carp,omitempty"`
+	Category           string    `json:"category,omitempty"`
+	Classify           bool    `json:"classify,omitempty"`
+	ClonePool          string    `json:"clonePool,omitempty"`
+	Code               int    `json:"code,omitempty"`
+	Compress           bool    `json:"compress,omitempty"`
+	Content            string    `json:"content,omitempty"`
+	CookieHash         bool    `json:"cookieHash,omitempty"`
+	CookieInsert       bool    `json:"cookieInsert,omitempty"`
+	CookiePassive      bool    `json:"cookiePassive,omitempty"`
+	CookieRewrite      bool    `json:"cookieRewrite,omitempty"`
+	Decompress         bool    `json:"decompress,omitempty"`
+	Defer              bool    `json:"defer,omitempty"`
+	DestinationAddress bool    `json:"destinationAddress,omitempty"`
+	Disable            bool    `json:"disable,omitempty"`
+	Domain             string    `json:"domain,omitempty"`
+	Enable             bool    `json:"enable,omitempty"`
+	Expiry             string    `json:"expiry,omitempty"`
+	ExpirySecs         int    `json:"expirySecs,omitempty"`
+	Expression         string    `json:"expression,omitempty"`
+	Extension          string    `json:"extension,omitempty"`
+	Facility           string    `json:"facility,omitempty"`
+	Forward            bool    `json:"forward,omitempty"`
+	FromProfile        string    `json:"fromProfile,omitempty"`
+	Hash               bool    `json:"hash,omitempty"`
+	Host               string    `json:"host,omitempty"`
+	Http               bool    `json:"http,omitempty"`
+	HttpBasicAuth      bool    `json:"httpBasicAuth,omitempty"`
+	HttpCookie         bool    `json:"httpCookie,omitempty"`
+	HttpHeader         bool    `json:"httpHeader,omitempty"`
+	HttpHost           bool    `json:"httpHost,omitempty"`
+	HttpReferer        bool    `json:"httpReferer,omitempty"`
+	HttpReply          bool    `json:"httpReply,omitempty"`
+	HttpSetCookie      bool    `json:"httpSetCookie,omitempty"`
+	HttpUri            bool    `json:"httpUri,omitempty"`
+	Ifile              string    `json:"ifile,omitempty"`
+	Insert             bool    `json:"insert,omitempty"`
+	InternalVirtual    string    `json:"internalVirtual,omitempty"`
+	IpAddress          string    `json:"ipAddress,omitempty"`
+	Key                string    `json:"key,omitempty"`
+	L7dos              bool    `json:"l7dos,omitempty"`
+	Length             int    `json:"length,omitempty"`
+	Location           string    `json:"location,omitempty"`
+	Log                bool    `json:"log,omitempty"`
+	LtmPolicy          bool    `json:"ltmPolicy,omitempty"`
+	Member             string    `json:"member,omitempty"`
+	Message            string    `json:"message,omitempty"`
+	TmName             string    `json:"tmName,omitempty"`
+	Netmask            string    `json:"netmask,omitempty"`
+	Nexthop            string    `json:"nexthop,omitempty"`
+	Node               string    `json:"node,omitempty"`
+	Offset             int    `json:"offset,omitempty"`
+	Path               string    `json:"path,omitempty"`
+	Pem                bool    `json:"pem,omitempty"`
+	Persist            bool    `json:"persist,omitempty"`
+	Pin                bool    `json:"pin,omitempty"`
+	Policy             string    `json:"policy,omitempty"`
+	Pool               string    `json:"pool,omitempty"`
+	Port               int    `json:"port,omitempty"`
+	Priority           string    `json:"priority,omitempty"`
+	Profile            string    `json:"profile,omitempty"`
+	Protocol           string    `json:"protocol,omitempty"`
+	QueryString        string    `json:"queryString,omitempty"`
+	Rateclass          string    `json:"rateclass,omitempty"`
+	Redirect           bool    `json:"redirect,omitempty"`
+	Remove             bool    `json:"remove,omitempty"`
+	Replace            bool    `json:"replace,omitempty"`
+	Request            bool    `json:"request,omitempty"`
+	RequestAdapt       bool    `json:"requestAdapt,omitempty"`
+	Reset              bool    `json:"reset,omitempty"`
+	Response           bool    `json:"response,omitempty"`
+	ResponseAdapt      bool    `json:"responseAdapt,omitempty"`
+	Scheme             string    `json:"scheme,omitempty"`
+	Script             string    `json:"script,omitempty"`
+	Select             bool    `json:"select,omitempty"`
+	ServerSsl          bool    `json:"serverSsl,omitempty"`
+	SetVariable        bool    `json:"setVariable,omitempty"`
+	Snat               string    `json:"snat,omitempty"`
+	Snatpool           string    `json:"snatpool,omitempty"`
+	SourceAddress      bool    `json:"sourceAddress,omitempty"`
+	SslClientHello     bool    `json:"sslClientHello,omitempty"`
+	SslServerHandshake bool    `json:"sslServerHandshake,omitempty"`
+	SslServerHello     bool    `json:"sslServerHello,omitempty"`
+	SslSessionId       bool    `json:"sslSessionId,omitempty"`
+	Status             int    `json:"status,omitempty"`
+	Tcl                bool    `json:"tcl,omitempty"`
+	TcpNagle           bool    `json:"tcpNagle,omitempty"`
+	Text               string    `json:"text,omitempty"`
+	Timeout            int    `json:"timeout,omitempty"`
+	Uie                bool    `json:"uie,omitempty"`
+	Universal          bool    `json:"universal,omitempty"`
+	Value              string    `json:"value,omitempty"`
+	Virtual            string    `json:"virtual,omitempty"`
+	Vlan               string    `json:"vlan,omitempty"`
+	VlanId             int    `json:"vlanId,omitempty"`
+	Wam                bool    `json:"wam,omitempty"`
+	Write              bool    `json:"write,omitempty"`
+}
+
+type PolicyRuleCondition struct {
+	Name                  string  `json:"name,omitempty"`
+	Generation            int     `json:"generation,omitempty"`
+	Address               bool    `json:"address,omitempty"`
+	All                   bool    `json:"all,omitempty"`
+	AppService            string  `json:"appService,omitempty"`
+	BrowserType           bool    `json:"browserType,omitempty"`
+	BrowserVersion        bool    `json:"browserVersion,omitempty"`
+	CaseInsensitive       bool    `json:"caseInsensitive,omitempty"`
+	CaseSensitive         bool    `json:"caseSensitive,omitempty"`
+	Cipher                bool    `json:"cipher,omitempty"`
+	CipherBits            bool    `json:"cipherBits,omitempty"`
+	ClientSsl             bool    `json:"clientSsl,omitempty"`
+	Code                  bool    `json:"code,omitempty"`
+	CommonName            bool    `json:"commonName,omitempty"`
+	Contains              bool    `json:"contains,omitempty"`
+	Continent             bool    `json:"continent,omitempty"`
+	CountryCode           bool    `json:"countryCode,omitempty"`
+	CountryName           bool    `json:"countryName,omitempty"`
+	CpuUsage              bool    `json:"cpuUsage,omitempty"`
+	DeviceMake            bool    `json:"deviceMake,omitempty"`
+	DeviceModel           bool    `json:"deviceModel,omitempty"`
+	Domain                bool    `json:"domain,omitempty"`
+	EndsWith              bool    `json:"endsWith,omitempty"`
+	Equals                bool    `json:"equals,omitempty"`
+	Expiry                bool    `json:"expiry,omitempty"`
+	Extension             bool    `json:"extension,omitempty"`
+	External              bool    `json:"external,omitempty"`
+	Geoip                 bool    `json:"geoip,omitempty"`
+	Greater               bool    `json:"greater,omitempty"`
+	GreaterOrEqual        bool    `json:"greaterOrEqual,omitempty"`
+	Host                  bool    `json:"host,omitempty"`
+	HttpBasicAuth         bool    `json:"httpBasicAuth,omitempty"`
+	HttpCookie            bool    `json:"httpCookie,omitempty"`
+	HttpHeader            bool    `json:"httpHeader,omitempty"`
+	HttpHost              bool    `json:"httpHost,omitempty"`
+	HttpMethod            bool    `json:"httpMethod,omitempty"`
+	HttpReferer           bool    `json:"httpReferer,omitempty"`
+	HttpSetCookie         bool    `json:"httpSetCookie,omitempty"`
+	HttpStatus            bool    `json:"httpStatus,omitempty"`
+	HttpUri               bool    `json:"httpUri,omitempty"`
+	HttpUserAgent         bool    `json:"httpUserAgent,omitempty"`
+	HttpVersion           bool    `json:"httpVersion,omitempty"`
+	Index                 int    `json:"index,omitempty"`
+	Internal              bool    `json:"internal,omitempty"`
+	Isp                   bool    `json:"isp,omitempty"`
+	Last_15secs           bool    `json:"last_15secs,omitempty"`
+	Last_1min             bool    `json:"last_1min,omitempty"`
+	Last_5mins            bool    `json:"last_5mins,omitempty"`
+	Less                  bool    `json:"less,omitempty"`
+	LessOrEqual           bool    `json:"lessOrEqual,omitempty"`
+	Local                 bool    `json:"local,omitempty"`
+	Major                 bool    `json:"major,omitempty"`
+	Matches               bool    `json:"matches,omitempty"`
+	Minor                 bool    `json:"minor,omitempty"`
+	Missing               bool    `json:"missing,omitempty"`
+	Mss                   bool    `json:"mss,omitempty"`
+	TmName                string  `json:"tmName,omitempty"`
+	Not                   bool    `json:"not,omitempty"`
+	Org                   bool    `json:"org,omitempty"`
+	Password              bool    `json:"password,omitempty"`
+	Path                  bool    `json:"path,omitempty"`
+	PathSegment           bool    `json:"pathSegment,omitempty"`
+	Port                  bool    `json:"port,omitempty"`
+	Present               bool    `json:"present,omitempty"`
+	Protocol              bool    `json:"protocol,omitempty"`
+	QueryParameter        bool    `json:"queryParameter,omitempty"`
+	QueryString           bool    `json:"queryString,omitempty"`
+	RegionCode            bool    `json:"regionCode,omitempty"`
+	RegionName            bool    `json:"regionName,omitempty"`
+	Remote                bool    `json:"remote,omitempty"`
+	Request               bool    `json:"request,omitempty"`
+	Response              bool    `json:"response,omitempty"`
+	RouteDomain           bool    `json:"routeDomain,omitempty"`
+	Rtt                   bool    `json:"rtt,omitempty"`
+	Scheme                bool    `json:"scheme,omitempty"`
+	ServerName            bool    `json:"serverName,omitempty"`
+	SslCert               bool    `json:"sslCert,omitempty"`
+	SslClientHello        bool    `json:"sslClientHello,omitempty"`
+	SslExtension          bool    `json:"sslExtension,omitempty"`
+	SslServerHandshake    bool    `json:"sslServerHandshake,omitempty"`
+	SslServerHello        bool    `json:"sslServerHello,omitempty"`
+	StartsWith            bool    `json:"startsWith,omitempty"`
+	Tcp                   bool    `json:"tcp,omitempty"`
+	Text                  bool    `json:"text,omitempty"`
+	UnnamedQueryParameter bool    `json:"unnamedQueryParameter,omitempty"`
+	UserAgentToken        bool    `json:"userAgentToken,omitempty"`
+	Username              bool    `json:"username,omitempty"`
+	Value                 bool    `json:"value,omitempty"`
+	Values                []string  `json:"values,omitempty"`
+	Version               bool    `json:"version,omitempty"`
+	Vlan                  bool    `json:"vlan,omitempty"`
+	VlanId                bool    `json:"vlanId,omitempty"`
 }
 
 func (p *VirtualAddress) MarshalJSON() ([]byte, error) {
@@ -263,8 +481,8 @@ type Profiles struct {
 }
 
 type Profile struct {
-	Name		   string `json:"name,omitempty"`
-	Partition      string `json:"partition,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Partition string `json:"partition,omitempty"`
 }
 
 type IRules struct {
@@ -293,14 +511,14 @@ func (p *Monitor) UnmarshalJSON(b []byte) error {
 }
 
 var (
-	uriNode           = "ltm/node"
-	uriPolicy         = "ltm/policy"
-	uriPool           = "ltm/pool"
-	uriVirtual        = "ltm/virtual"
+	uriNode = "ltm/node"
+	uriPool = "ltm/pool"
+	uriVirtual = "ltm/virtual"
 	uriVirtualAddress = "ltm/virtual-address"
-	uriMonitor        = "ltm/monitor"
+	uriMonitor = "ltm/monitor"
 	uriRule			  = "ltm/rule"
-	cidr              = map[string]string{
+	uriPolicy = "ltm/policy"
+	cidr = map[string]string{
 		"0":  "0.0.0.0",
 		"1":  "128.0.0.0",
 		"2":  "192.0.0.0",
@@ -403,7 +621,7 @@ func (b *BigIP) GetNode(name string) (*Node, error) {
 // DeleteNode removes a node.
 func (b *BigIP) DeleteNode(name string) error {
 	return b.delete(uriNode, name)
-}
+	}
 
 // ModifyNode allows you to change any attribute of a node. Fields that
 // can be modified are referenced in the Node struct.
@@ -436,9 +654,9 @@ func (b *BigIP) NodeStatus(name, state string) error {
 	case "disable":
 		// config.State = "unchecked"
 		config.Session = "user-disabled"
-		// case "offline":
-		// 	config.State = "user-down"
-		// 	config.Session = "user-disabled"
+	// case "offline":
+	// 	config.State = "user-down"
+	// 	config.Session = "user-disabled"
 	}
 
 	marshalJSON, err := json.Marshal(config)
@@ -532,7 +750,7 @@ func (b *BigIP) AddPoolMember(pool, member string) error {
 // of <node>:<port>, i.e.: "web-server1:443".
 func (b *BigIP) DeletePoolMember(pool, member string) error {
 	return b.delete(uriPool, pool, "members", member)
-}
+	}
 
 // PoolMemberStatus changes the status of a pool member. <state> can be either
 // "enable" or "disable". <member> must be in the form of <node>:<port>,
@@ -547,9 +765,9 @@ func (b *BigIP) PoolMemberStatus(pool, member, state string) error {
 	case "disable":
 		// config.State = "unchecked"
 		config.Session = "user-disabled"
-		// case "offline":
-		// 	config.State = "user-down"
-		// 	config.Session = "user-disabled"
+	// case "offline":
+	// 	config.State = "user-down"
+	// 	config.Session = "user-disabled"
 	}
 
 	marshalJSON, err := json.Marshal(config)
@@ -612,7 +830,7 @@ func (b *BigIP) GetPool(name string) (*Pool, error) {
 // DeletePool removes a pool.
 func (b *BigIP) DeletePool(name string) error {
 	return b.delete(uriPool, name)
-}
+	}
 
 // ModifyPool allows you to change any attribute of a pool. Fields that
 // can be modified are referenced in the Pool struct.
@@ -703,7 +921,7 @@ func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 		return nil, err
 	}
 
-	profiles,err := b.VirtualServerProfiles(name)
+	profiles, err := b.VirtualServerProfiles(name)
 	if err != nil {
 		return nil, err
 	}
@@ -715,7 +933,7 @@ func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 // DeleteVirtualServer removes a virtual server.
 func (b *BigIP) DeleteVirtualServer(name string) error {
 	return b.delete(uriVirtual, name)
-}
+	}
 
 // ModifyVirtualServer allows you to change any attribute of a virtual server. Fields that
 // can be modified are referenced in the VirtualServer struct.
@@ -737,7 +955,7 @@ func (b *BigIP) ModifyVirtualServer(name string, config *VirtualServer) error {
 }
 
 // VirtualServerProfiles gets the profiles currently associated with a virtual server.
-func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error){
+func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error) {
 	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/profiles", uriVirtual, vs))
 	if err != nil {
 		return nil, err
@@ -866,7 +1084,7 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 // DeleteMonitor removes a monitor.
 func (b *BigIP) DeleteMonitor(name, parent string) error {
 	return b.delete(uriMonitor, parent, name)
-}
+	}
 
 // ModifyMonitor allows you to change any attribute of a monitor. <parent> must be
 // one of "http", "https", "icmp", or "gateway icmp". Fields that
@@ -976,4 +1194,43 @@ func (b *BigIP) DeleteIRule(name string) error {
 func (b *BigIP) ModifyIRule(name string, irule *IRule) error {
 	irule.Name = name
 	return b.put(irule, uriRule, name)
+}
+func (b *BigIP) Policies() (*Policies, error) {
+	var p Policies
+	req := &APIRequest{
+		Method: "get",
+		URL:    uriPolicy,
+	}
+
+	resp, err := b.APICall(req)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(resp, &p)
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+func (b *BigIP) GetPolicy(name string) (*Policy, error) {
+	var p Policy
+	req := &APIRequest{
+		Method: "get",
+		URL:    fmt.Sprintf("%s/%s", uriPolicy, name),
+	}
+
+	resp, err := b.APICall(req)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(resp, &p)
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
 }
