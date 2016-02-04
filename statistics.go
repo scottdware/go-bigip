@@ -3,6 +3,7 @@ package bigip
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 //Disgusting struct for pool statistics
@@ -231,9 +232,10 @@ type VSSStatistics struct {
 	Selflink   string `json:"selfLink"`
 }
 
-// Get pool statistics by name
-func (b *BigIP) GetPoolStatistics(name string) (*PoolStatistics, error) {
-	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/stats", uriPool, name))
+// Get pool statistics by full path(/<partition>/<name>)
+func (b *BigIP) GetPoolStatistics(fullpath string) (*PoolStatistics, error) {
+	fixedpath := strings.Replace(fullpath, "/", "~", -1)
+	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/stats", uriPool, fixedpath))
 	if err != nil {
 		return nil, err
 	}
@@ -250,9 +252,10 @@ func (b *BigIP) GetPoolStatistics(name string) (*PoolStatistics, error) {
 	return &stats, nil
 }
 
-// Get pool statistics by name
-func (b *BigIP) GetVSSStatistics(name string) (*VSSStatistics, error) {
-	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/stats", uriVirtual, name))
+// Get pool statistics by full path (/<partition>/<name>)
+func (b *BigIP) GetVSSStatistics(fullpath string) (*VSSStatistics, error) {
+	fixedpath := strings.Replace(fullpath, "/", "~", -1)
+	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/stats", uriVirtual, fixedpath))
 	if err != nil {
 		return nil, err
 	}
