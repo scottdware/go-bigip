@@ -93,6 +93,51 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	return data, nil
 }
 
+//Generic delete
+func (b *BigIP) Delete(path ...string) error {
+	req := &APIRequest{
+		Method: "delete",
+		URL:    strings.Join(path, "/"),
+	}
+
+	_, callErr := b.APICall(req)
+	return callErr
+}
+
+func (b *BigIP) Post(body interface{}, path ...string) error {
+	marshalJSON, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "post",
+		URL:         strings.Join(path, "/"),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	_, callErr := b.APICall(req)
+	return callErr
+}
+
+func (b *BigIP) Put(body interface{}, path ...string) error {
+	marshalJSON, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         strings.Join(path, "/"),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	_, callErr := b.APICall(req)
+	return callErr
+}
+
 // checkError handles any errors we get from our API requests. It returns either the
 // message of the error, if any, or nil.
 func (b *BigIP) checkError(resp []byte) error {
