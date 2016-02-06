@@ -939,6 +939,26 @@ func (b *BigIP) IRules() (*IRules, error) {
 	return &rules, nil
 }
 
+func (b *BigIP) IRule(name string) (*IRule, error) {
+	var rule IRule
+	req := &APIRequest{
+		Method: "get",
+		URL:    fmt.Sprintf("%s/%s", uriRule, name),
+	}
+
+	resp, err := b.APICall(req)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(resp, &rule)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rule, nil
+}
+
 // IRules returns a list of irules
 func (b *BigIP) CreateIRule(name, rule string) error {
 	irule :=  &IRule{
