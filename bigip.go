@@ -46,8 +46,14 @@ func (r *RequestError) Error() error {
 
 // NewSession sets up our connection to the BIG-IP system.
 func NewSession(host, user, passwd string) *BigIP {
+	var url string
+	if !strings.HasPrefix(host, "http") {
+		url = fmt.Sprintf("https://%s", host)
+	} else {
+		url = host
+	}
 	return &BigIP{
-		Host:     host,
+		Host:     url,
 		User:     user,
 		Password: passwd,
 		Transport: &http.Transport{
@@ -62,7 +68,7 @@ func NewSession(host, user, passwd string) *BigIP {
 func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	var req *http.Request
 	client := &http.Client{Transport: b.Transport}
-	url := fmt.Sprintf("https://%s/mgmt/tm/%s", b.Host, options.URL)
+	url := fmt.Sprintf("%s/mgmt/tm/%s", b.Host, options.URL)
 	body := bytes.NewReader([]byte(options.Body))
 	req, _ = http.NewRequest(strings.ToUpper(options.Method), url, body)
 	req.SetBasicAuth(b.User, b.Password)
@@ -94,7 +100,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 }
 
 //Generic delete
-func (b *BigIP) Delete(path ...string) error {
+func (b *BigIP) delete(path ...string) error {
 	req := &APIRequest{
 		Method: "delete",
 		URL:    strings.Join(path, "/"),
@@ -104,7 +110,7 @@ func (b *BigIP) Delete(path ...string) error {
 	return callErr
 }
 
-func (b *BigIP) Post(body interface{}, path ...string) error {
+func (b *BigIP) post(body interface{}, path ...string) error {
 	marshalJSON, err := json.Marshal(body)
 	if err != nil {
 		return err
@@ -121,7 +127,7 @@ func (b *BigIP) Post(body interface{}, path ...string) error {
 	return callErr
 }
 
-func (b *BigIP) Put(body interface{}, path ...string) error {
+func (b *BigIP) put(body interface{}, path ...string) error {
 	marshalJSON, err := json.Marshal(body)
 	if err != nil {
 		return err

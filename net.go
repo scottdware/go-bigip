@@ -267,7 +267,7 @@ func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
 
 // DeleteSelfIP removes a self IP.
 func (b *BigIP) DeleteSelfIP(name string) error {
-	return b.Delete(uriSelf, name)
+	return b.delete(uriSelf, name)
 }
 
 // ModifySelfIP allows you to change any attribute of a self IP. Fields that
@@ -347,7 +347,7 @@ func (b *BigIP) CreateTrunk(name, interfaces string, lacp bool) error {
 
 // DeleteTrunk removes a trunk.
 func (b *BigIP) DeleteTrunk(name string) error {
-	return b.Delete(uriTrunk, name)
+	return b.delete(uriTrunk, name)
 }
 
 // ModifyTrunk allows you to change any attribute of a trunk. Fields that
@@ -415,7 +415,7 @@ func (b *BigIP) CreateVlan(name string, tag int) error {
 
 // DeleteVlan removes a vlan.
 func (b *BigIP) DeleteVlan(name string) error {
-	return b.Delete(uriVlan, name)
+	return b.delete(uriVlan, name)
 }
 
 // ModifyVlan allows you to change any attribute of a VLAN. Fields that
@@ -485,7 +485,7 @@ func (b *BigIP) CreateRoute(name, dest, gateway string) error {
 
 // DeleteRoute removes a static route.
 func (b *BigIP) DeleteRoute(name string) error {
-	return b.Delete(uriRoute, name)
+	return b.delete(uriRoute, name)
 }
 
 // ModifyRoute allows you to change any attribute of a static route. Fields that
@@ -568,7 +568,7 @@ func (b *BigIP) CreateRouteDomain(name string, id int, strict bool, vlans string
 
 // DeleteRouteDomain removes a route domain.
 func (b *BigIP) DeleteRouteDomain(name string) error {
-	return b.Delete(uriRouteDomain, name)
+	return b.delete(uriRouteDomain, name)
 }
 
 // ModifyRouteDomain allows you to change any attribute of a route domain. Fields that

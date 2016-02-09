@@ -402,7 +402,7 @@ func (b *BigIP) GetNode(name string) (*Node, error) {
 
 // DeleteNode removes a node.
 func (b *BigIP) DeleteNode(name string) error {
-	return b.Delete(uriNode, name)
+	return b.delete(uriNode, name)
 }
 
 // ModifyNode allows you to change any attribute of a node. Fields that
@@ -531,7 +531,7 @@ func (b *BigIP) AddPoolMember(pool, member string) error {
 // DeletePoolMember removes a member from the given pool. <member> must be in the form
 // of <node>:<port>, i.e.: "web-server1:443".
 func (b *BigIP) DeletePoolMember(pool, member string) error {
-	return b.Delete(uriPool, pool, "members", member)
+	return b.delete(uriPool, pool, "members", member)
 }
 
 // PoolMemberStatus changes the status of a pool member. <state> can be either
@@ -611,7 +611,7 @@ func (b *BigIP) GetPool(name string) (*Pool, error) {
 
 // DeletePool removes a pool.
 func (b *BigIP) DeletePool(name string) error {
-	return b.Delete(uriPool, name)
+	return b.delete(uriPool, name)
 }
 
 // ModifyPool allows you to change any attribute of a pool. Fields that
@@ -714,7 +714,7 @@ func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 
 // DeleteVirtualServer removes a virtual server.
 func (b *BigIP) DeleteVirtualServer(name string) error {
-	return b.Delete(uriVirtual, name)
+	return b.delete(uriVirtual, name)
 }
 
 // ModifyVirtualServer allows you to change any attribute of a virtual server. Fields that
@@ -865,7 +865,7 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 
 // DeleteMonitor removes a monitor.
 func (b *BigIP) DeleteMonitor(name, parent string) error {
-	return b.Delete(uriMonitor, parent, name)
+	return b.delete(uriMonitor, parent, name)
 }
 
 // ModifyMonitor allows you to change any attribute of a monitor. <parent> must be
@@ -965,15 +965,15 @@ func (b *BigIP) CreateIRule(name, rule string) error {
 		Name: name,
 		Rule: rule,
 	}
-	return b.Post(irule, uriRule)
+	return b.post(irule, uriRule)
 }
 
 // DeleteNode removes a node.
 func (b *BigIP) DeleteIRule(name string) error {
-	return b.Delete(uriRule, name)
+	return b.delete(uriRule, name)
 }
 
 func (b *BigIP) ModifyIRule(name string, irule *IRule) error {
 	irule.Name = name
-	return b.Put(irule, uriRule, name)
+	return b.put(irule, uriRule, name)
 }
