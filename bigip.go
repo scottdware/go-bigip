@@ -36,6 +36,7 @@ type RequestError struct {
 	ErrorStack []string `json:"errorStack,omitempty"`
 }
 
+// Error returns the error message.
 func (r *RequestError) Error() error {
 	if r.Message != "" {
 		return errors.New(r.Message)
