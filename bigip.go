@@ -74,7 +74,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	req, _ = http.NewRequest(strings.ToUpper(options.Method), url, body)
 	req.SetBasicAuth(b.User, b.Password)
 
-	//log.Println("REQ -- ", url," -- ",options.Body)
+	//fmt.Println("REQ -- ", url," -- ",options.Body)
 
 	if len(options.ContentType) > 0 {
 		req.Header.Set("Content-Type", options.ContentType)
@@ -143,6 +143,25 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 
 	_, callErr := b.APICall(req)
 	return callErr
+}
+
+func (b *BigIP) getForEntity(e interface{}, path ...string) error {
+	req := &APIRequest{
+		Method: "get",
+		URL:    strings.Join(path, "/"),
+	}
+
+	resp, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(resp, e)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // checkError handles any errors we get from our API requests. It returns either the
