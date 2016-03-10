@@ -18,6 +18,7 @@ type BigIP struct {
 	Host      string
 	User      string
 	Password  string
+	Token     string
 	Transport *http.Transport
 }
 
@@ -65,6 +66,74 @@ func NewSession(host, user, passwd string) *BigIP {
 	}
 }
 
+// UseTokenAuth instructs the session to use token authentication
+// instead of Basic Auth. This is required when using external
+// authentication provider, such as Radius or Active Directory.
+// Get the login reference from your system administrator. There is
+// no public way to anonymously query available login providers. A
+// login reference looks similar to the following example:
+// https://localhost/mgmt/cm/system/authn/providers/ldap/298d4aa5­d255­438f­997d­7f984109dd5d/login
+func (b *BigIP) UseTokenAuth(loginReference string) (err error) {
+	type authLoginReference struct {
+		Link string
+	}
+	type authReq struct {
+		Username       string
+		Password       string
+		LoginReference authLoginReference
+	}
+	type authResp struct {
+		Token struct {
+			Token string
+		}
+	}
+
+	auth := authReq{
+		b.User,
+		b.Password,
+		authLoginReference{
+			loginReference,
+		},
+	}
+
+	marshalJSON, err := json.Marshal(auth)
+	if err != nil {
+		return
+	}
+
+	req := &APIRequest{
+		Method:      "post",
+		URL:         "/mgmt/shared/authn/login",
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	resp, err := b.APICall(req)
+	if err != nil {
+		return
+	}
+
+	if resp == nil {
+		err = fmt.Errorf("unable to acquire authentication token")
+		return
+	}
+
+	var aresp authResp
+	err = json.Unmarshal(resp, &aresp)
+	if err != nil {
+		return
+	}
+
+	if aresp.Token.Token == "" {
+		err = fmt.Errorf("unable to acquire authentication token")
+		return
+	}
+
+	b.Token = aresp.Token.Token
+
+	return
+}
+
 // APICall is used to query the BIG-IP web API.
 func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	var req *http.Request
@@ -72,7 +141,11 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	url := fmt.Sprintf("%s/mgmt/tm/%s", b.Host, options.URL)
 	body := bytes.NewReader([]byte(options.Body))
 	req, _ = http.NewRequest(strings.ToUpper(options.Method), url, body)
-	req.SetBasicAuth(b.User, b.Password)
+	if b.Token != "" {
+		req.Header.Set("X-F5-Auth-Token", b.Token)
+	} else {
+		req.SetBasicAuth(b.User, b.Password)
+	}
 
 	//log.Println("REQ -- ", url," -- ",options.Body)
 
