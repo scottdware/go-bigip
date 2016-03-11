@@ -74,10 +74,7 @@ func NewSession(host, user, passwd string) *BigIP {
 // anonymously query available login providers. A login reference
 // looks similar to the following example:
 // https://localhost/mgmt/cm/system/authn/providers/ldap/298d4aa5­d255­438f­997d­7f984109dd5d/login
-func NewTokenSession(host, user, passwd, loginReference string) (*BigIP, error) {
-	b := NewSession(host, user, passwd)
-	var err error
-
+func NewTokenSession(host, user, passwd, loginReference string) (b *BigIP, err error) {
 	type authLoginReference struct {
 		Link string
 	}
@@ -93,8 +90,8 @@ func NewTokenSession(host, user, passwd, loginReference string) (*BigIP, error) 
 	}
 
 	auth := authReq{
-		b.User,
-		b.Password,
+		user,
+		passwd,
 		authLoginReference{
 			loginReference,
 		},
@@ -102,7 +99,7 @@ func NewTokenSession(host, user, passwd, loginReference string) (*BigIP, error) 
 
 	marshalJSON, err := json.Marshal(auth)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	req := &APIRequest{
@@ -114,28 +111,29 @@ func NewTokenSession(host, user, passwd, loginReference string) (*BigIP, error) 
 
 	resp, err := b.APICall(req)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	if resp == nil {
 		err = fmt.Errorf("unable to acquire authentication token")
-		return nil, err
+		return
 	}
 
 	var aresp authResp
 	err = json.Unmarshal(resp, &aresp)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	if aresp.Token.Token == "" {
 		err = fmt.Errorf("unable to acquire authentication token")
-		return nil, err
+		return
 	}
 
+	b = NewSession(host, user, passwd)
 	b.Token = aresp.Token.Token
 
-	return b, nil
+	return
 }
 
 // APICall is used to query the BIG-IP web API.
