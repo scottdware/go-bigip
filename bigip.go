@@ -18,7 +18,7 @@ type BigIP struct {
 	Host      string
 	User      string
 	Password  string
-	Token     string
+	Token     string // if set, will be used instead of User/Password
 	Transport *http.Transport
 }
 
@@ -66,14 +66,18 @@ func NewSession(host, user, passwd string) *BigIP {
 	}
 }
 
-// UseTokenAuth instructs the session to use token authentication
-// instead of Basic Auth. This is required when using external
-// authentication provider, such as Radius or Active Directory.
-// Get the login reference from your system administrator. There is
-// no public way to anonymously query available login providers. A
-// login reference looks similar to the following example:
+// NewTokenSession sets up our connection to the BIG-IP system, and
+// instructs the session to use token authentication instead of Basic
+// Auth. This is required when using an external authentication
+// provider, such as Radius or Active Directory. Get the login
+// reference from your system administrator. There is no public way to
+// anonymously query available login providers. A login reference
+// looks similar to the following example:
 // https://localhost/mgmt/cm/system/authn/providers/ldap/298d4aa5­d255­438f­997d­7f984109dd5d/login
-func (b *BigIP) UseTokenAuth(loginReference string) (err error) {
+func NewTokenSession(host, user, passwd, loginReference string) (*BigIP, error) {
+	b := NewSession(host, user, passwd)
+	var err error
+
 	type authLoginReference struct {
 		Link string
 	}
@@ -98,7 +102,7 @@ func (b *BigIP) UseTokenAuth(loginReference string) (err error) {
 
 	marshalJSON, err := json.Marshal(auth)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	req := &APIRequest{
@@ -110,28 +114,28 @@ func (b *BigIP) UseTokenAuth(loginReference string) (err error) {
 
 	resp, err := b.APICall(req)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	if resp == nil {
 		err = fmt.Errorf("unable to acquire authentication token")
-		return
+		return nil, err
 	}
 
 	var aresp authResp
 	err = json.Unmarshal(resp, &aresp)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	if aresp.Token.Token == "" {
 		err = fmt.Errorf("unable to acquire authentication token")
-		return
+		return nil, err
 	}
 
 	b.Token = aresp.Token.Token
 
-	return
+	return b, nil
 }
 
 // APICall is used to query the BIG-IP web API.
