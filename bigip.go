@@ -69,19 +69,13 @@ func NewSession(host, user, passwd string) *BigIP {
 // NewTokenSession sets up our connection to the BIG-IP system, and
 // instructs the session to use token authentication instead of Basic
 // Auth. This is required when using an external authentication
-// provider, such as Radius or Active Directory. Get the login
-// reference from your system administrator. There is no public way to
-// anonymously query available login providers. A login reference
-// looks similar to the following example:
-// https://localhost/mgmt/cm/system/authn/providers/ldap/298d4aa5­d255­438f­997d­7f984109dd5d/login
-func NewTokenSession(host, user, passwd, loginReference string) (b *BigIP, err error) {
-	type authLoginReference struct {
-		Link string
-	}
+// provider, such as Radius or Active Directory. loginProviderName is
+// probably "tmos" but your environment may vary.
+func NewTokenSession(host, user, passwd, loginProviderName string) (b *BigIP, err error) {
 	type authReq struct {
-		Username       string
-		Password       string
-		LoginReference authLoginReference
+		Username          string `json:"username"`
+		Password          string `json:"password"`
+		LoginProviderName string `json:"loginProviderName"`
 	}
 	type authResp struct {
 		Token struct {
@@ -92,9 +86,7 @@ func NewTokenSession(host, user, passwd, loginReference string) (b *BigIP, err e
 	auth := authReq{
 		user,
 		passwd,
-		authLoginReference{
-			loginReference,
-		},
+		loginProviderName,
 	}
 
 	marshalJSON, err := json.Marshal(auth)
@@ -104,11 +96,12 @@ func NewTokenSession(host, user, passwd, loginReference string) (b *BigIP, err e
 
 	req := &APIRequest{
 		Method:      "post",
-		URL:         "/mgmt/shared/authn/login",
+		URL:         "mgmt/shared/authn/login",
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
 
+	b = NewSession(host, user, passwd)
 	resp, err := b.APICall(req)
 	if err != nil {
 		return
@@ -130,7 +123,6 @@ func NewTokenSession(host, user, passwd, loginReference string) (b *BigIP, err e
 		return
 	}
 
-	b = NewSession(host, user, passwd)
 	b.Token = aresp.Token.Token
 
 	return
@@ -140,7 +132,13 @@ func NewTokenSession(host, user, passwd, loginReference string) (b *BigIP, err e
 func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	var req *http.Request
 	client := &http.Client{Transport: b.Transport}
-	url := fmt.Sprintf("%s/mgmt/tm/%s", b.Host, options.URL)
+	var format string
+	if strings.Contains(options.URL, "mgmt/") {
+		format = "%s/%s"
+	} else {
+		format = "%s/mgmt/tm/%s"
+	}
+	url := fmt.Sprintf(format, b.Host, options.URL)
 	body := bytes.NewReader([]byte(options.Body))
 	req, _ = http.NewRequest(strings.ToUpper(options.Method), url, body)
 	if b.Token != "" {
