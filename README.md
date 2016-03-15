@@ -21,8 +21,8 @@ Here's a [blog post][blog] that goes a little more in-depth.
 ### Contributors
 A very special thanks to the following who have helped contribute to this software!
 
-[Adam Burnett](https://github.com/aburnett)
-[Michael D. Ivey](https://github.com/ivey)
+* [Adam Burnett](https://github.com/aburnett)
+* [Michael D. Ivey](https://github.com/ivey)
 
 [godoc-go-bigip]: http://godoc.org/github.com/scottdware/go-bigip
 [license]: https://github.com/scottdware/go-bigip/blob/master/LICENSE
