@@ -90,6 +90,14 @@ func (s *LTMTestSuite) TestDeleteIRule() {
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 }
 
+func (s *LTMTestSuite) TestModifyVirtualAddress() {
+	d := &VirtualAddress{}
+	s.Client.ModifyVirtualAddress("address1", d)
+
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriVirtualAddress, "address1"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+}
+
 func (s *LTMTestSuite) TestGetPolicies() {
 	s.ResponseFunc = func(w http.ResponseWriter) {
 		w.Write([]byte(`{
