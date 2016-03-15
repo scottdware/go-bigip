@@ -1094,6 +1094,32 @@ func (b *BigIP) VirtualAddresses() (*VirtualAddresses, error) {
 func (b *BigIP) VirtualAddressStatus(vaddr, state string) error {
 	config := &VirtualAddress{}
 
+	switch state {
+	case "enable":
+		config.Enabled = true
+	case "disable":
+		config.Enabled = false
+	}
+
+	marshalJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "put",
+		URL:         fmt.Sprintf("%s/%s", uriVirtualAddress, vaddr),
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	_, callErr := b.APICall(req)
+	return callErr
+}
+
+// ModifyVirtualAddress allows you to change any attribute of a virtual address. Fields that
+// can be modified are referenced in the VirtualAddress struct.
+func (b *BigIP) ModifyVirtualAddress(vaddr string, config *VirtualAddress) error {
 	marshalJSON, err := json.Marshal(config)
 	if err != nil {
 		return err
