@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
+	"strings"
 )
 
 type LTMTestSuite struct {
@@ -17,7 +18,7 @@ type LTMTestSuite struct {
 	Server          *httptest.Server
 	LastRequest     *http.Request
 	LastRequestBody string
-	ResponseFunc    func(http.ResponseWriter)
+	ResponseFunc    func(http.ResponseWriter, *http.Request)
 }
 
 func (s *LTMTestSuite) SetupSuite() {
@@ -26,7 +27,7 @@ func (s *LTMTestSuite) SetupSuite() {
 		s.LastRequestBody = string(body)
 		s.LastRequest = r
 		if s.ResponseFunc != nil {
-			s.ResponseFunc(w)
+			s.ResponseFunc(w, r)
 		}
 	}))
 
@@ -47,7 +48,7 @@ func TestLtmSuite(t *testing.T) {
 }
 
 func (s *LTMTestSuite) TestIRules() {
-	s.ResponseFunc = func(w http.ResponseWriter) {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"items" :
 			[
 				{"name":"rule1","apiAnonymous":"rule1"},
@@ -99,7 +100,7 @@ func (s *LTMTestSuite) TestModifyVirtualAddress() {
 }
 
 func (s *LTMTestSuite) TestGetPolicies() {
-	s.ResponseFunc = func(w http.ResponseWriter) {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{
   "kind": "tm:ltm:policy:policycollectionstate",
   "selfLink": "https://localhost/mgmt/tm/ltm/policy?ver=11.5.1",
@@ -155,6 +156,123 @@ func (s *LTMTestSuite) TestGetPolicies() {
 	assert.Equal(s.T(), "/Common/first-match", p.Policies[0].Strategy)
 	assert.EqualValues(s.T(), []string{"http", "client-ssl"}, p.Policies[0].Requires)
 	assert.EqualValues(s.T(), []string{"forwarding"}, p.Policies[0].Controls)
+}
+
+func (s *LTMTestSuite) TestGetPolicy() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "rules") {
+			w.Write([]byte(`{
+			  "kind": "tm:ltm:policy:rules:rulescollectionstate",
+			  "selfLink": "https://localhost/mgmt/tm/ltm/policy/my_policy/rules?ver=11.5.1",
+			  "items": [
+			    {
+			      "kind": "tm:ltm:policy:rules:rulesstate",
+			      "name": "rule1",
+			      "fullPath": "rule1",
+			      "generation": 144344,
+			      "selfLink": "https://localhost/mgmt/tm/ltm/policy/my_policy/rules/rule1?ver=11.5.1",
+			      "ordinal": 0,
+			      "actionsReference": {
+				"link": "https://localhost/mgmt/tm/ltm/policy/my_policy/rules/rule1/actions?ver=11.5.1",
+				"isSubcollection": true
+			      },
+			      "conditionsReference": {
+				"link": "https://localhost/mgmt/tm/ltm/policy/my_policy/rules/rule1/conditions?ver=11.5.1",
+				"isSubcollection": true
+			      }
+			    }
+			  ]
+			}`))
+		} else if strings.HasSuffix(r.URL.Path, "actions") {
+			w.Write([]byte(`{
+			  "kind": "tm:ltm:policy:rules:actions:actionscollectionstate",
+			  "selfLink": "https://localhost/mgmt/tm/ltm/policy/my_policy/rules/rule1/actions?ver=11.5.1",
+			  "items": [
+			    {
+			      "kind": "tm:ltm:policy:rules:actions:actionsstate",
+			      "name": "0",
+			      "fullPath": "0",
+			      "generation": 144344,
+			      "selfLink": "https://localhost/mgmt/tm/ltm/policy/my_policy/rules/rule1/actions/0?ver=11.5.1",
+			      "code": 0,
+			      "forward": true,
+			      "pool": "/Common/sorry_server",
+			      "port": 0,
+			      "request": true,
+			      "select": true,
+			      "status": 0,
+			      "vlanId": 0
+			    }
+			  ]
+			}`))
+		} else if strings.HasSuffix(r.URL.Path, "conditions") {
+			w.Write([]byte(`{
+			  "kind": "tm:ltm:policy:rules:conditions:conditionscollectionstate",
+			  "selfLink": "https://localhost/mgmt/tm/ltm/policy/my_policy/rules/rule1/conditions?ver=11.5.1",
+			  "items": [
+			    {
+			      "kind": "tm:ltm:policy:rules:conditions:conditionsstate",
+			      "name": "0",
+			      "fullPath": "0",
+			      "generation": 144344,
+			      "selfLink": "https://localhost/mgmt/tm/ltm/policy/my_policy/rules/rule1/conditions/0?ver=11.5.1",
+			      "all": true,
+			      "caseInsensitive": true,
+			      "external": true,
+			      "httpUri": true,
+			      "index": 0,
+			      "present": true,
+			      "remote": true,
+			      "request": true,
+			      "startsWith": true,
+			      "values": [
+				"/foo"
+			      ]
+			    }]
+			    }`))
+		} else {
+			w.Write([]byte(`{
+			  "kind": "tm:ltm:policy:policystate",
+			  "name": "my_policy",
+			  "fullPath": "my_policy",
+			  "generation": 144344,
+			  "selfLink": "https://localhost/mgmt/tm/ltm/policy/my_policy?ver=11.5.1",
+			  "controls": [
+			    "forwarding"
+			  ],
+			  "requires": [
+			    "http"
+			  ],
+			  "strategy": "/Common/first-match",
+			  "rulesReference": {
+			    "link": "https://localhost/mgmt/tm/ltm/policy/~Common~my_policy/rules?ver=11.5.1",
+			    "isSubcollection": true
+			  }
+			}`))
+		}
+	}
+
+	p, err := s.Client.GetPolicy("my_policy")
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), "my_policy", p.Name)
+	assert.Equal(s.T(), 1, len(p.Rules), "Not enough rules")
+	assert.Equal(s.T(), 1, len(p.Rules[0].Actions), "Not enough actions")
+	assert.Equal(s.T(), "/Common/sorry_server", p.Rules[0].Actions[0].Pool)
+	assert.Equal(s.T(), 1, len(p.Rules[0].Conditions), "Not enough conditions")
+	assert.Equal(s.T(), []string{"/foo"}, p.Rules[0].Conditions[0].Values)
+}
+
+func (s *LTMTestSuite) TestGetNonExistentPolicy() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	p, err := s.Client.GetPolicy("asdf")
+
+	assert.NotNil(s.T(), err, "nil error returned")
+	assert.Nil(s.T(), p)
+	assert.True(s.T(), strings.HasPrefix(err.Error(), "HTTP 404"), err.Error())
 }
 
 func (s *LTMTestSuite) TestCreatePolicy() {

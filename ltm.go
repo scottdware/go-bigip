@@ -1354,20 +1354,20 @@ func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 	}
 	p.Rules = rules.Items
 
-	for _, rule := range p.Rules {
+	for i, _ := range p.Rules {
 		var a PolicyRuleActions
 		var c PolicyRuleConditions
 
-		err = b.getForEntity(a, uriPolicy, name, "rules", rule.Name, "actions")
+		err = b.getForEntity(&a, uriPolicy, name, "rules", p.Rules[i].Name, "actions")
 		if err != nil {
 			return nil, err
 		}
-		err = b.getForEntity(c, uriPolicy, name, "rules", rule.Name, "conditions")
+		err = b.getForEntity(&c, uriPolicy, name, "rules", p.Rules[i].Name, "conditions")
 		if err != nil {
 			return nil, err
 		}
-		rule.Actions = a.Items
-		rule.Conditions = c.Items
+		p.Rules[i].Actions = a.Items
+		p.Rules[i].Conditions = c.Items
 	}
 
 	return &p, nil
