@@ -6,6 +6,92 @@ import (
 	"strings"
 )
 
+type PoolMembersStatistics struct {
+	Entries map[string]PoolMemberStatistics `json:"entries"`
+}
+
+type PoolMemberStatistics struct {
+	NestedStats struct {
+		Entries struct {
+			Addr struct {
+				Description string `json:"description"`
+			} `json:"addr"`
+			ConnqAgeEdm struct {
+				Value int `json:"value"`
+			} `json:"connq.ageEdm"`
+			ConnqAgeEma struct {
+				Value int `json:"value"`
+			} `json:"connq.ageEma"`
+			ConnqAgeHead struct {
+				Value int `json:"value"`
+			} `json:"connq.ageHead"`
+			ConnqAgeMax struct {
+				Value int `json:"value"`
+			} `json:"connq.ageMax"`
+			ConnqDepth struct {
+				Value int `json:"value"`
+			} `json:"connq.depth"`
+			ConnqServiced struct {
+				Value int `json:"value"`
+			} `json:"connq.serviced"`
+			CurSessions struct {
+				Value int `json:"value"`
+			} `json:"curSessions"`
+			MonitorRule struct {
+				Description string `json:"description"`
+			} `json:"monitorRule"`
+			MonitorStatus struct {
+				Description string `json:"description"`
+			} `json:"monitorStatus"`
+			NodeName struct {
+				Description string `json:"description"`
+			} `json:"nodeName"`
+			PoolName struct {
+				Description string `json:"description"`
+			} `json:"poolName"`
+			Port struct {
+				Value int `json:"value"`
+			} `json:"port"`
+			ServersideBitsIn struct {
+				Value int `json:"value"`
+			} `json:"serverside.bitsIn"`
+			ServersideBitsOut struct {
+				Value int64 `json:"value"`
+			} `json:"serverside.bitsOut"`
+			ServersideCurConns struct {
+				Value int `json:"value"`
+			} `json:"serverside.curConns"`
+			ServersideMaxConns struct {
+				Value int `json:"value"`
+			} `json:"serverside.maxConns"`
+			ServersidePktsIn struct {
+				Value int `json:"value"`
+			} `json:"serverside.pktsIn"`
+			ServersidePktsOut struct {
+				Value int `json:"value"`
+			} `json:"serverside.pktsOut"`
+			ServersideTotConns struct {
+				Value int `json:"value"`
+			} `json:"serverside.totConns"`
+			SessionStatus struct {
+				Description string `json:"description"`
+			} `json:"sessionStatus"`
+			StatusAvailabilityState struct {
+				Description string `json:"description"`
+			} `json:"status.availabilityState"`
+			StatusEnabledState struct {
+				Description string `json:"description"`
+			} `json:"status.enabledState"`
+			StatusStatusReason struct {
+				Description string `json:"description"`
+			} `json:"status.statusReason"`
+			TotRequests struct {
+				Value int `json:"value"`
+			} `json:"totRequests"`
+		} `json:"entries"`
+	} `json:"nestedStats"`
+}
+
 //Disgusting struct for pool statistics
 //{
 //  "entries": {
@@ -99,7 +185,7 @@ type PoolStatistics struct {
 			Value float64 `json:"value"`
 		} `json:"totRequests"`
 	} `json:"entries"`
-	Generation int64    `json:"generation"`
+	Generation int64  `json:"generation"`
 	Kind       string `json:"kind"`
 	Selflink   string `json:"selfLink"`
 }
@@ -227,15 +313,33 @@ type VSSStatistics struct {
 			Value float64 `json:"value"`
 		} `json:"totRequests"`
 	} `json:"entries"`
-	Generation int64    `json:"generation"`
+	Generation int64  `json:"generation"`
 	Kind       string `json:"kind"`
 	Selflink   string `json:"selfLink"`
 }
 
+// Get pool members statistics by full path(/<partition>/<name>)
+func (b *BigIP) GetPoolMemberStatistics(poolName string) (*PoolMembersStatistics, error) {
+	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/members/stats", uriPool, poolName))
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, nil
+	}
+
+	var stats PoolMembersStatistics
+	err = json.Unmarshal(resp, &stats)
+	if err != nil {
+		return nil, err
+	}
+
+	return &stats, nil
+}
+
 // Get pool statistics by full path(/<partition>/<name>)
-func (b *BigIP) GetPoolStatistics(fullpath string) (*PoolStatistics, error) {
-	fixedpath := strings.Replace(fullpath, "/", "~", -1)
-	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/stats", uriPool, fixedpath))
+func (b *BigIP) GetPoolStatistics(poolName string) (*PoolStatistics, error) {
+	resp, err := b.SafeGet(fmt.Sprintf("%s/%s/members/stats", uriPool, poolName))
 	if err != nil {
 		return nil, err
 	}

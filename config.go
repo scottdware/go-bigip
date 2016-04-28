@@ -71,9 +71,47 @@ type TrafficGroup struct {
 	UnitID              int      `json:"unitId,omitempty"`
 }
 
-// how am i supposed to parse that other than into a string
+/*
+oh my
+{
+    "entries": {
+        "https://localhost/mgmt/tm/cm/failover-status/0": {
+            "nestedStats": {
+                "entries": {
+                    "color": {
+                        "description": "green"
+                    },
+                    "https://localhost/mgmt/tm/cm/failoverStatus/0/details": {
+                        "nestedStats": {
+                            "entries": {
+                                "https://localhost/mgmt/tm/cm/failoverStatus/0/details/0": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "details": {
+                                                "description": "active for /Common/traffic-group-1"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "status": {
+                        "description": "ACTIVE"
+                    },
+                    "summary": {
+                        "description": "1/1 active"
+                    }
+                }
+            }
+        }
+    },
+    "kind": "tm:cm:failover-status:failover-statusstats",
+    "selfLink": "https://localhost/mgmt/tm/cm/failover-status?ver=11.6.0"
+}
+*/
 type failoverStatusEntries struct {
-	Entries map[string]failoverStatus
+	Entries map[string]failoverStatus // https://localhost/mgmt/tm/cm/failover-status/0
 }
 
 type failoverStatus struct {
@@ -129,6 +167,7 @@ func (c *Config) IsInSync() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	// i think this might actually not work because maps are not iterated over in any order
 	for _, entry := range ss.Entries {
 		if entry.NestedStats.Entries.Status.Description == INSYNC {
 			return true, nil
@@ -163,6 +202,7 @@ func (c *Config) IsActive() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	// i think this might actually not work because maps are not iterated over in any order
 	for _, entry := range fs.Entries {
 		if entry.NestedStats.Entries.Status.Description == ACTIVE {
 			return true, nil
