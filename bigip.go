@@ -173,11 +173,22 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	return data, nil
 }
 
+func (b *BigIP) iControlPath(parts []string) string {
+	var buffer bytes.Buffer
+	for i, p := range parts {
+		buffer.WriteString(strings.Replace(p, "/", "~", -1))
+		if i < len(parts)-1 {
+			buffer.WriteString("/")
+		}
+	}
+	return buffer.String()
+}
+
 //Generic delete
 func (b *BigIP) delete(path ...string) error {
 	req := &APIRequest{
 		Method: "delete",
-		URL:    strings.Join(path, "/"),
+		URL:    b.iControlPath(path),
 	}
 
 	_, callErr := b.APICall(req)
@@ -192,7 +203,7 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 
 	req := &APIRequest{
 		Method:      "post",
-		URL:         strings.Join(path, "/"),
+		URL:         b.iControlPath(path),
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
@@ -209,7 +220,7 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 
 	req := &APIRequest{
 		Method:      "put",
-		URL:         strings.Join(path, "/"),
+		URL:         b.iControlPath(path),
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
@@ -218,23 +229,32 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 	return callErr
 }
 
-func (b *BigIP) getForEntity(e interface{}, path ...string) error {
+//Get a url and populate an entity. If the entity does not exist (404) then the
+//passed entity will be untouched and false will be returned as the second parameter.
+//You can use this to distinguish between a missing entity or an actual error.
+func (b *BigIP) getForEntity(e interface{}, path ...string) (error, bool) {
 	req := &APIRequest{
-		Method: "get",
-		URL:    strings.Join(path, "/"),
+		Method:      "get",
+		URL:         b.iControlPath(path),
+		ContentType: "application/json",
 	}
 
 	resp, err := b.APICall(req)
 	if err != nil {
-		return err
+		var reqError RequestError
+		json.Unmarshal(resp, &reqError)
+		if reqError.Code == 404 {
+			return nil, false
+		}
+		return err, false
 	}
 
 	err = json.Unmarshal(resp, e)
 	if err != nil {
-		return err
+		return err, false
 	}
 
-	return nil
+	return nil, true
 }
 
 // checkError handles any errors we get from our API requests. It returns either the
@@ -259,30 +279,9 @@ func (b *BigIP) checkError(resp []byte) error {
 	return nil
 }
 
-// Perform a GET request and treat 404's as nil objects instead of errors.
-func (b *BigIP) SafeGet(url string) ([]byte, error) {
-	req := &APIRequest{
-		Method:      "get",
-		URL:         url,
-		ContentType: "application/json",
-	}
-
-	resp, err := b.APICall(req)
-	if err != nil {
-		var reqError RequestError
-		json.Unmarshal(resp, &reqError)
-		if reqError.Code == 404 {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return resp, nil
-}
-
 // Helper to copy between transfer objects and model objects to hide the myriad of boolean representations
 // in the iControlREST api. DTO fields can be tagged with bool:"yes|enabled|true" to set what true and false
-// marshal to
+// marshal to.
 func marshal(to, from interface{}) error {
 	toVal := reflect.ValueOf(to).Elem()
 	fromVal := reflect.ValueOf(from).Elem()
