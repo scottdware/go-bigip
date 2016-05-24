@@ -882,8 +882,18 @@ func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	vs.Profiles = profiles.Profiles
+
+	policy_names, err := b.VirtualServerPolicyNames(name)
+	if err != nil {
+		return nil, err
+	}
+	var policies []Policy
+	for _, policy_name := range policy_names {
+		policies = append(policies, policy_name)
+	}
+	vs.Policies = policies
+
 	return &vs, nil
 }
 
@@ -910,6 +920,16 @@ func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error) {
 	}
 
 	return &p, nil
+}
+
+//Get the names of policies associated with a particular virtual server
+func (b *BigIP) VirtualServerPolicyNames(vs string) ([]Policy, error) {
+	var policies VirtualServerPolicies
+	err, _ := b.getForEntity(&policies, uriLtm, uriVirtual, vs, "policies")
+	if err != nil {
+		return nil, err
+	}
+	return policies.PolicyRef.Policies, nil
 }
 
 // VirtualAddresses returns a list of virtual addresses.
