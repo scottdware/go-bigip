@@ -199,6 +199,10 @@ type Policies struct {
 	Policies []Policy `json:"items"`
 }
 
+type VirtualServerPolicies struct {
+	PolicyRef Policies `json:"policiesReference"`
+}
+
 type Policy struct {
 	Name      string
 	Partition string
