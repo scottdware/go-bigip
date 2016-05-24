@@ -147,6 +147,7 @@ type VirtualServer struct {
 	VSIndex          int       `json:"vsIndex,omitempty"`
 	Rules            []string  `json:"rules,omitempty"`
 	Profiles         []Profile `json:"profiles,omitempty"`
+	Policies         []Policy  `json:"policies,omitempty"`
 }
 
 // VirtualAddresses contains a list of all virtual addresses on the BIG-IP system.
