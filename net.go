@@ -1,8 +1,6 @@
 package bigip
 
 import (
-	"encoding/json"
-	"fmt"
 	"strings"
 )
 
@@ -159,29 +157,21 @@ type RouteDomain struct {
 	Vlans      []string `json:"vlans,omitempty"`
 }
 
-var (
-	uriInterface   = "net/interface"
-	uriSelf        = "net/self"
-	uriTrunk       = "net/trunk"
-	uriVlan        = "net/vlan"
-	uriRoute       = "net/route"
-	uriRouteDomain = "net/route-domain"
+const (
+	uriNet         = "net"
+	uriInterface   = "interface"
+	uriSelf        = "self"
+	uriTrunk       = "trunk"
+	uriVlan        = "vlan"
+	uriRoute       = "route"
+	uriRouteDomain = "route-domain"
 )
 
 // Interfaces returns a list of interfaces.
 func (b *BigIP) Interfaces() (*Interfaces, error) {
 	var interfaces Interfaces
-	req := &APIRequest{
-		Method: "get",
-		URL:    uriInterface,
-	}
+	err, _ := b.getForEntity(&interfaces, uriNet, uriInterface)
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(resp, &interfaces)
 	if err != nil {
 		return nil, err
 	}
@@ -193,46 +183,20 @@ func (b *BigIP) Interfaces() (*Interfaces, error) {
 func (b *BigIP) AddInterfaceToVlan(vlan, iface string, tagged bool) error {
 	config := &VlanInterface{}
 
+	config.Name = iface
 	if tagged {
-		config.Name = vlan
 		config.Tagged = true
-	}
-
-	if !tagged {
-		config.Name = vlan
+	} else {
 		config.Untagged = true
 	}
 
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "put",
-		URL:         fmt.Sprintf("%s/%s/interfaces", uriVlan, vlan),
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.put(config, uriNet, uriVlan, vlan, "interfaces")
 }
 
 // SelfIPs returns a list of self IP's.
 func (b *BigIP) SelfIPs() (*SelfIPs, error) {
 	var self SelfIPs
-	req := &APIRequest{
-		Method: "get",
-		URL:    uriSelf,
-	}
-
-	resp, err := b.APICall(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(resp, &self)
+	err, _ := b.getForEntity(&self, uriNet, uriSelf)
 	if err != nil {
 		return nil, err
 	}
@@ -249,60 +213,24 @@ func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
 		Vlan:    vlan,
 	}
 
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "post",
-		URL:         uriSelf,
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.post(config, uriNet, uriSelf)
 }
 
 // DeleteSelfIP removes a self IP.
 func (b *BigIP) DeleteSelfIP(name string) error {
-	return b.delete(uriSelf, name)
+	return b.delete(uriNet, uriSelf, name)
 }
 
 // ModifySelfIP allows you to change any attribute of a self IP. Fields that
 // can be modified are referenced in the SelfIP struct.
 func (b *BigIP) ModifySelfIP(name string, config *SelfIP) error {
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "put",
-		URL:         fmt.Sprintf("%s/%s", uriSelf, name),
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.put(config, uriNet, uriSelf, name)
 }
 
 // Trunks returns a list of trunks.
 func (b *BigIP) Trunks() (*Trunks, error) {
 	var trunks Trunks
-	req := &APIRequest{
-		Method: "get",
-		URL:    uriTrunk,
-	}
-
-	resp, err := b.APICall(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(resp, &trunks)
+	err, _ := b.getForEntity(&trunks, uriNet, uriTrunk)
 	if err != nil {
 		return nil, err
 	}
@@ -329,60 +257,25 @@ func (b *BigIP) CreateTrunk(name, interfaces string, lacp bool) error {
 		config.LACP = "enabled"
 	}
 
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "post",
-		URL:         uriTrunk,
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.post(config, uriNet, uriTrunk)
 }
 
 // DeleteTrunk removes a trunk.
 func (b *BigIP) DeleteTrunk(name string) error {
-	return b.delete(uriTrunk, name)
+	return b.delete(uriNet, uriTrunk, name)
 }
 
 // ModifyTrunk allows you to change any attribute of a trunk. Fields that
 // can be modified are referenced in the Trunk struct.
 func (b *BigIP) ModifyTrunk(name string, config *Trunk) error {
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "put",
-		URL:         fmt.Sprintf("%s/%s", uriTrunk, name),
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.put(config, uriNet, uriTrunk, name)
 }
 
 // Vlans returns a list of vlans.
 func (b *BigIP) Vlans() (*Vlans, error) {
 	var vlans Vlans
-	req := &APIRequest{
-		Method: "get",
-		URL:    uriVlan,
-	}
+	err, _ := b.getForEntity(&vlans, uriNet, uriVlan)
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(resp, &vlans)
 	if err != nil {
 		return nil, err
 	}
@@ -397,60 +290,25 @@ func (b *BigIP) CreateVlan(name string, tag int) error {
 		Tag:  tag,
 	}
 
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "post",
-		URL:         uriVlan,
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.post(config, uriNet, uriVlan)
 }
 
 // DeleteVlan removes a vlan.
 func (b *BigIP) DeleteVlan(name string) error {
-	return b.delete(uriVlan, name)
+	return b.delete(uriNet, uriVlan, name)
 }
 
 // ModifyVlan allows you to change any attribute of a VLAN. Fields that
 // can be modified are referenced in the Vlan struct.
 func (b *BigIP) ModifyVlan(name string, config *Vlan) error {
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "put",
-		URL:         fmt.Sprintf("%s/%s", uriVlan, name),
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.put(config, uriNet, uriVlan, name)
 }
 
 // Routes returns a list of routes.
 func (b *BigIP) Routes() (*Routes, error) {
 	var routes Routes
-	req := &APIRequest{
-		Method: "get",
-		URL:    uriRoute,
-	}
+	err, _ := b.getForEntity(&routes, uriNet, uriRoute)
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(resp, &routes)
 	if err != nil {
 		return nil, err
 	}
@@ -467,60 +325,25 @@ func (b *BigIP) CreateRoute(name, dest, gateway string) error {
 		Gateway: gateway,
 	}
 
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "post",
-		URL:         uriRoute,
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.post(config, uriNet, uriRoute)
 }
 
 // DeleteRoute removes a static route.
 func (b *BigIP) DeleteRoute(name string) error {
-	return b.delete(uriRoute, name)
+	return b.delete(uriNet, uriRoute, name)
 }
 
 // ModifyRoute allows you to change any attribute of a static route. Fields that
 // can be modified are referenced in the Route struct.
 func (b *BigIP) ModifyRoute(name string, config *Route) error {
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "put",
-		URL:         fmt.Sprintf("%s/%s", uriRoute, name),
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.put(config, uriNet, uriRoute, name)
 }
 
 // RouteDomains returns a list of route domains.
 func (b *BigIP) RouteDomains() (*RouteDomains, error) {
 	var rd RouteDomains
-	req := &APIRequest{
-		Method: "get",
-		URL:    uriRouteDomain,
-	}
+	err, _ := b.getForEntity(&rd, uriNet, uriRouteDomain)
 
-	resp, err := b.APICall(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(resp, &rd)
 	if err != nil {
 		return nil, err
 	}
@@ -550,42 +373,16 @@ func (b *BigIP) CreateRouteDomain(name string, id int, strict bool, vlans string
 		Vlans:  vlanMembers,
 	}
 
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "post",
-		URL:         uriRouteDomain,
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.post(config, uriNet, uriRouteDomain)
 }
 
 // DeleteRouteDomain removes a route domain.
 func (b *BigIP) DeleteRouteDomain(name string) error {
-	return b.delete(uriRouteDomain, name)
+	return b.delete(uriNet, uriRouteDomain, name)
 }
 
 // ModifyRouteDomain allows you to change any attribute of a route domain. Fields that
 // can be modified are referenced in the RouteDomain struct.
 func (b *BigIP) ModifyRouteDomain(name string, config *RouteDomain) error {
-	marshalJSON, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "put",
-		URL:         fmt.Sprintf("%s/%s", uriRouteDomain, name),
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.put(config, uriNet, uriRouteDomain, name)
 }
