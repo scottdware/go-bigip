@@ -59,7 +59,7 @@ func (s *LTMTestSuite) TestIRules() {
 	rules, err := s.Client.IRules()
 
 	assert.Nil(s.T(), err, "Error loading rules")
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s", uriIRule), s.LastRequest.URL.Path, "Wrong uri to fetch rules")
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriIRule), s.LastRequest.URL.Path, "Wrong uri to fetch rules")
 	assert.Equal(s.T(), 2, len(rules.IRules), "Wrong number of rules")
 	assert.Equal(s.T(), "rule1", rules.IRules[0].Name)
 	assert.Equal(s.T(), "rule2", rules.IRules[1].Name)
@@ -71,7 +71,7 @@ rule2`, rules.IRules[1].Rule, "Multiline rule not unmarshalled")
 func (s *LTMTestSuite) TestCreateIRule() {
 	s.Client.CreateIRule("rule1", `when CLIENT_ACCEPTED { log local0. "test"}`)
 
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s", uriIRule), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriIRule), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.JSONEq(s.T(), `{"name":"rule1","apiAnonymous":"when CLIENT_ACCEPTED { log local0. \"test\"}"}`, s.LastRequestBody)
 }
@@ -79,7 +79,7 @@ func (s *LTMTestSuite) TestCreateIRule() {
 func (s *LTMTestSuite) TestModifyIRule() {
 	s.Client.ModifyIRule("rule1", &IRule{Rule: "modified"})
 
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriIRule, "rule1"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriIRule, "rule1"), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
 	assert.JSONEq(s.T(), `{"name":"rule1","apiAnonymous":"modified"}`, s.LastRequestBody)
 }
@@ -87,7 +87,7 @@ func (s *LTMTestSuite) TestModifyIRule() {
 func (s *LTMTestSuite) TestDeleteIRule() {
 	s.Client.DeleteIRule("rule1")
 
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriIRule, "rule1"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriIRule, "rule1"), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 }
 
@@ -95,7 +95,7 @@ func (s *LTMTestSuite) TestModifyVirtualAddress() {
 	d := &VirtualAddress{}
 	s.Client.ModifyVirtualAddress("address1", d)
 
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriVirtualAddress, "address1"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriVirtualAddress, "address1"), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
 }
 
@@ -308,7 +308,7 @@ func (s *LTMTestSuite) TestCreatePolicy() {
 	s.Client.CreatePolicy(&p)
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s", uriPolicy), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriPolicy), s.LastRequest.URL.Path)
 	assert.JSONEq(s.T(), `{"name":"test",
 		"controls":["forwarding"],
 		"requires":["http"],
@@ -345,12 +345,12 @@ func (s *LTMTestSuite) TestUpdatePolicy() {
 	s.Client.UpdatePolicy("foo", &Policy{})
 
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/foo", uriPolicy), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo", uriLtm, uriPolicy), s.LastRequest.URL.Path)
 }
 
 func (s *LTMTestSuite) TestDeletePolicy() {
 	s.Client.DeletePolicy("foo")
 
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/foo", uriPolicy), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo", uriLtm, uriPolicy), s.LastRequest.URL.Path)
 }
