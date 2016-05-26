@@ -1014,11 +1014,13 @@ func (b *BigIP) IRules() (*IRules, error) {
 // IRule returns information about the given iRule.
 func (b *BigIP) IRule(name string) (*IRule, error) {
 	var rule IRule
-	err, _ := b.getForEntity(&rule, uriLtm, uriIRule, name)
+	err, ok := b.getForEntity(&rule, uriLtm, uriIRule, name)
 	if err != nil {
 		return nil, err
 	}
-
+	if !ok {
+		return nil, nil
+	}
 	return &rule, nil
 }
 
@@ -1055,9 +1057,12 @@ func (b *BigIP) Policies() (*Policies, error) {
 //Load a fully policy definition. Policies seem to be best dealt with as one big entity.
 func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 	var p Policy
-	err, _ := b.getForEntity(&p, uriLtm, uriPolicy, name)
+	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, name)
 	if err != nil {
 		return nil, err
+	}
+	if !ok {
+		return nil, nil
 	}
 
 	var rules PolicyRules
