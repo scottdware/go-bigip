@@ -162,7 +162,7 @@ type VirtualAddress struct {
 	Generation            int
 	Address               string
 	ARP                   bool
-	AutoDelete            string
+	AutoDelete            bool
 	ConnectionLimit       int
 	Enabled               bool
 	Floating              bool
@@ -182,7 +182,7 @@ type virtualAddressDTO struct {
 	Generation            int    `json:"generation,omitempty"`
 	Address               string `json:"address,omitempty"`
 	ARP                   string `json:"arp,omitempty" bool:"enabled"`
-	AutoDelete            string `json:"autoDelete,omitempty"`
+	AutoDelete            string `json:"autoDelete,omitempty" bool:"true"`
 	ConnectionLimit       int    `json:"connectionLimit,omitempty"`
 	Enabled               string `json:"enabled,omitempty" bool:"yes"`
 	Floating              string `json:"floating,omitempty" bool:"enabled"`
@@ -619,6 +619,8 @@ const (
 	uriMonitor        = "monitor"
 	uriIRule          = "rule"
 	uriPolicy         = "policy"
+	ENABLED           = "enable"
+	DISABLED          = "disable"
 )
 
 var cidr = map[string]string{
@@ -908,18 +910,16 @@ func (b *BigIP) VirtualAddresses() (*VirtualAddresses, error) {
 	return &va, nil
 }
 
+func (b *BigIP) CreateVirtualAddress(vaddr string, config *VirtualAddress) error {
+	config.Name = vaddr
+	return b.post(config, uriLtm, uriVirtualAddress)
+}
+
 // VirtualAddressStatus changes the status of a virtual address. <state> can be either
 // "enable" or "disable".
 func (b *BigIP) VirtualAddressStatus(vaddr, state string) error {
 	config := &VirtualAddress{}
-
-	switch state {
-	case "enable":
-		config.Enabled = true
-	case "disable":
-		config.Enabled = false
-	}
-
+	config.Enabled = (state == ENABLED)
 	return b.put(config, uriLtm, uriVirtualAddress, vaddr)
 }
 
@@ -927,6 +927,10 @@ func (b *BigIP) VirtualAddressStatus(vaddr, state string) error {
 // can be modified are referenced in the VirtualAddress struct.
 func (b *BigIP) ModifyVirtualAddress(vaddr string, config *VirtualAddress) error {
 	return b.put(config, uriLtm, uriVirtualAddress, vaddr)
+}
+
+func (b *BigIP) DeleteVirtualAddress(vaddr string) error {
+	return b.delete(uriLtm, uriVirtualAddress, vaddr)
 }
 
 // Monitors returns a list of all HTTP, HTTPS, Gateway ICMP, and ICMP monitors.
