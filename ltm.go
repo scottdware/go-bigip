@@ -582,6 +582,7 @@ type Profiles struct {
 type Profile struct {
 	Name      string `json:"name,omitempty"`
 	Partition string `json:"partition,omitempty"`
+	Context   string `json:"context,omitempty"`
 }
 
 type IRules struct {
@@ -621,6 +622,9 @@ const (
 	uriPolicy         = "policy"
 	ENABLED           = "enable"
 	DISABLED          = "disable"
+	CONTEXT_SERVER    = "serverside"
+	CONTEXT_CLIENT    = "clientside"
+	CONTEXT_ALL       = "all"
 )
 
 var cidr = map[string]string{

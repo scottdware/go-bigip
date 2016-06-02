@@ -381,3 +381,27 @@ func (s *LTMTestSuite) TestDeleteVitualAddress() {
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/test-va", uriLtm, uriVirtualAddress), s.LastRequest.URL.Path)
 }
+
+func (s *LTMTestSuite) TestModifyVirtualServer() {
+	vs := &VirtualServer{
+		Name: "test",
+		Profiles: []Profile{
+			Profile{Name: "/Common/tcp", Context: CONTEXT_CLIENT},
+			Profile{Name: "/Common/tcp", Context: CONTEXT_SERVER}},
+		//TODO: test more
+	}
+
+	s.Client.ModifyVirtualServer("test", vs)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/test", uriLtm, uriVirtual), s.LastRequest.URL.Path)
+	assert.JSONEq(s.T(), `
+	{"name":"test",
+	"sourceAddressTranslation":{},
+	"profiles":[
+		{"name":"/Common/tcp","context":"clientside"},
+		{"name":"/Common/tcp","context":"serverside"}
+	]
+	}`, s.LastRequestBody)
+
+}
