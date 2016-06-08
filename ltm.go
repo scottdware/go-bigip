@@ -993,14 +993,6 @@ func (b *BigIP) DeleteMonitor(name, parent string) error {
 // one of "http", "https", "icmp", or "gateway icmp". Fields that
 // can be modified are referenced in the Monitor struct.
 func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
-	if strings.Contains(config.SendString, "\r\n") {
-		config.SendString = strings.Replace(config.SendString, "\r\n", "\\r\\n", -1)
-	}
-
-	if strings.Contains(parent, "gateway") {
-		parent = "gateway_icmp"
-	}
-
 	return b.put(config, uriLtm, uriMonitor, parent, name)
 }
 
