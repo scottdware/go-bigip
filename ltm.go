@@ -981,6 +981,10 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 
 // Create a monitor by supplying a config
 func (b *BigIP) AddMonitor(config *Monitor) error {
+	if strings.Contains(config.ParentMonitor, "gateway") {
+		config.ParentMonitor = "gateway_icmp"
+	}
+
 	return b.post(config, uriLtm, uriMonitor, config.ParentMonitor)
 }
 
@@ -993,6 +997,10 @@ func (b *BigIP) DeleteMonitor(name, parent string) error {
 // one of "http", "https", "icmp", or "gateway icmp". Fields that
 // can be modified are referenced in the Monitor struct.
 func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
+	if strings.Contains(config.ParentMonitor, "gateway") {
+		config.ParentMonitor = "gateway_icmp"
+	}
+
 	return b.put(config, uriLtm, uriMonitor, parent, name)
 }
 
