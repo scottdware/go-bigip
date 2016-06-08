@@ -616,6 +616,16 @@ func (p *Monitor) UnmarshalJSON(b []byte) error {
 	return marshal(p, &dto)
 }
 
+func (p *Monitor) cleanMonitor() {
+	if strings.Contains(p.SendString, "\r\n") {
+		p.SendString = strings.Replace(p.SendString, "\r\n", "\\r\\n", -1)
+	}
+
+	if strings.Contains(p.ParentMonitor, "gateway") {
+		p.ParentMonitor = "gateway_icmp"
+	}
+}
+
 const (
 	uriLtm            = "ltm"
 	uriNode           = "node"
@@ -963,15 +973,7 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 
 // CreateMonitor adds a new monitor to the BIG-IP system. <parent> must be one of "http", "https",
 // "icmp", or "gateway icmp".
-func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive, user, pass string) error {
-	if strings.Contains(send, "\r\n") {
-		send = strings.Replace(send, "\r\n", "\\r\\n", -1)
-	}
-
-	if strings.Contains(parent, "gateway") {
-		parent = "gateway_icmp"
-	}
-
+func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive string) error {
 	config := &Monitor{
 		Name:          name,
 		ParentMonitor: parent,
@@ -979,11 +981,18 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 		Timeout:       timeout,
 		SendString:    send,
 		ReceiveString: receive,
-		Username:      user,
-		Password:      pass,
 	}
 
+	config.cleanMonitor()
+
 	return b.post(config, uriLtm, uriMonitor, parent)
+}
+
+// Create a monitor by supplying a config
+func (b *BigIP) AddMonitor(config *Monitor) error {
+	config.cleanMonitor()
+
+	return b.post(config, uriLtm, uriMonitor, config.ParentMonitor)
 }
 
 // DeleteMonitor removes a monitor.
