@@ -544,6 +544,7 @@ type Monitor struct {
 	Interval       int
 	IPDSCP         int
 	ManualResume   bool
+	Password       string
 	ReceiveString  string
 	ReceiveDisable string
 	Reverse        bool
@@ -552,6 +553,7 @@ type Monitor struct {
 	Timeout        int
 	Transparent    bool
 	UpInterval     int
+	Username       string
 }
 
 type monitorDTO struct {
@@ -565,6 +567,7 @@ type monitorDTO struct {
 	Interval       int    `json:"interval,omitempty"`
 	IPDSCP         int    `json:"ipDscp,omitempty"`
 	ManualResume   string `json:"manualResume,omitempty" bool:"enabled"`
+	Password       string `json:"password,omitempty"`
 	ReceiveString  string `json:"recv,omitempty"`
 	ReceiveDisable string `json:"recvDisable,omitempty"`
 	Reverse        string `json:"reverse,omitempty" bool:"enabled"`
@@ -573,6 +576,7 @@ type monitorDTO struct {
 	Timeout        int    `json:"timeout,omitempty"`
 	Transparent    string `json:"transparent,omitempty" bool:"enabled"`
 	UpInterval     int    `json:"upInterval,omitempty"`
+	Username       string `json:"username,omitempty"`
 }
 
 type Profiles struct {
@@ -959,7 +963,7 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 
 // CreateMonitor adds a new monitor to the BIG-IP system. <parent> must be one of "http", "https",
 // "icmp", or "gateway icmp".
-func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive string) error {
+func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive, user, pass string) error {
 	if strings.Contains(send, "\r\n") {
 		send = strings.Replace(send, "\r\n", "\\r\\n", -1)
 	}
@@ -975,6 +979,8 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 		Timeout:       timeout,
 		SendString:    send,
 		ReceiveString: receive,
+		Username:      user,
+		Password:      pass,
 	}
 
 	return b.post(config, uriLtm, uriMonitor, parent)
