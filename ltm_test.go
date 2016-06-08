@@ -405,3 +405,34 @@ func (s *LTMTestSuite) TestModifyVirtualServer() {
 	}`, s.LastRequestBody)
 
 }
+
+func (s *LTMTestSuite) TestCreateMonitor() {
+	config := &Monitor{
+		Name:          "test-web-monitor",
+		ParentMonitor: "http",
+		Interval:      "15",
+		Timeout:       "5",
+		SendString:    "GET /\r\n",
+		ReceiveString: "200 OK",
+		Username:      "monitoring",
+		Password:      "monitoring",
+	}
+
+	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString, config.Username, config.Password)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
+}
+
+
+func (s *LTMTestSuite) TestDeleteMonitor() {
+	config := &Monitor{
+		Name:          "test-web-monitor",
+		ParentMonitor: "http",
+	}
+
+	s.Client.DeleteMonitor(config.Name, config.ParentMonitor)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor, config.Name), s.LastRequest.URL.Path)
+}
