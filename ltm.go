@@ -604,6 +604,9 @@ type IRule struct {
 func (p *Monitor) MarshalJSON() ([]byte, error) {
 	var dto monitorDTO
 	marshal(&dto, p)
+	if strings.Contains(dto.SendString, "\r\n") {
+		dto.SendString = strings.Replace(dto.SendString, "\r\n", "\\r\\n", -1)
+	}
 	return json.Marshal(dto)
 }
 
@@ -614,16 +617,6 @@ func (p *Monitor) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	return marshal(p, &dto)
-}
-
-func (p *Monitor) cleanMonitor() {
-	if strings.Contains(p.SendString, "\r\n") {
-		p.SendString = strings.Replace(p.SendString, "\r\n", "\\r\\n", -1)
-	}
-
-	if strings.Contains(p.ParentMonitor, "gateway") {
-		p.ParentMonitor = "gateway_icmp"
-	}
 }
 
 const (
@@ -983,15 +976,11 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 		ReceiveString: receive,
 	}
 
-	config.cleanMonitor()
-
-	return b.post(config, uriLtm, uriMonitor, parent)
+	return b.AddMonitor(config)
 }
 
 // Create a monitor by supplying a config
 func (b *BigIP) AddMonitor(config *Monitor) error {
-	config.cleanMonitor()
-
 	return b.post(config, uriLtm, uriMonitor, config.ParentMonitor)
 }
 
