@@ -442,7 +442,6 @@ func (s *LTMTestSuite) TestAddMonitor() {
 	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","password":"monitoring","recv":"200 OK","reverse":"disabled","send":"GET /\\r\\n","timeout":5,"transparent":"disabled","username":"monitoring"}`, s.LastRequestBody)
 }
 
-
 func (s *LTMTestSuite) TestDeleteMonitor() {
 	config := &Monitor{
 		Name:          "test-web-monitor",
