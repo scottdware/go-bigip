@@ -405,3 +405,51 @@ func (s *LTMTestSuite) TestModifyVirtualServer() {
 	}`, s.LastRequestBody)
 
 }
+
+func (s *LTMTestSuite) TestCreateMonitor() {
+	config := &Monitor{
+		Name:          "test-web-monitor",
+		ParentMonitor: "http",
+		Interval:      15,
+		Timeout:       5,
+		SendString:    "GET /\r\n",
+		ReceiveString: "200 OK",
+	}
+
+	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","recv":"200 OK","reverse":"disabled","send":"GET /\\r\\n","timeout":5,"transparent":"disabled"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestAddMonitor() {
+	config := &Monitor{
+		Name:          "test-web-monitor",
+		ParentMonitor: "http",
+		Interval:      15,
+		Timeout:       5,
+		SendString:    "GET /\r\n",
+		ReceiveString: "200 OK",
+		Username:      "monitoring",
+		Password:      "monitoring",
+	}
+
+	s.Client.AddMonitor(config)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","password":"monitoring","recv":"200 OK","reverse":"disabled","send":"GET /\\r\\n","timeout":5,"transparent":"disabled","username":"monitoring"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestDeleteMonitor() {
+	config := &Monitor{
+		Name:          "test-web-monitor",
+		ParentMonitor: "http",
+	}
+
+	s.Client.DeleteMonitor(config.Name, config.ParentMonitor)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor, config.Name), s.LastRequest.URL.Path)
+}
