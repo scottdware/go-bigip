@@ -410,8 +410,8 @@ func (s *LTMTestSuite) TestCreateMonitor() {
 	config := &Monitor{
 		Name:          "test-web-monitor",
 		ParentMonitor: "http",
-		Interval:      "15",
-		Timeout:       "5",
+		Interval:      15,
+		Timeout:       5,
 		SendString:    "GET /\r\n",
 		ReceiveString: "200 OK",
 		Username:      "monitoring",
