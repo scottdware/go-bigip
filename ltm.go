@@ -264,6 +264,7 @@ type PolicyRules struct {
 
 type PolicyRule struct {
 	Name       string
+	FullPath   string
 	Ordinal    int
 	Conditions []PolicyRuleCondition
 	Actions    []PolicyRuleAction
@@ -272,6 +273,7 @@ type PolicyRule struct {
 type policyRuleDTO struct {
 	Name       string `json:"name"`
 	Ordinal    int    `json:"ordinal"`
+	FullPath   string `json:"fullPath,omitempty"`
 	Conditions struct {
 		Items []PolicyRuleCondition `json:"items,omitempty"`
 	} `json:"conditionsReference,omitempty"`
