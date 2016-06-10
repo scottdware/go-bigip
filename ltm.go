@@ -147,6 +147,7 @@ type VirtualServer struct {
 	VSIndex          int       `json:"vsIndex,omitempty"`
 	Rules            []string  `json:"rules,omitempty"`
 	Profiles         []Profile `json:"profiles,omitempty"`
+	Policies         []Policy  `json:"policies,omitempty"`
 }
 
 // VirtualAddresses contains a list of all virtual addresses on the BIG-IP system.
@@ -197,6 +198,10 @@ type virtualAddressDTO struct {
 
 type Policies struct {
 	Policies []Policy `json:"items"`
+}
+
+type VirtualServerPolicies struct {
+	PolicyRef Policies `json:"policiesReference"`
 }
 
 type Policy struct {
@@ -259,6 +264,7 @@ type PolicyRules struct {
 
 type PolicyRule struct {
 	Name       string
+	FullPath   string
 	Ordinal    int
 	Conditions []PolicyRuleCondition
 	Actions    []PolicyRuleAction
@@ -267,6 +273,7 @@ type PolicyRule struct {
 type policyRuleDTO struct {
 	Name       string `json:"name"`
 	Ordinal    int    `json:"ordinal"`
+	FullPath   string `json:"fullPath,omitempty"`
 	Conditions struct {
 		Items []PolicyRuleCondition `json:"items,omitempty"`
 	} `json:"conditionsReference,omitempty"`
@@ -882,8 +889,18 @@ func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	vs.Profiles = profiles.Profiles
+
+	policy_names, err := b.VirtualServerPolicyNames(name)
+	if err != nil {
+		return nil, err
+	}
+	var policies []Policy
+	for _, policy_name := range policy_names {
+		policies = append(policies, policy_name)
+	}
+	vs.Policies = policies
+
 	return &vs, nil
 }
 
@@ -910,6 +927,16 @@ func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error) {
 	}
 
 	return &p, nil
+}
+
+//Get the names of policies associated with a particular virtual server
+func (b *BigIP) VirtualServerPolicyNames(vs string) ([]Policy, error) {
+	var policies VirtualServerPolicies
+	err, _ := b.getForEntity(&policies, uriLtm, uriVirtual, vs, "policies")
+	if err != nil {
+		return nil, err
+	}
+	return policies.PolicyRef.Policies, nil
 }
 
 // VirtualAddresses returns a list of virtual addresses.

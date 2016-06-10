@@ -453,3 +453,43 @@ func (s *LTMTestSuite) TestDeleteMonitor() {
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor, config.Name), s.LastRequest.URL.Path)
 }
+
+func (s *LTMTestSuite) TestVirtualServerPolicies() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+		  "kind": "tm:ltm:virtual:policies:policiescollectionstate",
+		  "selfLink": "https://localhost/mgmt/tm/ltm/virtual/foo/policies?ver=11.5.1",
+		  "policiesReference": {
+		    "link": "https://localhost/mgmt/tm/ltm/virtual/foo/policies?ver=11.5.1",
+		    "isSubcollection": true,
+		    "items": [
+		      {
+			"kind": "tm:ltm:virtual:policies:policiesstate",
+			"name": "policy1",
+			"partition": "Common",
+			"fullPath": "/Common/policy1",
+			"generation": 1,
+			"selfLink": "https://localhost/mgmt/tm/ltm/virtual/foo/policies/~Common~policy1?ver=11.5.1"
+		      },
+		      {
+			"kind": "tm:ltm:virtual:policies:policiesstate",
+			"name": "policy2",
+			"partition": "Common",
+			"fullPath": "/Common/policy2",
+			"generation": 1,
+			"selfLink": "https://localhost/mgmt/tm/ltm/virtual/foo/policies/~Common~policy2?ver=11.5.1"
+		      }
+		    ]
+		  }
+		}`))
+	}
+
+	p, err := s.Client.VirtualServerPolicyNames("foo")
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo/policies", uriLtm, uriVirtual), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "policy1", p[0].Name)
+	assert.Equal(s.T(), "Common", p[0].Partition)
+	assert.Equal(s.T(), "policy2", p[1].Name)
+	assert.Equal(s.T(), "Common", p[1].Partition)
+}
