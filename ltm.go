@@ -147,7 +147,7 @@ type VirtualServer struct {
 	VSIndex          int       `json:"vsIndex,omitempty"`
 	Rules            []string  `json:"rules,omitempty"`
 	Profiles         []Profile `json:"profiles,omitempty"`
-	Policies         []Policy  `json:"policies,omitempty"`
+	Policies         []string  `json:"policies,omitempty"`
 }
 
 // VirtualAddresses contains a list of all virtual addresses on the BIG-IP system.
@@ -284,8 +284,9 @@ type policyRuleDTO struct {
 
 func (p *PolicyRule) MarshalJSON() ([]byte, error) {
 	return json.Marshal(policyRuleDTO{
-		Name:    p.Name,
-		Ordinal: p.Ordinal,
+		Name:     p.Name,
+		Ordinal:  p.Ordinal,
+		FullPath: p.FullPath,
 		Conditions: struct {
 			Items []PolicyRuleCondition `json:"items,omitempty"`
 		}{Items: p.Conditions},
@@ -306,6 +307,7 @@ func (p *PolicyRule) UnmarshalJSON(b []byte) error {
 	p.Ordinal = dto.Ordinal
 	p.Actions = dto.Actions.Items
 	p.Conditions = dto.Conditions.Items
+	p.FullPath = dto.FullPath
 
 	return nil
 }
@@ -895,11 +897,7 @@ func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 	if err != nil {
 		return nil, err
 	}
-	var policies []Policy
-	for _, policy_name := range policy_names {
-		policies = append(policies, policy_name)
-	}
-	vs.Policies = policies
+	vs.Policies = policy_names
 
 	return &vs, nil
 }
@@ -930,13 +928,18 @@ func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error) {
 }
 
 //Get the names of policies associated with a particular virtual server
-func (b *BigIP) VirtualServerPolicyNames(vs string) ([]Policy, error) {
+func (b *BigIP) VirtualServerPolicyNames(vs string) ([]string, error) {
 	var policies VirtualServerPolicies
 	err, _ := b.getForEntity(&policies, uriLtm, uriVirtual, vs, "policies")
 	if err != nil {
 		return nil, err
 	}
-	return policies.PolicyRef.Policies, nil
+	fmt.Printf("%v\n", policies)
+	retval := make([]string, 0, len(policies.PolicyRef.Policies))
+	for _, p := range policies.PolicyRef.Policies {
+		retval = append(retval, p.FullPath)
+	}
+	return retval, nil
 }
 
 // VirtualAddresses returns a list of virtual addresses.

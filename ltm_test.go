@@ -488,8 +488,6 @@ func (s *LTMTestSuite) TestVirtualServerPolicies() {
 
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo/policies", uriLtm, uriVirtual), s.LastRequest.URL.Path)
-	assert.Equal(s.T(), "policy1", p[0].Name)
-	assert.Equal(s.T(), "Common", p[0].Partition)
-	assert.Equal(s.T(), "policy2", p[1].Name)
-	assert.Equal(s.T(), "Common", p[1].Partition)
+	assert.Equal(s.T(), "/Common/policy1", p[0])
+	assert.Equal(s.T(), "/Common/policy2", p[1])
 }
