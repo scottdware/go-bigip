@@ -61,6 +61,12 @@ type Pool struct {
 	SlowRampTime           int
 }
 
+// PoolMember returns the name and state of each pool member of the given pool.
+type PoolMember struct {
+	Name  string
+	State string
+}
+
 // Pool transfer object so we can mask the bool data munging
 type poolDTO struct {
 	Name                   string `json:"name,omitempty"`
@@ -758,18 +764,19 @@ func (b *BigIP) Pools() (*Pools, error) {
 	return &pools, nil
 }
 
-// PoolMembers returns a list of pool members for the given pool.
-func (b *BigIP) PoolMembers(name string) ([]string, error) {
+// PoolMembers returns a list of pool members for the given pool. Contained within the PoolMember
+// struct are the name and state fields.
+func (b *BigIP) PoolMembers(name string) ([]PoolMember, error) {
 	var nodes Nodes
-	members := []string{}
-	errString := []string{}
+	members := []PoolMember{}
 	err, _ := b.getForEntity(&nodes, uriLtm, uriPool, name, "members")
 	if err != nil {
-		return errString, err
+		return nil, err
 	}
 
 	for _, m := range nodes.Nodes {
-		members = append(members, m.Name)
+		member := &PoolMember{Name: m.Name, State: m.State}
+		members = append(members, *member)
 	}
 
 	return members, nil
