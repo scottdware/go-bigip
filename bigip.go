@@ -11,6 +11,11 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"time"
+)
+
+var (
+	DefaultAPICallTimeout = 60 * time.Second
 )
 
 // BigIP is a container for our session state.
@@ -131,7 +136,10 @@ func NewTokenSession(host, user, passwd, loginProviderName string) (b *BigIP, er
 // APICall is used to query the BIG-IP web API.
 func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	var req *http.Request
-	client := &http.Client{Transport: b.Transport}
+	client := &http.Client{
+		Transport: b.Transport,
+		Timeout: DefaultAPICallTimeout,
+	}
 	var format string
 	if strings.Contains(options.URL, "mgmt/") {
 		format = "%s/%s"
