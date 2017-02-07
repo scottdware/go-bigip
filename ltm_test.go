@@ -31,7 +31,7 @@ func (s *LTMTestSuite) SetupSuite() {
 		}
 	}))
 
-	s.Client = NewSession(s.Server.URL, "", "")
+	s.Client = NewSession(s.Server.URL, "", "", nil)
 }
 
 func (s *LTMTestSuite) TearDownSuite() {
