@@ -14,17 +14,22 @@ import (
 	"time"
 )
 
-var (
-	DefaultAPICallTimeout = 60 * time.Second
-)
+var defaultConfigOptions = &ConfigOptions{
+	APICallTimeout: 60 * time.Second,
+}
+
+type ConfigOptions struct {
+	APICallTimeout time.Duration
+}
 
 // BigIP is a container for our session state.
 type BigIP struct {
-	Host      string
-	User      string
-	Password  string
-	Token     string // if set, will be used instead of User/Password
-	Transport *http.Transport
+	Host          string
+	User          string
+	Password      string
+	Token         string // if set, will be used instead of User/Password
+	Transport     *http.Transport
+	ConfigOptions *ConfigOptions
 }
 
 // APIRequest builds our request before sending it to the server.
@@ -52,12 +57,15 @@ func (r *RequestError) Error() error {
 }
 
 // NewSession sets up our connection to the BIG-IP system.
-func NewSession(host, user, passwd string) *BigIP {
+func NewSession(host, user, passwd string, configOptions *ConfigOptions) *BigIP {
 	var url string
 	if !strings.HasPrefix(host, "http") {
 		url = fmt.Sprintf("https://%s", host)
 	} else {
 		url = host
+	}
+	if configOptions == nil {
+		configOptions = defaultConfigOptions
 	}
 	return &BigIP{
 		Host:     url,
@@ -68,6 +76,7 @@ func NewSession(host, user, passwd string) *BigIP {
 				InsecureSkipVerify: true,
 			},
 		},
+		ConfigOptions: configOptions,
 	}
 }
 
@@ -76,7 +85,7 @@ func NewSession(host, user, passwd string) *BigIP {
 // Auth. This is required when using an external authentication
 // provider, such as Radius or Active Directory. loginProviderName is
 // probably "tmos" but your environment may vary.
-func NewTokenSession(host, user, passwd, loginProviderName string) (b *BigIP, err error) {
+func NewTokenSession(host, user, passwd, loginProviderName string, configOptions *ConfigOptions) (b *BigIP, err error) {
 	type authReq struct {
 		Username          string `json:"username"`
 		Password          string `json:"password"`
@@ -106,7 +115,7 @@ func NewTokenSession(host, user, passwd, loginProviderName string) (b *BigIP, er
 		ContentType: "application/json",
 	}
 
-	b = NewSession(host, user, passwd)
+	b = NewSession(host, user, passwd, configOptions)
 	resp, err := b.APICall(req)
 	if err != nil {
 		return
@@ -138,7 +147,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	var req *http.Request
 	client := &http.Client{
 		Transport: b.Transport,
-		Timeout: DefaultAPICallTimeout,
+		Timeout:   b.ConfigOptions.APICallTimeout,
 	}
 	var format string
 	if strings.Contains(options.URL, "mgmt/") {
