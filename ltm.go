@@ -58,6 +58,7 @@ type Pool struct {
 	QueueOnConnectionLimit string
 	QueueTimeLimit         int
 	ReselectTries          int
+	ServiceDownAction      string
 	SlowRampTime           int
 }
 
@@ -90,6 +91,7 @@ type poolDTO struct {
 	QueueOnConnectionLimit string `json:"queueOnConnectionLimit,omitempty"`
 	QueueTimeLimit         int    `json:"queueTimeLimit,omitempty"`
 	ReselectTries          int    `json:"reselectTries,omitempty"`
+	ServiceDownAction      string `json:"serviceDownAction,omitempty"`
 	SlowRampTime           int    `json:"slowRampTime,omitempty"`
 }
 
