@@ -539,4 +539,5 @@ func (s *LTMTestSuite) TestInternalDataGroups() {
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriDatagroup, uriInternal), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), "some_data_group", g.DataGroups[0].Name)
 	assert.Equal(s.T(), "jenkins_whitelisted_paths", g.DataGroups[1].Name)
+	assert.Equal(s.T(), "/medister", g.DataGroups[1].Records[0].Name)
 }

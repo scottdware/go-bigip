@@ -41,14 +41,21 @@ type DataGroup struct {
 	FullPath   string
 	Generation int
 	Type       string
+	Records    []DataGroupRecord
+}
+
+type DataGroupRecord struct {
+	Name string `json:"name,omitempty"`
+	Data string `json:"data,omitempty"`
 }
 
 type dataGroupDTO struct {
-	Name       string `json:"name,omitempty"`
-	Partition  string `json:"partition,omitempty"`
-	FullPath   string `json:"fullPath,omitempty"`
-	Generation int    `json:"generation,omitempty"`
-	Type       string `json:"type,omitempty"`
+	Name       string             `json:"name,omitempty"`
+	Partition  string             `json:"partition,omitempty"`
+	FullPath   string             `json:"fullPath,omitempty"`
+	Generation int                `json:"generation,omitempty"`
+	Type       string             `json:"type,omitempty"`
+	Records    []DataGroupRecord  `json:"records,omitempty"`
 }
 
 func (p *DataGroup) MarshalJSON() ([]byte, error) {
@@ -803,6 +810,10 @@ func (b *BigIP) InternalDataGroups() (*DataGroups, error) {
 	}
 
 	return &dataGroups, nil
+}
+
+func (b * BigIP) AddInternalDataGroup(name string, config *DataGroup) error {
+	return b.post(config, uriLtm, )
 }
 
 // Pools returns a list of pools.
