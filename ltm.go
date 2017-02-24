@@ -29,6 +29,21 @@ type Node struct {
 	State           string `json:"state,omitempty"`
 }
 
+// SnatPools contains a list of every snatpool on the BIG-IP system.
+type SnatPools struct {
+	SnatPools []SnatPool `json:"items"`
+}
+
+// SnatPool contains information about each individual snatpool. You can use all
+// of these fields when modifying a snatpool.
+type SnatPool struct {
+	Name       string   `json:"name,omitempty"`
+	Partition  string   `json:"partition,omitempty"`
+	FullPath   string   `json:"fullPath,omitempty"`
+	Generation int      `json:"generation,omitempty"`
+	Members    []string `json:"members,omitempty"`
+}
+
 // Pools contains a list of pools on the BIG-IP system.
 type Pools struct {
 	Pools []Pool `json:"items"`
@@ -643,6 +658,7 @@ const (
 	uriPool           = "pool"
 	uriVirtual        = "virtual"
 	uriVirtualAddress = "virtual-address"
+	uriSnatPool       = "snatpool"
 	uriMonitor        = "monitor"
 	uriIRule          = "rule"
 	uriPolicy         = "policy"
@@ -687,6 +703,52 @@ var cidr = map[string]string{
 	"30": "255.255.255.252",
 	"31": "255.255.255.254",
 	"32": "255.255.255.255",
+}
+
+// SnatPools returns a list of snatpools.
+func (b *BigIP) SnatPools() (*SnatPools, error) {
+	var snatPools SnatPools
+	err, _ := b.getForEntity(&snatPools, uriLtm, uriSnatPool)
+	if err != nil {
+		return nil, err
+	}
+
+	return &snatPools, nil
+}
+
+// CreateSnatPool adds a new snatpool to the BIG-IP system.
+func (b *BigIP) CreateSnatPool(name string, members []string) error {
+	config := &SnatPool{
+		Name:    name,
+		Members: members,
+	}
+
+	return b.post(config, uriLtm, uriSnatPool)
+}
+
+// Get a SnatPool by name. Returns nil if the snatpool does not exist
+func (b *BigIP) GetSnatPool(name string) (*SnatPool, error) {
+	var snatPool SnatPool
+	err, ok := b.getForEntity(&snatPool, uriLtm, uriSnatPool, name)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &snatPool, nil
+}
+
+// DeleteSnatPool removes a snatpool.
+func (b *BigIP) DeleteSnatPool(name string) error {
+	return b.delete(uriLtm, uriSnatPool, name)
+}
+
+// ModifySnatPool allows you to change any attribute of a snatpool. Fields that
+// can be modified are referenced in the Snatpool struct.
+func (b *BigIP) ModifySnatPool(name string, config *SnatPool) error {
+	return b.put(config, uriLtm, uriSnatPool, name)
 }
 
 // Nodes returns a list of nodes.
