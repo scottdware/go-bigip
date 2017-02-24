@@ -491,3 +491,52 @@ func (s *LTMTestSuite) TestVirtualServerPolicies() {
 	assert.Equal(s.T(), "/Common/policy1", p[0])
 	assert.Equal(s.T(), "/Common/policy2", p[1])
 }
+
+func (s *LTMTestSuite) TestInternalDataGroups() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+		  "kind": "tm:ltm:data-group:internal:internalcollectionstate",
+		  "selfLink": "https://localhost/mgmt/tm/ltm/data-group/internal?ver=12.1.2",
+		  "items": [
+		    {
+		      "kind": "tm:ltm:data-group:internal:internalstate",
+		      "name": "some_data_group",
+		      "partition": "Common",
+		      "fullPath": "/Common/api.tv2.dk_host_pool_map",
+		      "generation": 2552,
+		      "selfLink": "https://localhost/mgmt/tm/ltm/data-group/internal/~Common~api.tv2.dk_host_pool_map?ver=12.1.2",
+		      "type": "string",
+		      "records": [
+		        {
+		          "name": "jens.medister.api.tv2.dk-hest",
+		          "data": "pool-medister"
+		        }
+		      ]
+		    },
+		    {
+		      "kind": "tm:ltm:data-group:internal:internalstate",
+		      "name": "jenkins_whitelisted_paths",
+		      "partition": "Common",
+		      "fullPath": "/Common/jenkins_whitelisted_paths",
+		      "generation": 41,
+		      "selfLink": "https://localhost/mgmt/tm/ltm/data-group/internal/~Common~jenkins_whitelisted_paths?ver=12.1.2",
+		      "type": "string",
+		      "records": [
+		        {
+		          "name": "/medister",
+		          "data": "1"
+		        }
+		      ]
+		    }
+		  ]
+		}`))
+	}
+
+	g, err := s.Client.InternalDataGroups()
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), "GET", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriDatagroup, uriInternal), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "some_data_group", g.DataGroups[0].Name)
+	assert.Equal(s.T(), "jenkins_whitelisted_paths", g.DataGroups[1].Name)
+}

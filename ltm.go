@@ -29,6 +29,43 @@ type Node struct {
 	State           string `json:"state,omitempty"`
 }
 
+// DataGroups contains a list of data groups on the BIG-IP system.
+type DataGroups struct {
+	DataGroups []DataGroup `json:"items"`
+}
+
+// DataGroups contains information about each data group.
+type DataGroup struct {
+	Name       string
+	Partition  string
+	FullPath   string
+	Generation int
+	Type       string
+}
+
+type dataGroupDTO struct {
+	Name       string `json:"name,omitempty"`
+	Partition  string `json:"partition,omitempty"`
+	FullPath   string `json:"fullPath,omitempty"`
+	Generation int    `json:"generation,omitempty"`
+	Type       string `json:"type,omitempty"`
+}
+
+func (p *DataGroup) MarshalJSON() ([]byte, error) {
+	var dto dataGroupDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
+}
+
+func (p *DataGroup) UnmarshalJSON(b []byte) error {
+	var dto dataGroupDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
+}
+
 // Pools contains a list of pools on the BIG-IP system.
 type Pools struct {
 	Pools []Pool `json:"items"`
@@ -638,19 +675,21 @@ func (p *Monitor) UnmarshalJSON(b []byte) error {
 }
 
 const (
-	uriLtm            = "ltm"
-	uriNode           = "node"
-	uriPool           = "pool"
-	uriVirtual        = "virtual"
-	uriVirtualAddress = "virtual-address"
-	uriMonitor        = "monitor"
-	uriIRule          = "rule"
-	uriPolicy         = "policy"
-	ENABLED           = "enable"
-	DISABLED          = "disable"
-	CONTEXT_SERVER    = "serverside"
-	CONTEXT_CLIENT    = "clientside"
-	CONTEXT_ALL       = "all"
+	uriLtm               = "ltm"
+	uriNode              = "node"
+	uriPool              = "pool"
+	uriVirtual           = "virtual"
+	uriVirtualAddress    = "virtual-address"
+	uriMonitor           = "monitor"
+	uriIRule             = "rule"
+	uriPolicy            = "policy"
+	uriDatagroup         = "data-group"
+	uriInternal          = "internal"
+	ENABLED              = "enable"
+	DISABLED             = "disable"
+	CONTEXT_SERVER       = "serverside"
+	CONTEXT_CLIENT       = "clientside"
+	CONTEXT_ALL          = "all"
 )
 
 var cidr = map[string]string{
@@ -753,6 +792,17 @@ func (b *BigIP) NodeStatus(name, state string) error {
 	}
 
 	return b.put(config, uriLtm, uriNode, name)
+}
+
+// InternalDataGroups returns a list of internal data groups.
+func (b *BigIP) InternalDataGroups() (*DataGroups, error) {
+	var dataGroups DataGroups
+	err, _ := b.getForEntity(&dataGroups, uriLtm, uriDatagroup, uriInternal)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dataGroups, nil
 }
 
 // Pools returns a list of pools.
