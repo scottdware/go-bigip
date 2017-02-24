@@ -152,8 +152,10 @@ type VirtualServer struct {
 	SYNCookieStatus  string    `json:"synCookieStatus,omitempty"`
 	TranslateAddress string    `json:"translateAddress,omitempty"`
 	TranslatePort    string    `json:"translatePort,omitempty"`
+	VlansEnabled     bool      `json:"vlansEnabled,omitempty"`
 	VlansDisabled    bool      `json:"vlansDisabled,omitempty"`
 	VSIndex          int       `json:"vsIndex,omitempty"`
+	Vlans            []string  `json:"vlans,omitempty"`
 	Rules            []string  `json:"rules,omitempty"`
 	Profiles         []Profile `json:"profiles,omitempty"`
 	Policies         []string  `json:"policies,omitempty"`
