@@ -994,7 +994,6 @@ func (b *BigIP) VirtualServerPolicyNames(vs string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%v\n", policies)
 	retval := make([]string, 0, len(policies.PolicyRef.Policies))
 	for _, p := range policies.PolicyRef.Policies {
 		retval = append(retval, p.FullPath)
