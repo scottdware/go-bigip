@@ -812,8 +812,12 @@ func (b *BigIP) InternalDataGroups() (*DataGroups, error) {
 	return &dataGroups, nil
 }
 
-func (b * BigIP) AddInternalDataGroup(name string, config *DataGroup) error {
-	return b.post(config, uriLtm, )
+func (b *BigIP) AddInternalDataGroup(config *DataGroup) error {
+	return b.post(config, uriLtm, uriDatagroup, uriInternal)
+}
+
+func (b *BigIP) DeleteInternalDataGroup(name string) error {
+	return b.delete(uriLtm, uriDatagroup, uriInternal, name)
 }
 
 // Pools returns a list of pools.

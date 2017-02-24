@@ -541,3 +541,34 @@ func (s *LTMTestSuite) TestInternalDataGroups() {
 	assert.Equal(s.T(), "jenkins_whitelisted_paths", g.DataGroups[1].Name)
 	assert.Equal(s.T(), "/medister", g.DataGroups[1].Records[0].Name)
 }
+
+func (s *LTMTestSuite) TestAddInternalDataGroup() {
+	config := &DataGroup{
+		Name: "test-datagroup",
+		Type: "string",
+		Records: []DataGroupRecord {
+			DataGroupRecord {
+				Name: "name1",
+				Data: "data1",
+			},
+			DataGroupRecord {
+				Name: "name2",
+				Data: "data2",
+			},
+		},
+	}
+
+	s.Client.AddInternalDataGroup(config)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriDatagroup, uriInternal), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"test-datagroup","type":"string","records":[{"name":"name1","data":"data1"},{"name":"name2","data":"data2"}]}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestDeleteInternalDataGroup() {
+	dataGroup := "test"
+	s.Client.DeleteInternalDataGroup(dataGroup)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriDatagroup, uriInternal, dataGroup), s.LastRequest.URL.Path)
+}
