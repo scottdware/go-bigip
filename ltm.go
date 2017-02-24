@@ -820,6 +820,25 @@ func (b *BigIP) DeleteInternalDataGroup(name string) error {
 	return b.delete(uriLtm, uriDatagroup, uriInternal, name)
 }
 
+// Modify a named internal data group, REPLACING all the records
+func (b *BigIP) ModifyInternalDataGroupRecords(name string, records *[]DataGroupRecord) error {
+	config := &DataGroup {
+		Records: *records,
+	}
+	return b.put(config, uriLtm, uriDatagroup, uriInternal, name)
+}
+
+// Get the internal data group records for a named internal data group
+func (b *BigIP) GetInternalDataGroupRecords(name string) (*[]DataGroupRecord, error) {
+	var dataGroupRecords []DataGroupRecord
+	err, _ := b.getForEntity(&dataGroupRecords, uriLtm, uriDatagroup, uriInternal, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dataGroupRecords, nil
+}
+
 // Pools returns a list of pools.
 func (b *BigIP) Pools() (*Pools, error) {
 	var pools Pools

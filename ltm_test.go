@@ -565,10 +565,39 @@ func (s *LTMTestSuite) TestAddInternalDataGroup() {
 	assert.Equal(s.T(), `{"name":"test-datagroup","type":"string","records":[{"name":"name1","data":"data1"},{"name":"name2","data":"data2"}]}`, s.LastRequestBody)
 }
 
+func (s *LTMTestSuite) TestModifyInternalDataGroupRecords() {
+	dataGroup := "test"
+
+	records := &[]DataGroupRecord {
+		DataGroupRecord {
+			Name: "name1",
+			Data: "data1",
+		},
+		DataGroupRecord {
+			Name: "name42",
+			Data: "data42",
+		},
+	}
+
+	s.Client.ModifyInternalDataGroupRecords(dataGroup, records)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriDatagroup, uriInternal, dataGroup), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"records":[{"name":"name1","data":"data1"},{"name":"name42","data":"data42"}]}`, s.LastRequestBody)
+}
+
 func (s *LTMTestSuite) TestDeleteInternalDataGroup() {
 	dataGroup := "test"
 	s.Client.DeleteInternalDataGroup(dataGroup)
 
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriDatagroup, uriInternal, dataGroup), s.LastRequest.URL.Path)
+}
+
+func (s *LTMTestSuite) TestGetInternalDataGroupRecords() {
+	dataGroup := "test"
+	s.Client.GetInternalDataGroupRecords(dataGroup)
+
+	assert.Equal(s.T(), "GET", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriDatagroup, uriInternal, dataGroup), s.LastRequest.URL.Path)
 }
