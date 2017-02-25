@@ -6,10 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"strings"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type LTMTestSuite struct {
@@ -490,4 +491,72 @@ func (s *LTMTestSuite) TestVirtualServerPolicies() {
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo/policies", uriLtm, uriVirtual), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), "/Common/policy1", p[0])
 	assert.Equal(s.T(), "/Common/policy2", p[1])
+}
+
+func (s *LTMTestSuite) TestSnatPools() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+			"kind": "tm:ltm:snatpool:snatpoolcollectionstate",
+			"selfLink": "https://localhost/mgmt/tm/ltm/snatpool?ver=11.5.3",
+			"items": [{
+				"kind": "tm:ltm:snatpool:snatpoolstate",
+				"name": "mySnatPool",
+				"partition": "Common",
+				"fullPath": "/Common/mySnatPool",
+				"generation": 419,
+				"selfLink": "https://localhost/mgmt/tm/ltm/snatpool/~Common~mySnatPool?ver=11.5.3",
+				"members": [
+					"/Common/10.0.0.1"
+				]
+			}, {
+				"kind": "tm:ltm:snatpool:snatpoolstate",
+				"name": "mySnatPool2",
+				"partition": "Common",
+				"fullPath": "/Common/mySnatPool2",
+				"generation": 477,
+				"selfLink": "https://localhost/mgmt/tm/ltm/snatpool/~Common~mySnatPool2?ver=11.5.3",
+				"members": [
+					"/Common/10.0.0.2"
+				]
+			}]
+		}`))
+	}
+
+	g, err := s.Client.SnatPools()
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), "GET", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriSnatPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "mySnatPool", g.SnatPools[0].Name)
+	assert.Equal(s.T(), "mySnatPool2", g.SnatPools[1].Name)
+}
+
+func (s *LTMTestSuite) TestCreateSnatPool() {
+
+	s.Client.CreateSnatPool("mySnatPool", []string{"10.1.1.1", "10.2.2.2"})
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriSnatPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"mySnatPool","members":["10.1.1.1","10.2.2.2"]}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestModifySnatPool() {
+
+	snatPool := "mySnatPool"
+
+	myModifedSnatPool := &SnatPool{Members: []string{"10.0.0.1", "10.0.0.2"}}
+
+	s.Client.ModifySnatPool(snatPool, myModifedSnatPool)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriSnatPool, snatPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"members":["10.0.0.1","10.0.0.2"]}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestDeleteSnatPool() {
+	snatPool := "mySnatPool"
+	s.Client.DeleteSnatPool(snatPool)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriSnatPool, snatPool), s.LastRequest.URL.Path)
 }
