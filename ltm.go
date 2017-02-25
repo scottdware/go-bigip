@@ -726,7 +726,13 @@ func (b *BigIP) CreateSnatPool(name string, members []string) error {
 	return b.post(config, uriLtm, uriSnatPool)
 }
 
-// Get a SnatPool by name. Returns nil if the snatpool does not exist
+// AddSnatPool adds a new snatpool by config to the BIG-IP system.
+func (b *BigIP) AddSnatPool(config *SnatPool) error {
+
+	return b.post(config, uriLtm, uriSnatPool)
+}
+
+// GetSnatPool retrieves a SnatPool by name. Returns nil if the snatpool does not exist
 func (b *BigIP) GetSnatPool(name string) (*SnatPool, error) {
 	var snatPool SnatPool
 	err, ok := b.getForEntity(&snatPool, uriLtm, uriSnatPool, name)

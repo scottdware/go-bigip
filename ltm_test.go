@@ -540,6 +540,17 @@ func (s *LTMTestSuite) TestCreateSnatPool() {
 	assert.Equal(s.T(), `{"name":"mySnatPool","members":["10.1.1.1","10.2.2.2"]}`, s.LastRequestBody)
 }
 
+func (s *LTMTestSuite) TestAddSnatPool() {
+
+	mySnatPool := &SnatPool{Name: "mySnatPool", Members: []string{"10.1.1.1", "10.2.2.2"}}
+
+	s.Client.AddSnatPool(mySnatPool)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriSnatPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"mySnatPool","members":["10.1.1.1","10.2.2.2"]}`, s.LastRequestBody)
+}
+
 func (s *LTMTestSuite) TestModifySnatPool() {
 
 	snatPool := "mySnatPool"
