@@ -571,3 +571,165 @@ func (s *LTMTestSuite) TestDeleteSnatPool() {
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriSnatPool, snatPool), s.LastRequest.URL.Path)
 }
+
+func (s *LTMTestSuite) TestServerSSLProfiles() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+			"kind": "tm:ltm:profile:server-ssl:server-sslcollectionstate",
+			"selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl?ver=11.5.3",
+			"items": [{
+				"kind": "tm:ltm:profile:server-ssl:server-sslstate",
+				"name": "myServerSSL",
+				"partition": "Common",
+				"fullPath": "/Common/myServerSSL",
+				"generation": 784,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~myServerSSL?ver=11.5.3",
+				"alertTimeout": "10",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"cert": "/Common/default.crt",
+				"ciphers": "DEFAULT",
+				"defaultsFrom": "/Common/serverssl",
+				"expireCertResponseControl": "drop",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"key": "/Common/default.key",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "require-strict",
+				"serverName": "myserver.contoso.com",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"untrustedCertResponseControl": "drop"
+			}, {
+				"kind": "tm:ltm:profile:server-ssl:server-sslstate",
+				"name": "serverssl",
+				"partition": "Common",
+				"fullPath": "/Common/serverssl",
+				"generation": 1,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~serverssl?ver=11.5.3",
+				"alertTimeout": "10",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"ciphers": "DEFAULT",
+				"expireCertResponseControl": "drop",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "require-strict",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"untrustedCertResponseControl": "drop"
+			}, {
+				"kind": "tm:ltm:profile:server-ssl:server-sslstate",
+				"name": "serverssl-insecure-compatible",
+				"partition": "Common",
+				"fullPath": "/Common/serverssl-insecure-compatible",
+				"generation": 1,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~serverssl-insecure-compatible?ver=11.5.3",
+				"alertTimeout": "10",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"ciphers": "!SSLv2:!EXPORT:!DH:RSA+RC4:RSA+AES:RSA+DES:RSA+3DES:ECDHE+AES:ECDHE+3DES:@SPEED",
+				"defaultsFrom": "/Common/serverssl",
+				"expireCertResponseControl": "drop",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "request",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"untrustedCertResponseControl": "drop"
+			}]
+		}`))
+	}
+
+	g, err := s.Client.ServerSSLProfiles()
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), "GET", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriProfile, uriServerSSL), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "myServerSSL", g.ServerSSLProfiles[0].Name)
+	assert.Equal(s.T(), "serverssl", g.ServerSSLProfiles[1].Name)
+	assert.Equal(s.T(), "serverssl-insecure-compatible", g.ServerSSLProfiles[2].Name)
+}
+
+func (s *LTMTestSuite) TestCreateServerSSLProfile() {
+	s.Client.CreateServerSSLProfile("myServerSSL", "/Common/serverssl")
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriProfile, uriServerSSL), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"myServerSSL","defaultsFrom":"/Common/serverssl"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestModifyServerSSLProfile() {
+	serverSSLProfile := "myServerSSL"
+	myModifedServerSSLProfile := &ServerSSLProfile{Mode: "enabled", Cert: "/Common/default.crt", Key: "/Common/default.key", ServerName: "myserver.contoso.com"}
+
+	s.Client.ModifyServerSSLProfile(serverSSLProfile, myModifedServerSSLProfile)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriProfile, uriServerSSL, serverSSLProfile), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"cert":"/Common/default.crt","key":"/Common/default.key","mode":"enabled","serverName":"myserver.contoso.com"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestDeleteServerSSLProfile() {
+	serverSSLProfile := "myServerSSL"
+	s.Client.DeleteServerSSLProfile(serverSSLProfile)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriProfile, uriServerSSL, serverSSLProfile), s.LastRequest.URL.Path)
+}
