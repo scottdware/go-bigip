@@ -985,10 +985,10 @@ func (b *BigIP) DeleteVirtualAddress(vaddr string) error {
 	return b.delete(uriLtm, uriVirtualAddress, vaddr)
 }
 
-// Monitors returns a list of all HTTP, HTTPS, Gateway ICMP, and ICMP monitors.
+// Monitors returns a list of all HTTP, HTTPS, Gateway ICMP, ICMP, and TCP monitors.
 func (b *BigIP) Monitors() ([]Monitor, error) {
 	var monitors []Monitor
-	monitorUris := []string{"http", "https", "icmp", "gateway-icmp"}
+	monitorUris := []string{"http", "https", "icmp", "gateway-icmp", "tcp"}
 
 	for _, name := range monitorUris {
 		var m Monitors
@@ -1005,7 +1005,7 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 }
 
 // CreateMonitor adds a new monitor to the BIG-IP system. <parent> must be one of "http", "https",
-// "icmp", or "gateway icmp".
+// "icmp", "gateway icmp", or "tcp".
 func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive string) error {
 	config := &Monitor{
 		Name:          name,
@@ -1034,7 +1034,7 @@ func (b *BigIP) DeleteMonitor(name, parent string) error {
 }
 
 // ModifyMonitor allows you to change any attribute of a monitor. <parent> must be
-// one of "http", "https", "icmp", or "gateway icmp". Fields that
+// one of "http", "https", "icmp", "gateway icmp", or "tcp". Fields that
 // can be modified are referenced in the Monitor struct.
 func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
 	if strings.Contains(config.ParentMonitor, "gateway") {
