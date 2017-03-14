@@ -152,6 +152,50 @@ type Node struct {
 	State           string `json:"state,omitempty"`
 }
 
+// DataGroups contains a list of data groups on the BIG-IP system.
+type DataGroups struct {
+	DataGroups []DataGroup `json:"items"`
+}
+
+// DataGroups contains information about each data group.
+type DataGroup struct {
+	Name       string
+	Partition  string
+	FullPath   string
+	Generation int
+	Type       string
+	Records    []DataGroupRecord
+}
+
+type DataGroupRecord struct {
+	Name string `json:"name,omitempty"`
+	Data string `json:"data,omitempty"`
+}
+
+type dataGroupDTO struct {
+	Name       string             `json:"name,omitempty"`
+	Partition  string             `json:"partition,omitempty"`
+	FullPath   string             `json:"fullPath,omitempty"`
+	Generation int                `json:"generation,omitempty"`
+	Type       string             `json:"type,omitempty"`
+	Records    []DataGroupRecord  `json:"records,omitempty"`
+}
+
+func (p *DataGroup) MarshalJSON() ([]byte, error) {
+	var dto dataGroupDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
+}
+
+func (p *DataGroup) UnmarshalJSON(b []byte) error {
+	var dto dataGroupDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
+}
+
 // SnatPools contains a list of every snatpool on the BIG-IP system.
 type SnatPools struct {
 	SnatPools []SnatPool `json:"items"`
@@ -790,6 +834,8 @@ const (
 	uriMonitor        = "monitor"
 	uriIRule          = "rule"
 	uriPolicy         = "policy"
+	uriDatagroup      = "data-group"
+	uriInternal       = "internal"
 	ENABLED           = "enable"
 	DISABLED          = "disable"
 	CONTEXT_SERVER    = "serverside"
@@ -1053,6 +1099,44 @@ func (b *BigIP) NodeStatus(name, state string) error {
 	return b.put(config, uriLtm, uriNode, name)
 }
 
+// InternalDataGroups returns a list of internal data groups.
+func (b *BigIP) InternalDataGroups() (*DataGroups, error) {
+	var dataGroups DataGroups
+	err, _ := b.getForEntity(&dataGroups, uriLtm, uriDatagroup, uriInternal)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dataGroups, nil
+}
+
+func (b *BigIP) AddInternalDataGroup(config *DataGroup) error {
+	return b.post(config, uriLtm, uriDatagroup, uriInternal)
+}
+
+func (b *BigIP) DeleteInternalDataGroup(name string) error {
+	return b.delete(uriLtm, uriDatagroup, uriInternal, name)
+}
+
+// Modify a named internal data group, REPLACING all the records
+func (b *BigIP) ModifyInternalDataGroupRecords(name string, records *[]DataGroupRecord) error {
+	config := &DataGroup {
+		Records: *records,
+	}
+	return b.put(config, uriLtm, uriDatagroup, uriInternal, name)
+}
+
+// Get the internal data group records for a named internal data group
+func (b *BigIP) GetInternalDataGroupRecords(name string) (*[]DataGroupRecord, error) {
+	var dataGroupRecords []DataGroupRecord
+	err, _ := b.getForEntity(&dataGroupRecords, uriLtm, uriDatagroup, uriInternal, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dataGroupRecords, nil
+}
+
 // Pools returns a list of pools.
 func (b *BigIP) Pools() (*Pools, error) {
 	var pools Pools
@@ -1242,7 +1326,6 @@ func (b *BigIP) VirtualServerPolicyNames(vs string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%v\n", policies)
 	retval := make([]string, 0, len(policies.PolicyRef.Policies))
 	for _, p := range policies.PolicyRef.Policies {
 		retval = append(retval, p.FullPath)
