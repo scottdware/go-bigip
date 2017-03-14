@@ -6,10 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"strings"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type LTMTestSuite struct {
@@ -600,4 +601,501 @@ func (s *LTMTestSuite) TestGetInternalDataGroupRecords() {
 
 	assert.Equal(s.T(), "GET", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriDatagroup, uriInternal, dataGroup), s.LastRequest.URL.Path)
+}
+
+func (s *LTMTestSuite) TestSnatPools() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+			"kind": "tm:ltm:snatpool:snatpoolcollectionstate",
+			"selfLink": "https://localhost/mgmt/tm/ltm/snatpool?ver=11.5.3",
+			"items": [{
+				"kind": "tm:ltm:snatpool:snatpoolstate",
+				"name": "mySnatPool",
+				"partition": "Common",
+				"fullPath": "/Common/mySnatPool",
+				"generation": 419,
+				"selfLink": "https://localhost/mgmt/tm/ltm/snatpool/~Common~mySnatPool?ver=11.5.3",
+				"members": [
+					"/Common/10.0.0.1"
+				]
+			}, {
+				"kind": "tm:ltm:snatpool:snatpoolstate",
+				"name": "mySnatPool2",
+				"partition": "Common",
+				"fullPath": "/Common/mySnatPool2",
+				"generation": 477,
+				"selfLink": "https://localhost/mgmt/tm/ltm/snatpool/~Common~mySnatPool2?ver=11.5.3",
+				"members": [
+					"/Common/10.0.0.2"
+				]
+			}]
+		}`))
+	}
+
+	g, err := s.Client.SnatPools()
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), "GET", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriSnatPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "mySnatPool", g.SnatPools[0].Name)
+	assert.Equal(s.T(), "mySnatPool2", g.SnatPools[1].Name)
+}
+
+func (s *LTMTestSuite) TestCreateSnatPool() {
+
+	s.Client.CreateSnatPool("mySnatPool", []string{"10.1.1.1", "10.2.2.2"})
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriSnatPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"mySnatPool","members":["10.1.1.1","10.2.2.2"]}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestAddSnatPool() {
+
+	mySnatPool := &SnatPool{Name: "mySnatPool", Members: []string{"10.1.1.1", "10.2.2.2"}}
+
+	s.Client.AddSnatPool(mySnatPool)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriSnatPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"mySnatPool","members":["10.1.1.1","10.2.2.2"]}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestModifySnatPool() {
+
+	snatPool := "mySnatPool"
+
+	myModifedSnatPool := &SnatPool{Members: []string{"10.0.0.1", "10.0.0.2"}}
+
+	s.Client.ModifySnatPool(snatPool, myModifedSnatPool)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriSnatPool, snatPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"members":["10.0.0.1","10.0.0.2"]}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestDeleteSnatPool() {
+	snatPool := "mySnatPool"
+	s.Client.DeleteSnatPool(snatPool)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriSnatPool, snatPool), s.LastRequest.URL.Path)
+}
+
+func (s *LTMTestSuite) TestServerSSLProfiles() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+			"kind": "tm:ltm:profile:server-ssl:server-sslcollectionstate",
+			"selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl?ver=11.5.3",
+			"items": [{
+				"kind": "tm:ltm:profile:server-ssl:server-sslstate",
+				"name": "myServerSSL",
+				"partition": "Common",
+				"fullPath": "/Common/myServerSSL",
+				"generation": 784,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~myServerSSL?ver=11.5.3",
+				"alertTimeout": "10",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"cert": "/Common/default.crt",
+				"ciphers": "DEFAULT",
+				"defaultsFrom": "/Common/serverssl",
+				"expireCertResponseControl": "drop",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"key": "/Common/default.key",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "require-strict",
+				"serverName": "myserver.contoso.com",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"untrustedCertResponseControl": "drop"
+			}, {
+				"kind": "tm:ltm:profile:server-ssl:server-sslstate",
+				"name": "serverssl",
+				"partition": "Common",
+				"fullPath": "/Common/serverssl",
+				"generation": 1,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~serverssl?ver=11.5.3",
+				"alertTimeout": "10",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"ciphers": "DEFAULT",
+				"expireCertResponseControl": "drop",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "require-strict",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"untrustedCertResponseControl": "drop"
+			}, {
+				"kind": "tm:ltm:profile:server-ssl:server-sslstate",
+				"name": "serverssl-insecure-compatible",
+				"partition": "Common",
+				"fullPath": "/Common/serverssl-insecure-compatible",
+				"generation": 1,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~serverssl-insecure-compatible?ver=11.5.3",
+				"alertTimeout": "10",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"ciphers": "!SSLv2:!EXPORT:!DH:RSA+RC4:RSA+AES:RSA+DES:RSA+3DES:ECDHE+AES:ECDHE+3DES:@SPEED",
+				"defaultsFrom": "/Common/serverssl",
+				"expireCertResponseControl": "drop",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "request",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"untrustedCertResponseControl": "drop"
+			}]
+		}`))
+	}
+
+	g, err := s.Client.ServerSSLProfiles()
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), "GET", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriProfile, uriServerSSL), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "myServerSSL", g.ServerSSLProfiles[0].Name)
+	assert.Equal(s.T(), "serverssl", g.ServerSSLProfiles[1].Name)
+	assert.Equal(s.T(), "serverssl-insecure-compatible", g.ServerSSLProfiles[2].Name)
+}
+
+func (s *LTMTestSuite) TestCreateServerSSLProfile() {
+	s.Client.CreateServerSSLProfile("myServerSSL", "/Common/serverssl")
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriProfile, uriServerSSL), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"myServerSSL","defaultsFrom":"/Common/serverssl"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestModifyServerSSLProfile() {
+	serverSSLProfile := "myServerSSL"
+	myModifedServerSSLProfile := &ServerSSLProfile{Mode: "enabled", Cert: "/Common/default.crt", Key: "/Common/default.key", ServerName: "myserver.contoso.com"}
+
+	s.Client.ModifyServerSSLProfile(serverSSLProfile, myModifedServerSSLProfile)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriProfile, uriServerSSL, serverSSLProfile), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"cert":"/Common/default.crt","key":"/Common/default.key","mode":"enabled","serverName":"myserver.contoso.com"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestDeleteServerSSLProfile() {
+	serverSSLProfile := "myServerSSL"
+	s.Client.DeleteServerSSLProfile(serverSSLProfile)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriProfile, uriServerSSL, serverSSLProfile), s.LastRequest.URL.Path)
+}
+
+func (s *LTMTestSuite) TestClientSSLProfiles() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+			"kind": "tm:ltm:profile:client-ssl:client-sslcollectionstate",
+			"selfLink": "https://localhost/mgmt/tm/ltm/profile/client-ssl?ver=11.5.3",
+			"items": [{
+				"kind": "tm:ltm:profile:client-ssl:client-sslstate",
+				"name": "clientssl",
+				"partition": "Common",
+				"fullPath": "/Common/clientssl",
+				"generation": 1,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~clientssl?ver=11.5.3",
+				"alertTimeout": "10",
+				"allowNonSsl": "disabled",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"cert": "/Common/default.crt",
+				"certExtensionIncludes": [
+					"basic-constraints",
+					"subject-alternative-name"
+				],
+				"certLifespan": 30,
+				"certLookupByIpaddrPort": "disabled",
+				"ciphers": "DEFAULT",
+				"forwardProxyBypassDefaultAction": "intercept",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"inheritCertkeychain": "false",
+				"key": "/Common/default.key",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiateMaxRecordDelay": "indefinite",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "require",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"certKeyChain": [{
+					"name": "default",
+					"cert": "/Common/default.crt",
+					"key": "/Common/default.key"
+				}]
+			}, {
+				"kind": "tm:ltm:profile:client-ssl:client-sslstate",
+				"name": "clientssl-insecure-compatible",
+				"partition": "Common",
+				"fullPath": "/Common/clientssl-insecure-compatible",
+				"generation": 1,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~clientssl-insecure-compatible?ver=11.5.3",
+				"alertTimeout": "10",
+				"allowNonSsl": "disabled",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"cert": "/Common/default.crt",
+				"certExtensionIncludes": [
+					"basic-constraints",
+					"subject-alternative-name"
+				],
+				"certLifespan": 30,
+				"certLookupByIpaddrPort": "disabled",
+				"ciphers": "!SSLv2:ALL:!DH:!ADH:!EDH:@SPEED",
+				"defaultsFrom": "/Common/clientssl",
+				"forwardProxyBypassDefaultAction": "intercept",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"inheritCertkeychain": "true",
+				"key": "/Common/default.key",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiateMaxRecordDelay": "indefinite",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "request",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"certKeyChain": [{
+					"name": "default",
+					"cert": "/Common/default.crt",
+					"key": "/Common/default.key"
+				}]
+			}, {
+				"kind": "tm:ltm:profile:client-ssl:client-sslstate",
+				"name": "myClientSSL",
+				"partition": "Common",
+				"fullPath": "/Common/myClientSSL",
+				"generation": 727,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~myClientSSL?ver=11.5.3",
+				"alertTimeout": "10",
+				"allowNonSsl": "disabled",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"certExtensionIncludes": [
+					"basic-constraints",
+					"subject-alternative-name"
+				],
+				"certLifespan": 30,
+				"certLookupByIpaddrPort": "disabled",
+				"ciphers": "DEFAULT",
+				"defaultsFrom": "/Common/clientssl",
+				"forwardProxyBypassDefaultAction": "intercept",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"inheritCertkeychain": "false",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiateMaxRecordDelay": "indefinite",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "require",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"certKeyChain": [{
+					"name": "\"\""
+				}]
+			}, {
+				"kind": "tm:ltm:profile:client-ssl:client-sslstate",
+				"name": "wom-default-clientssl",
+				"partition": "Common",
+				"fullPath": "/Common/wom-default-clientssl",
+				"generation": 1,
+				"selfLink": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~wom-default-clientssl?ver=11.5.3",
+				"alertTimeout": "10",
+				"allowNonSsl": "enabled",
+				"authenticate": "once",
+				"authenticateDepth": 9,
+				"cacheSize": 262144,
+				"cacheTimeout": 3600,
+				"cert": "/Common/default.crt",
+				"certExtensionIncludes": [
+					"basic-constraints",
+					"subject-alternative-name"
+				],
+				"certLifespan": 30,
+				"certLookupByIpaddrPort": "disabled",
+				"ciphers": "DEFAULT",
+				"defaultsFrom": "/Common/clientssl",
+				"forwardProxyBypassDefaultAction": "intercept",
+				"genericAlert": "enabled",
+				"handshakeTimeout": "10",
+				"inheritCertkeychain": "true",
+				"key": "/Common/default.key",
+				"modSslMethods": "disabled",
+				"mode": "enabled",
+				"tmOptions": [
+					"dont-insert-empty-fragments"
+				],
+				"peerCertMode": "ignore",
+				"proxySsl": "disabled",
+				"renegotiateMaxRecordDelay": "indefinite",
+				"renegotiatePeriod": "indefinite",
+				"renegotiateSize": "indefinite",
+				"renegotiation": "enabled",
+				"retainCertificate": "true",
+				"secureRenegotiation": "require",
+				"sessionTicket": "disabled",
+				"sniDefault": "false",
+				"sniRequire": "false",
+				"sslForwardProxy": "disabled",
+				"sslForwardProxyBypass": "disabled",
+				"sslSignHash": "any",
+				"strictResume": "disabled",
+				"uncleanShutdown": "enabled",
+				"certKeyChain": [{
+					"name": "default",
+					"cert": "/Common/default.crt",
+					"key": "/Common/default.key"
+				}]
+			}]
+		}`))
+	}
+
+	g, err := s.Client.ClientSSLProfiles()
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), "GET", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriProfile, uriClientSSL), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "clientssl", g.ClientSSLProfiles[0].Name)
+	assert.Equal(s.T(), "clientssl-insecure-compatible", g.ClientSSLProfiles[1].Name)
+	assert.Equal(s.T(), "myClientSSL", g.ClientSSLProfiles[2].Name)
+	assert.Equal(s.T(), "wom-default-clientssl", g.ClientSSLProfiles[3].Name)
+}
+
+func (s *LTMTestSuite) TestCreateClientSSLProfile() {
+	s.Client.CreateClientSSLProfile("myClientSSL", "/Common/clientssl")
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriProfile, uriClientSSL), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"myClientSSL","defaultsFrom":"/Common/clientssl"}`, s.LastRequestBody)
+}
+
+// Add additional test for more complex certKeyChain
+
+func (s *LTMTestSuite) TestModifyClientSSLProfile() {
+	clientSSLProfile := "myClientSSL"
+	myModifedClientSSLProfile := &ClientSSLProfile{Mode: "enabled", Cert: "/Common/default.crt", Key: "/Common/default.key", ServerName: "myserver.contoso.com"}
+
+	s.Client.ModifyClientSSLProfile(clientSSLProfile, myModifedClientSSLProfile)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriProfile, uriClientSSL, clientSSLProfile), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"cert":"/Common/default.crt","key":"/Common/default.key","mode":"enabled","serverName":"myserver.contoso.com"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestDeleteClientSSLProfile() {
+	clientSSLProfile := "myClientSSL"
+	s.Client.DeleteClientSSLProfile(clientSSLProfile)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriProfile, uriClientSSL, clientSSLProfile), s.LastRequest.URL.Path)
 }
