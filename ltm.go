@@ -173,12 +173,12 @@ type DataGroupRecord struct {
 }
 
 type dataGroupDTO struct {
-	Name       string             `json:"name,omitempty"`
-	Partition  string             `json:"partition,omitempty"`
-	FullPath   string             `json:"fullPath,omitempty"`
-	Generation int                `json:"generation,omitempty"`
-	Type       string             `json:"type,omitempty"`
-	Records    []DataGroupRecord  `json:"records,omitempty"`
+	Name       string            `json:"name,omitempty"`
+	Partition  string            `json:"partition,omitempty"`
+	FullPath   string            `json:"fullPath,omitempty"`
+	Generation int               `json:"generation,omitempty"`
+	Type       string            `json:"type,omitempty"`
+	Records    []DataGroupRecord `json:"records,omitempty"`
 }
 
 func (p *DataGroup) MarshalJSON() ([]byte, error) {
@@ -244,10 +244,63 @@ type Pool struct {
 	SlowRampTime           int
 }
 
-// PoolMember returns the name and state of each pool member of the given pool.
+// Pool Members contains a list of pool members within a pool on the BIG-IP system.
+type PoolMembers struct {
+	PoolMembers []PoolMember `json:"items"`
+}
+
+// Pool Member contains information about each individual member in a pool. You can use all
+// of these fields when modifying a pool member.
 type PoolMember struct {
-	Name  string
-	State string
+	Name            string
+	Partition       string
+	FullPath        string
+	Generation      int
+	Address         string
+	ConnectionLimit int
+	DynamicRatio    int
+	InheritProfile  bool
+	Logging         bool
+	Monitor         string
+	PriorityGroup   int
+	RateLimit       string
+	Ratio           int
+	Session         string
+	State           string
+}
+
+// PoolMember transfer object so we can mask the bool data munging
+type poolMemberDTO struct {
+	Name            string `json:"name,omitempty"`
+	Partition       string `json:"partition,omitempty"`
+	FullPath        string `json:"fullPath,omitempty"`
+	Generation      int    `json:"generation,omitempty"`
+	Address         string `json:"address,omitempty"`
+	ConnectionLimit int    `json:"connectionLimit,omitempty"`
+	DynamicRatio    int    `json:"dynamicRatio,omitempty"`
+	InheritProfile  string `json:"inheritProfile,omitempty" bool:"enabled"`
+	Logging         string `json:"logging,omitempty" bool:"enabled"`
+	Monitor         string `json:"monitor,omitempty"`
+	PriorityGroup   int    `json:"priorityGroup,omitempty"`
+	RateLimit       string `json:"rateLimit,omitempty" bool:"enabled"`
+	Ratio           int    `json:"ratio,omitempty"`
+	Session         string `json:"session,omitempty"`
+	State           string `json:"state,omitempty"`
+}
+
+func (p *PoolMember) MarshalJSON() ([]byte, error) {
+	var dto poolMemberDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
+}
+
+func (p *PoolMember) UnmarshalJSON(b []byte) error {
+	var dto poolMemberDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
 }
 
 // Pool transfer object so we can mask the bool data munging
@@ -825,6 +878,7 @@ const (
 	uriLtm            = "ltm"
 	uriNode           = "node"
 	uriPool           = "pool"
+	uriPoolMember     = "members"
 	uriProfile        = "profile"
 	uriServerSSL      = "server-ssl"
 	uriClientSSL      = "client-ssl"
@@ -1120,7 +1174,7 @@ func (b *BigIP) DeleteInternalDataGroup(name string) error {
 
 // Modify a named internal data group, REPLACING all the records
 func (b *BigIP) ModifyInternalDataGroupRecords(name string, records *[]DataGroupRecord) error {
-	config := &DataGroup {
+	config := &DataGroup{
 		Records: *records,
 	}
 	return b.put(config, uriLtm, uriDatagroup, uriInternal, name)
@@ -1150,20 +1204,14 @@ func (b *BigIP) Pools() (*Pools, error) {
 
 // PoolMembers returns a list of pool members for the given pool. Contained within the PoolMember
 // struct are the name and state fields.
-func (b *BigIP) PoolMembers(name string) ([]PoolMember, error) {
-	var nodes Nodes
-	members := []PoolMember{}
-	err, _ := b.getForEntity(&nodes, uriLtm, uriPool, name, "members")
+func (b *BigIP) PoolMembers(name string) (*PoolMembers, error) {
+	var poolMembers PoolMembers
+	err, _ := b.getForEntity(&poolMembers, uriLtm, uriPool, name, uriPoolMember)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, m := range nodes.Nodes {
-		member := &PoolMember{Name: m.Name, State: m.State}
-		members = append(members, *member)
-	}
-
-	return members, nil
+	return &poolMembers, nil
 }
 
 // AddPoolMember adds a node/member to the given pool. <member> must be in the form
