@@ -1316,7 +1316,12 @@ func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, port i
 	return b.post(config, uriLtm, uriVirtual)
 }
 
-// Get a VirtualServer by name. Returns nil if the VirtualServer does not exist
+// AddVirtualServer adds a new virtual server by config to the BIG-IP system.
+func (b *BigIP) AddVirtualServer(config *VirtualServer) error {
+	return b.post(config, uriLtm, uriVirtual)
+}
+
+// GetVirtualServer retrieves a virtual server by name. Returns nil if the virtual server does not exist
 func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 	var vs VirtualServer
 	err, ok := b.getForEntity(&vs, uriLtm, uriVirtual, name)
