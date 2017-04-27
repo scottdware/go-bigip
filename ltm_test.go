@@ -383,6 +383,28 @@ func (s *LTMTestSuite) TestDeleteVitualAddress() {
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/test-va", uriLtm, uriVirtualAddress), s.LastRequest.URL.Path)
 }
 
+func (s *LTMTestSuite) TestCreateVirtualServer() {
+	s.Client.CreateVirtualServer("/Common/test-vs", "10.10.10.10", "255.255.255.255", "/Common/test-pool", 80)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriVirtual), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"/Common/test-vs","destination":"10.10.10.10:80","mask":"255.255.255.255","pool":"/Common/test-pool","sourceAddressTranslation":{}}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestAddVirtualServer() {
+	config := &VirtualServer{
+		Name:        "/Common/test-vs",
+		Destination: "10.10.10.10:80",
+		Pool:        "/Common/test-pool",
+	}
+
+	s.Client.AddVirtualServer(config)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriVirtual), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"/Common/test-vs","destination":"10.10.10.10:80","pool":"/Common/test-pool","sourceAddressTranslation":{}}`, s.LastRequestBody)
+}
+
 func (s *LTMTestSuite) TestModifyVirtualServer() {
 	vs := &VirtualServer{
 		Name: "test",
@@ -405,6 +427,13 @@ func (s *LTMTestSuite) TestModifyVirtualServer() {
 	]
 	}`, s.LastRequestBody)
 
+}
+
+func (s *LTMTestSuite) TestDeleteVirtualServer() {
+	s.Client.DeleteVirtualServer("/Common/test-vs")
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriVirtual, "~Common~test-vs"), s.LastRequest.URL.Path)
 }
 
 func (s *LTMTestSuite) TestCreateMonitor() {
@@ -547,12 +576,12 @@ func (s *LTMTestSuite) TestAddInternalDataGroup() {
 	config := &DataGroup{
 		Name: "test-datagroup",
 		Type: "string",
-		Records: []DataGroupRecord {
-			DataGroupRecord {
+		Records: []DataGroupRecord{
+			DataGroupRecord{
 				Name: "name1",
 				Data: "data1",
 			},
-			DataGroupRecord {
+			DataGroupRecord{
 				Name: "name2",
 				Data: "data2",
 			},
@@ -569,12 +598,12 @@ func (s *LTMTestSuite) TestAddInternalDataGroup() {
 func (s *LTMTestSuite) TestModifyInternalDataGroupRecords() {
 	dataGroup := "test"
 
-	records := &[]DataGroupRecord {
-		DataGroupRecord {
+	records := &[]DataGroupRecord{
+		DataGroupRecord{
 			Name: "name1",
 			Data: "data1",
 		},
-		DataGroupRecord {
+		DataGroupRecord{
 			Name: "name42",
 			Data: "data42",
 		},
