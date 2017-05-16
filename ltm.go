@@ -380,6 +380,7 @@ type VirtualServer struct {
 	RateLimitSourceMask      int    `json:"rateLimitSrcMask,omitempty"`
 	Source                   string `json:"source,omitempty"`
 	SourceAddressTranslation struct {
+	 	Pool string `json:"pool,omitempty"`
 		Type string `json:"type,omitempty"`
 		Pool string `json:"pool,omitempty"`
 	} `json:"sourceAddressTranslation,omitempty"`
