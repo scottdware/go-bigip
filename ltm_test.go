@@ -453,6 +453,23 @@ func (s *LTMTestSuite) TestCreateMonitor() {
 	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","recv":"200 OK","reverse":"disabled","send":"GET /\\r\\n","timeout":5,"transparent":"disabled"}`, s.LastRequestBody)
 }
 
+func (s *LTMTestSuite) TestCreateMonitorSpecialCharacters() {
+	config := &Monitor{
+		Name:          "test-web-monitor",
+		ParentMonitor: "http",
+		Interval:      15,
+		Timeout:       5,
+		SendString:    "GET /test&parms=1<2>3\r\n",
+		ReceiveString: "Response &<>",
+	}
+
+	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","recv":"Response &<>","reverse":"disabled","send":"GET /test&parms=1<2>3\\r\\n","timeout":5,"transparent":"disabled"}`, s.LastRequestBody)
+}
+
 func (s *LTMTestSuite) TestAddMonitor() {
 	config := &Monitor{
 		Name:          "test-web-monitor",
@@ -470,6 +487,18 @@ func (s *LTMTestSuite) TestAddMonitor() {
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","password":"monitoring","recv":"200 OK","reverse":"disabled","send":"GET /\\r\\n","timeout":5,"transparent":"disabled","username":"monitoring"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestGetMonitor() {
+	config := &Monitor{
+		Name:          "test-web-monitor",
+		ParentMonitor: "http",
+	}
+
+	s.Client.GetMonitor(config.Name, config.ParentMonitor)
+
+	assert.Equal(s.T(), "GET", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor, config.Name), s.LastRequest.URL.Path)
 }
 
 func (s *LTMTestSuite) TestDeleteMonitor() {
