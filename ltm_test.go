@@ -436,6 +436,353 @@ func (s *LTMTestSuite) TestDeleteVirtualServer() {
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriVirtual, "~Common~test-vs"), s.LastRequest.URL.Path)
 }
 
+func (s *LTMTestSuite) TestCreatePool() {
+	name := "/Common/test-pool"
+
+	s.Client.CreatePool(name)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"/Common/test-pool"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestAddPool() {
+	config := &Pool{
+		Name:      "test-pool",
+		Partition: "Common",
+		Monitor:   "/Common/http",
+	}
+
+	s.Client.AddPool(config)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"test-pool","partition":"Common","monitor":"/Common/http"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestGetPool() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+    "kind": "tm:ltm:pool:poolstate",
+    "name": "test-pool",
+    "partition": "Common",
+    "fullPath": "/Common/test-pool",
+    "generation": 3882,
+    "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool?ver=11.5.3",
+    "allowNat": "yes",
+    "allowSnat": "yes",
+    "ignorePersistedWeight": "disabled",
+    "ipTosToClient": "pass-through",
+    "ipTosToServer": "pass-through",
+    "linkQosToClient": "pass-through",
+    "linkQosToServer": "pass-through",
+    "loadBalancingMode": "round-robin",
+    "minActiveMembers": 0,
+    "minUpMembers": 0,
+    "minUpMembersAction": "failover",
+    "minUpMembersChecking": "disabled",
+    "monitor": "/Common/http ",
+    "queueDepthLimit": 0,
+    "queueOnConnectionLimit": "disabled",
+    "queueTimeLimit": 0,
+    "reselectTries": 0,
+    "slowRampTime": 10,
+    "membersReference": {
+        "link": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool/members?ver=11.5.3",
+        "isSubcollection": true
+				}
+		}`))
+	}
+
+	p, err := s.Client.GetPool("/Common/test-pool")
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "test-pool", p.Name)
+	assert.Equal(s.T(), "Common", p.Partition)
+	assert.Equal(s.T(), "/Common/test-pool", p.FullPath)
+	assert.Equal(s.T(), "/Common/http ", p.Monitor)
+}
+
+func (s *LTMTestSuite) TestPools() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+				"kind": "tm:ltm:pool:poolcollectionstate",
+				"selfLink": "https://localhost/mgmt/tm/ltm/pool?ver=11.5.3",
+				"items": [
+						{
+								"kind": "tm:ltm:pool:poolstate",
+								"name": "test-pool",
+								"partition": "Common",
+								"fullPath": "/Common/test-pool",
+								"generation": 3882,
+								"selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool?ver=11.5.3",
+								"allowNat": "yes",
+								"allowSnat": "yes",
+								"ignorePersistedWeight": "disabled",
+								"ipTosToClient": "pass-through",
+								"ipTosToServer": "pass-through",
+								"linkQosToClient": "pass-through",
+								"linkQosToServer": "pass-through",
+								"loadBalancingMode": "round-robin",
+								"minActiveMembers": 0,
+								"minUpMembers": 0,
+								"minUpMembersAction": "failover",
+								"minUpMembersChecking": "disabled",
+								"monitor": "/Common/http ",
+								"queueDepthLimit": 0,
+								"queueOnConnectionLimit": "disabled",
+								"queueTimeLimit": 0,
+								"reselectTries": 0,
+								"slowRampTime": 10,
+								"membersReference": {
+										"link": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool/members?ver=11.5.3",
+										"isSubcollection": true
+								}
+						},
+						{
+								"kind": "tm:ltm:pool:poolstate",
+								"name": "test-pool2",
+								"partition": "Common",
+								"fullPath": "/Common/test-pool2",
+								"generation": 3886,
+								"selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool2?ver=11.5.3",
+								"allowNat": "no",
+								"allowSnat": "no",
+								"ignorePersistedWeight": "disabled",
+								"ipTosToClient": "pass-through",
+								"ipTosToServer": "pass-through",
+								"linkQosToClient": "pass-through",
+								"linkQosToServer": "pass-through",
+								"loadBalancingMode": "round-robin",
+								"minActiveMembers": 0,
+								"minUpMembers": 0,
+								"minUpMembersAction": "failover",
+								"minUpMembersChecking": "disabled",
+								"queueDepthLimit": 0,
+								"queueOnConnectionLimit": "disabled",
+								"queueTimeLimit": 0,
+								"reselectTries": 0,
+								"slowRampTime": 10,
+								"membersReference": {
+										"link": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool2/members?ver=11.5.3",
+										"isSubcollection": true
+								}
+						}
+				]
+		}`))
+	}
+
+	p, err := s.Client.Pools()
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriPool), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "/Common/test-pool", p.Pools[0].FullPath)
+	assert.Equal(s.T(), "/Common/test-pool2", p.Pools[1].FullPath)
+}
+
+func (s *LTMTestSuite) TestDeletePool() {
+	name := "/Common/test-pool"
+	s.Client.DeletePool(name)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
+}
+
+func (s *LTMTestSuite) TestModifyPool() {
+	config := &Pool{
+		Name:              "test-pool",
+		Partition:         "Common",
+		Monitor:           "/Common/http",
+		LoadBalancingMode: "round-robin",
+		AllowSNAT:         "yes",
+		AllowNAT:          "yes",
+	}
+
+	s.Client.ModifyPool("/Common/test-pool", config)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"test-pool","partition":"Common","allowNat":"yes","allowSnat":"yes","loadBalancingMode":"round-robin","monitor":"/Common/http"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestAddPoolMember() {
+	pool := "/Common/test-pool"
+	poolmember := "/Common/test-pool-member"
+
+	s.Client.AddPoolMember(pool, poolmember)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember), s.LastRequest.URL.Path)
+}
+
+func (s *LTMTestSuite) TestCreatePoolMember() {
+	pool := "/Common/test-pool"
+	config := &PoolMember{
+		Name:      "test-pool-member",
+		Partition: "Common",
+		Monitor:   "/Common/icmp",
+	}
+
+	s.Client.CreatePoolMember(pool, config)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"name":"test-pool-member","partition":"Common","monitor":"/Common/icmp"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestGetPoolMember() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+    "kind": "tm:ltm:pool:members:membersstate",
+    "name": "test-pool-member:80",
+    "partition": "Common",
+    "fullPath": "/Common/test-pool-member:80",
+    "generation": 5124,
+    "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool/members/~Common~test-pool-member:80?ver=11.5.3",
+    "address": "10.10.20.30",
+    "connectionLimit": 0,
+    "dynamicRatio": 1,
+    "inheritProfile": "disabled",
+    "logging": "disabled",
+    "monitor": "default",
+    "priorityGroup": 0,
+    "rateLimit": "disabled",
+    "ratio": 1,
+    "session": "monitor-enabled",
+    "state": "down"
+		}`))
+	}
+
+	pool := "/Common/test-pool"
+	poolmember := "/Common/test-pool-member:80"
+	p, err := s.Client.GetPoolMember(pool, poolmember)
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember, "~Common~test-pool-member:80"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "test-pool-member:80", p.Name)
+	assert.Equal(s.T(), "Common", p.Partition)
+	assert.Equal(s.T(), "/Common/test-pool-member:80", p.FullPath)
+	assert.Equal(s.T(), "default", p.Monitor)
+}
+
+func (s *LTMTestSuite) TestPoolMembers() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+    "kind": "tm:ltm:pool:members:memberscollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool/members?ver=11.5.3",
+    "items": [
+        {
+            "kind": "tm:ltm:pool:members:membersstate",
+            "name": "test-pool-member-1:80",
+            "partition": "Common",
+            "fullPath": "/Common/test-pool-member-1:80",
+            "generation": 5124,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool/members/~Common~test-pool-member-1:80?ver=11.5.3",
+            "address": "10.156.153.10",
+            "connectionLimit": 0,
+            "dynamicRatio": 1,
+            "inheritProfile": "enabled",
+            "logging": "disabled",
+            "monitor": "default",
+            "priorityGroup": 0,
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "monitor-enabled",
+            "state": "down"
+        },
+        {
+            "kind": "tm:ltm:pool:members:membersstate",
+            "name": "test-pool-member-2:80",
+            "partition": "Common",
+            "fullPath": "/Common/test-pool-member-2:80",
+            "generation": 3882,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool/members/~Common~test-pool-member-2:80?ver=11.5.3",
+            "address": "10.10.20.30",
+            "connectionLimit": 0,
+            "dynamicRatio": 1,
+            "inheritProfile": "disabled",
+            "logging": "disabled",
+            "monitor": "default",
+            "priorityGroup": 0,
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "monitor-enabled",
+            "state": "down"
+        },
+        {
+            "kind": "tm:ltm:pool:members:membersstate",
+            "name": "test-pool-member-3:80",
+            "partition": "Common",
+            "fullPath": "/Common/test-pool-member-3:80",
+            "generation": 3862,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool/members/~Common~test-pool-member-3:80?ver=11.5.3",
+            "address": "10.10.20.40",
+            "connectionLimit": 0,
+            "dynamicRatio": 1,
+            "inheritProfile": "enabled",
+            "logging": "disabled",
+            "monitor": "/Common/http ",
+            "priorityGroup": 0,
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "monitor-enabled",
+            "state": "down"
+        }
+    ]
+		}`))
+	}
+
+	pool := "/Common/test-pool"
+	p, err := s.Client.PoolMembers(pool)
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "/Common/test-pool-member-1:80", p.PoolMembers[0].FullPath)
+	assert.Equal(s.T(), "/Common/test-pool-member-2:80", p.PoolMembers[1].FullPath)
+	assert.Equal(s.T(), "/Common/test-pool-member-3:80", p.PoolMembers[2].FullPath)
+}
+
+func (s *LTMTestSuite) TestDeletePoolMember() {
+
+	pool := "/Common/test-pool"
+	poolmember := "/Common/test-pool-member:80"
+	s.Client.DeletePoolMember(pool, poolmember)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember, "~Common~test-pool-member:80"), s.LastRequest.URL.Path)
+}
+
+func (s *LTMTestSuite) TestRemovePoolMember() {
+	pool := "/Common/test-pool"
+	config := &PoolMember{
+		Name:      "test-pool-member",
+		Partition: "Common",
+		Monitor:   "/Common/icmp",
+	}
+	s.Client.RemovePoolMember(pool, config)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/", uriLtm, uriPool, "~Common~test-pool", uriPoolMember), s.LastRequest.URL.Path)
+}
+
+func (s *LTMTestSuite) TestModifyPoolMember() {
+	pool := "/Common/test-pool"
+	config := &PoolMember{
+		Name:      "test-pool-member:80",
+		Partition: "Common",
+		FullPath:  "/Common/test-pool-member:80",
+		Monitor:   "/Common/icmp",
+	}
+
+	s.Client.ModifyPoolMember(pool, config)
+
+	fmt.Println(s.LastRequest.URL)
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember, "~Common~test-pool-member:80"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"monitor":"/Common/icmp"}`, s.LastRequestBody)
+}
+
 func (s *LTMTestSuite) TestCreateMonitor() {
 	config := &Monitor{
 		Name:          "test-web-monitor",
