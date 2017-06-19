@@ -834,6 +834,24 @@ type monitorDTO struct {
 	Username       string `json:"username,omitempty"`
 }
 
+func (p *Monitor) MarshalJSON() ([]byte, error) {
+	var dto monitorDTO
+	marshal(&dto, p)
+	if strings.Contains(dto.SendString, "\r\n") {
+		dto.SendString = strings.Replace(dto.SendString, "\r\n", "\\r\\n", -1)
+	}
+	return jsonMarshal(dto)
+}
+
+func (p *Monitor) UnmarshalJSON(b []byte) error {
+	var dto monitorDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
+}
+
 type Profiles struct {
 	Profiles []Profile `json:"items"`
 }
@@ -854,24 +872,6 @@ type IRule struct {
 	Partition string `json:"partition,omitempty"`
 	FullPath  string `json:"fullPath,omitempty"`
 	Rule      string `json:"apiAnonymous,omitempty"`
-}
-
-func (p *Monitor) MarshalJSON() ([]byte, error) {
-	var dto monitorDTO
-	marshal(&dto, p)
-	if strings.Contains(dto.SendString, "\r\n") {
-		dto.SendString = strings.Replace(dto.SendString, "\r\n", "\\r\\n", -1)
-	}
-	return json.Marshal(dto)
-}
-
-func (p *Monitor) UnmarshalJSON(b []byte) error {
-	var dto monitorDTO
-	err := json.Unmarshal(b, &dto)
-	if err != nil {
-		return err
-	}
-	return marshal(p, &dto)
 }
 
 const (
@@ -1460,6 +1460,21 @@ func (b *BigIP) AddMonitor(config *Monitor) error {
 	}
 
 	return b.post(config, uriLtm, uriMonitor, config.ParentMonitor)
+}
+
+// GetVirtualServer retrieves a monitor by name. Returns nil if the monitor does not exist
+func (b *BigIP) GetMonitor(name string, parent string) (*Monitor, error) {
+	// Add a verification that type is an accepted monitor type
+	var monitor Monitor
+	err, ok := b.getForEntity(&monitor, uriLtm, uriMonitor, parent, name)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &monitor, nil
 }
 
 // DeleteMonitor removes a monitor.

@@ -213,7 +213,7 @@ func (b *BigIP) delete(path ...string) error {
 }
 
 func (b *BigIP) post(body interface{}, path ...string) error {
-	marshalJSON, err := json.Marshal(body)
+	marshalJSON, err := jsonMarshal(body)
 	if err != nil {
 		return err
 	}
@@ -221,7 +221,7 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 	req := &APIRequest{
 		Method:      "post",
 		URL:         b.iControlPath(path),
-		Body:        string(marshalJSON),
+		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
 	}
 
@@ -230,7 +230,7 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 }
 
 func (b *BigIP) put(body interface{}, path ...string) error {
-	marshalJSON, err := json.Marshal(body)
+	marshalJSON, err := jsonMarshal(body)
 	if err != nil {
 		return err
 	}
@@ -238,7 +238,7 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 	req := &APIRequest{
 		Method:      "put",
 		URL:         b.iControlPath(path),
-		Body:        string(marshalJSON),
+		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
 	}
 
@@ -294,6 +294,16 @@ func (b *BigIP) checkError(resp []byte) error {
 	}
 
 	return nil
+}
+
+// jsonMarshal specifies an encoder with 'SetEscapeHTML' set to 'false' so that <, >, and & are not escaped. https://golang.org/pkg/encoding/json/#Marshal
+// https://stackoverflow.com/questions/28595664/how-to-stop-json-marshal-from-escaping-and
+func jsonMarshal(t interface{}) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(t)
+	return buffer.Bytes(), err
 }
 
 // Helper to copy between transfer objects and model objects to hide the myriad of boolean representations
