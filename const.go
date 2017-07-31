@@ -1,0 +1,25 @@
+package bigip
+
+const (
+	uriLtm            = "ltm"
+	uriNode           = "node"
+	uriPool           = "pool"
+	uriPoolMember     = "members"
+	uriProfile        = "profile"
+	uriServerSSL      = "server-ssl"
+	uriClientSSL      = "client-ssl"
+	uriProfileTCP     = "tcp"
+	uriVirtual        = "virtual"
+	uriVirtualAddress = "virtual-address"
+	uriSnatPool       = "snatpool"
+	uriMonitor        = "monitor"
+	uriIRule          = "rule"
+	uriPolicy         = "policy"
+	uriDatagroup      = "data-group"
+	uriInternal       = "internal"
+	ENABLED           = "enable"
+	DISABLED          = "disable"
+	CONTEXT_SERVER    = "serverside"
+	CONTEXT_CLIENT    = "clientside"
+	CONTEXT_ALL       = "all"
+)
