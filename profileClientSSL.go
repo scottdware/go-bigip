@@ -69,3 +69,54 @@ type ClientSSLProfile struct {
 	StrictResume                    string   `json:"strictResume,omitempty"`
 	UncleanShutdown                 string   `json:"uncleanShutdown,omitempty"`
 }
+
+// ClientSSLProfiles returns a list of client-ssl profiles.
+func (b *BigIP) ClientSSLProfiles() (*ClientSSLProfiles, error) {
+	var clientSSLProfiles ClientSSLProfiles
+	err, _ := b.getForEntity(&clientSSLProfiles, uriLtm, uriProfile, uriClientSSL)
+	if err != nil {
+		return nil, err
+	}
+
+	return &clientSSLProfiles, nil
+}
+
+// GetClientSSLProfile gets a client-ssl profile by name. Returns nil if the client-ssl profile does not exist
+func (b *BigIP) GetClientSSLProfile(name string) (*ClientSSLProfile, error) {
+	var clientSSLProfile ClientSSLProfile
+	err, ok := b.getForEntity(&clientSSLProfile, uriLtm, uriProfile, uriClientSSL, name)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &clientSSLProfile, nil
+}
+
+// CreateClientSSLProfile creates a new client-ssl profile on the BIG-IP system.
+func (b *BigIP) CreateClientSSLProfile(name string, parent string) error {
+	config := &ClientSSLProfile{
+		Name:         name,
+		DefaultsFrom: parent,
+	}
+
+	return b.post(config, uriLtm, uriProfile, uriClientSSL)
+}
+
+// AddClientSSLProfile adds a new client-ssl profile on the BIG-IP system.
+func (b *BigIP) AddClientSSLProfile(config *ClientSSLProfile) error {
+	return b.post(config, uriLtm, uriProfile, uriClientSSL)
+}
+
+// DeleteClientSSLProfile removes a client-ssl profile.
+func (b *BigIP) DeleteClientSSLProfile(name string) error {
+	return b.delete(uriLtm, uriProfile, uriClientSSL, name)
+}
+
+// ModifyClientSSLProfile allows you to change any attribute of a sever-ssl profile.
+// Fields that can be modified are referenced in the VirtualClient struct.
+func (b *BigIP) ModifyClientSSLProfile(name string, config *ClientSSLProfile) error {
+	return b.put(config, uriLtm, uriProfile, uriClientSSL, name)
+}

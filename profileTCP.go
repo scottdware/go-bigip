@@ -73,19 +73,19 @@ type TCPProfiles []TCPProfile
 
 // TCPProfiles returns a list of tcp profiles.
 func (b *BigIP) TCPProfiles() (*TCPProfiles, error) {
-	var serverSSLProfiles TCPProfiles
-	err, _ := b.getForEntity(&serverSSLProfiles, uriLtm, uriProfile, uriProfileTCP)
+	var serverTCPProfiles TCPProfiles
+	err, _ := b.getForEntity(&serverTCPProfiles, uriLtm, uriProfile, uriProfileTCP)
 	if err != nil {
 		return nil, err
 	}
 
-	return &serverSSLProfiles, nil
+	return &serverTCPProfiles, nil
 }
 
 // GetTCPProfile gets a tcp profile by name. Returns nil if the tcp profile does not exist
 func (b *BigIP) GetTCPProfile(name string) (*TCPProfile, error) {
-	var serverSSLProfile TCPProfile
-	err, ok := b.getForEntity(&serverSSLProfile, uriLtm, uriProfile, uriProfileTCP, name)
+	var serverTCPProfile TCPProfile
+	err, ok := b.getForEntity(&serverTCPProfile, uriLtm, uriProfile, uriProfileTCP, name)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (b *BigIP) GetTCPProfile(name string) (*TCPProfile, error) {
 		return nil, nil
 	}
 
-	return &serverSSLProfile, nil
+	return &serverTCPProfile, nil
 }
 
 // CreateTCPProfile creates a new tcp profile on the BIG-IP system.
