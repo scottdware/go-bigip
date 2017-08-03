@@ -466,6 +466,7 @@ type Monitors struct {
 // Monitor contains information about each individual monitor.
 type Monitor struct {
 	Name           string
+	Type           string
 	Partition      string
 	FullPath       string
 	Generation     int
