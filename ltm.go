@@ -901,7 +901,7 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 	return b.AddMonitor(config)
 }
 
-// Create a monitor by supplying a config
+// AddMonitor creates a monitor by supplying a config
 func (b *BigIP) AddMonitor(config *Monitor) error {
 	if strings.Contains(config.ParentMonitor, "gateway") {
 		config.ParentMonitor = "gateway_icmp"
