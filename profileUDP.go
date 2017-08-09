@@ -2,20 +2,20 @@ package bigip
 
 // UDPProfile represents a UDP Profile configuration
 type UDPProfile struct {
-	Kind                  string `json:"kind"`
-	Name                  string `json:"name"`
-	Partition             string `json:"partition"`
-	FullPath              string `json:"fullPath"`
-	Generation            int    `json:"generation"`
-	SelfLink              string `json:"selfLink"`
-	AllowNoPayload        string `json:"allowNoPayload"`
-	DatagramLoadBalancing string `json:"datagramLoadBalancing"`
-	DefaultsFrom          string `json:"defaultsFrom"`
-	IdleTimeout           string `json:"idleTimeout"`
-	IPTosToClient         string `json:"ipTosToClient"`
-	LinkQosToClient       string `json:"linkQosToClient"`
-	NoChecksum            string `json:"noChecksum"`
-	ProxyMss              string `json:"proxyMss"`
+	Kind                  string `json:"kind,omitempty"`
+	Name                  string `json:"name,omitempty"`
+	Partition             string `json:"partition,omitempty"`
+	FullPath              string `json:"fullPath,omitempty"`
+	Generation            int    `json:"generation,omitempty"`
+	SelfLink              string `json:"selfLink,omitempty"`
+	AllowNoPayload        string `json:"allowNoPayload,omitempty"`
+	DatagramLoadBalancing string `json:"datagramLoadBalancing,omitempty"`
+	DefaultsFrom          string `json:"defaultsFrom,omitempty"`
+	IdleTimeout           string `json:"idleTimeout,omitempty"`
+	IPTosToClient         string `json:"ipTosToClient,omitempty"`
+	LinkQosToClient       string `json:"linkQosToClient,omitempty"`
+	NoChecksum            string `json:"noChecksum,omitempty"`
+	ProxyMss              string `json:"proxyMss,omitempty"`
 }
 
 // UDPProfiles is an array of UDPProfile structs

@@ -537,6 +537,7 @@ type Profile struct {
 	Name      string `json:"name,omitempty"`
 	FullPath  string `json:"fullPath,omitempty"`
 	Partition string `json:"partition,omitempty"`
+	Type      string `json:"-"`
 	Context   string `json:"context,omitempty"`
 }
 

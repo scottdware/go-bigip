@@ -5,44 +5,44 @@ type HttpProfiles struct {
 }
 
 type HttpProfile struct {
-	Kind         string `json:"kind"`
-	DefaultsFrom string `json:"defaultsFrom"`
-	Name         string `json:"name"`
-	Partition    string `json:"partition"`
-	FullPath     string `json:"fullPath"`
-	Generation   int    `json:"generation"`
-	SelfLink     string `json:"selfLink"`
-	AcceptXff    string `json:"acceptXff"`
+	Kind         string `json:"kind,omitempty"`
+	DefaultsFrom string `json:"defaultsFrom,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Partition    string `json:"partition,omitempty"`
+	FullPath     string `json:"fullPath,omitempty"`
+	Generation   int    `json:"generation,omitempty"`
+	SelfLink     string `json:"selfLink,omitempty"`
+	AcceptXff    string `json:"acceptXff,omitempty"`
 	Enforcement  struct {
-		ExcessClientHeaders   string `json:"excessClientHeaders"`
-		ExcessServerHeaders   string `json:"excessServerHeaders"`
-		MaxHeaderCount        int    `json:"maxHeaderCount"`
-		MaxHeaderSize         int    `json:"maxHeaderSize"`
-		MaxRequests           int    `json:"maxRequests"`
-		OversizeClientHeaders string `json:"oversizeClientHeaders"`
-		OversizeServerHeaders string `json:"oversizeServerHeaders"`
-		Pipeline              string `json:"pipeline"`
-		TruncatedRedirects    string `json:"truncatedRedirects"`
-		UnknownMethod         string `json:"unknownMethod"`
-	} `json:"enforcement"`
+		ExcessClientHeaders   string `json:"excessClientHeaders,omitempty"`
+		ExcessServerHeaders   string `json:"excessServerHeaders,omitempty"`
+		MaxHeaderCount        int    `json:"maxHeaderCount,omitempty"`
+		MaxHeaderSize         int    `json:"maxHeaderSize,omitempty"`
+		MaxRequests           int    `json:"maxRequests,omitempty"`
+		OversizeClientHeaders string `json:"oversizeClientHeaders,omitempty"`
+		OversizeServerHeaders string `json:"oversizeServerHeaders,omitempty"`
+		Pipeline              string `json:"pipeline,omitempty"`
+		TruncatedRedirects    string `json:"truncatedRedirects,omitempty"`
+		UnknownMethod         string `json:"unknownMethod,omitempty"`
+	} `json:"enforcement,omitempty"`
 	ExplicitProxy struct {
-		DefaultConnectHandling string `json:"defaultConnectHandling"`
-	} `json:"explicitProxy"`
-	InsertXforwardedFor       string `json:"insertXforwardedFor"`
-	LwsWidth                  int    `json:"lwsWidth"`
-	OneconnectTransformations string `json:"oneconnectTransformations"`
-	ProxyType                 string `json:"proxyType"`
-	RequestChunking           string `json:"requestChunking"`
-	ResponseChunking          string `json:"responseChunking"`
-	ServerAgentName           string `json:"serverAgentName"`
+		DefaultConnectHandling string `json:"defaultConnectHandling,omitempty"`
+	} `json:"explicitProxy,omitempty"`
+	InsertXforwardedFor       string `json:"insertXforwardedFor,omitempty"`
+	LwsWidth                  int    `json:"lwsWidth,omitempty"`
+	OneconnectTransformations string `json:"oneconnectTransformations,omitempty"`
+	ProxyType                 string `json:"proxyType,omitempty"`
+	RequestChunking           string `json:"requestChunking,omitempty"`
+	ResponseChunking          string `json:"responseChunking,omitempty"`
+	ServerAgentName           string `json:"serverAgentName,omitempty"`
 	Sflow                     struct {
-		PollInterval       int    `json:"pollInterval"`
-		PollIntervalGlobal string `json:"pollIntervalGlobal"`
-		SamplingRate       int    `json:"samplingRate"`
-		SamplingRateGlobal string `json:"samplingRateGlobal"`
-	} `json:"sflow"`
-	ViaRequest  string `json:"viaRequest"`
-	ViaResponse string `json:"viaResponse"`
+		PollInterval       int    `json:"pollInterval,omitempty"`
+		PollIntervalGlobal string `json:"pollIntervalGlobal,omitempty"`
+		SamplingRate       int    `json:"samplingRate,omitempty"`
+		SamplingRateGlobal string `json:"samplingRateGlobal,omitempty"`
+	} `json:"sflow,omitempty"`
+	ViaRequest  string `json:"viaRequest,omitempty"`
+	ViaResponse string `json:"viaResponse,omitempty"`
 }
 
 // HttpProfiles returns a list of http profiles.

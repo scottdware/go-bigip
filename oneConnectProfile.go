@@ -11,19 +11,19 @@ type OneConnectProfiles struct {
 // OneConnectProfile contains information about each oneConnect profile. You can use all
 // of these fields when modifying a oneConnect profile.
 type OneConnectProfile struct {
-	Kind                string `json:"kind"`
-	Name                string `json:"name"`
-	Partition           string `json:"partition"`
-	FullPath            string `json:"fullPath"`
-	Generation          int    `json:"generation"`
-	SelfLink            string `json:"selfLink"`
-	IdleTimeoutOverride string `json:"idleTimeoutOverride"`
-	MaxAge              int    `json:"maxAge"`
-	MaxReuse            int    `json:"maxReuse"`
-	MaxSize             int    `json:"maxSize"`
-	SharePools          string `json:"sharePools"`
-	SourceMask          string `json:"sourceMask"`
-	DefaultsFrom        string `json:"defaultsFrom"`
+	Kind                string `json:"kind,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Partition           string `json:"partition,omitempty"`
+	FullPath            string `json:"fullPath,omitempty"`
+	Generation          int    `json:"generation,omitempty"`
+	SelfLink            string `json:"selfLink,omitempty"`
+	IdleTimeoutOverride string `json:"idleTimeoutOverride,omitempty"`
+	MaxAge              int    `json:"maxAge,omitempty"`
+	MaxReuse            int    `json:"maxReuse,omitempty"`
+	MaxSize             int    `json:"maxSize,omitempty"`
+	SharePools          string `json:"sharePools,omitempty"`
+	SourceMask          string `json:"sourceMask,omitempty"`
+	DefaultsFrom        string `json:"defaultsFrom,omitempty"`
 }
 
 // OneConnectProfiles returns a list of oneConnect profiles.
