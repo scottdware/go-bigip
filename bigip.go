@@ -219,6 +219,8 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 	}
 
 	fmt.Println()
+	fmt.Println("Request Debug:")
+	fmt.Println()
 	fmt.Println(marshalJSON)
 	fmt.Println()
 
