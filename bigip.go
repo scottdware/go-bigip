@@ -218,12 +218,12 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 		return err
 	}
 
-	fmt.Println()
-	fmt.Println("Request Debug:")
-	fmt.Println()
-	fmt.Println(marshalJSON)
-	fmt.Println()
-
+	// fmt.Println()
+	// fmt.Println("Request Debug:")
+	// fmt.Println()
+	// fmt.Println(string(marshalJSON))
+	// fmt.Println()
+	//
 	req := &APIRequest{
 		Method:      "post",
 		URL:         b.iControlPath(path),
