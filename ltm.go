@@ -886,12 +886,12 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 	return monitors, nil
 }
 
-// CreateMonitor adds a new monitor to the BIG-IP system. <parent> must be one of "http", "https",
-// "icmp", "gateway icmp", or "tcp".
-func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive string) error {
+// CreateMonitor adds a new monitor to the BIG-IP system.
+func (b *BigIP) CreateMonitor(name, monitorType, parentMonitor string, interval, timeout int, send, receive string) error {
 	config := &Monitor{
 		Name:          name,
-		ParentMonitor: parent,
+		ParentMonitor: parentMonitor,
+		Type:          monitorType,
 		Interval:      interval,
 		Timeout:       timeout,
 		SendString:    send,
@@ -907,14 +907,19 @@ func (b *BigIP) AddMonitor(config *Monitor) error {
 		config.ParentMonitor = "gateway_icmp"
 	}
 
-	return b.post(config, uriLtm, uriMonitor, config.ParentMonitor)
+	return b.post(config, uriLtm, uriMonitor, config.Type)
 }
 
 // GetVirtualServer retrieves a monitor by name. Returns nil if the monitor does not exist
-func (b *BigIP) GetMonitor(name string, parent string) (*Monitor, error) {
+func (b *BigIP) GetMonitor(name string, monitorType string) (*Monitor, error) {
 	// Add a verification that type is an accepted monitor type
 	var monitor Monitor
-	err, ok := b.getForEntity(&monitor, uriLtm, uriMonitor, parent, name)
+	if Debug {
+		fmt.Println()
+		fmt.Println("DEBUG getForEntity:", &monitor, uriLtm, uriMonitor, monitorType, name)
+		fmt.Println()
+	}
+	err, ok := b.getForEntity(&monitor, uriLtm, uriMonitor, monitorType, name)
 	if err != nil {
 		return nil, err
 	}
