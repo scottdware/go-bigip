@@ -3,6 +3,7 @@ package bigip
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -870,7 +871,7 @@ func (b *BigIP) DeleteVirtualAddress(vaddr string) error {
 // Monitors returns a list of all HTTP, HTTPS, Gateway ICMP, ICMP, and TCP monitors.
 func (b *BigIP) Monitors() ([]Monitor, error) {
 	var monitors []Monitor
-	monitorUris := []string{"http", "https", "icmp", "gateway-icmp", "tcp"}
+	monitorUris := [...]string{"http", "https", "tcp", "udp", "icmp", "external", "tcp-echo", "tcp-half-open", "virtual-location", "scripted", "mysql", "mssql", "diameter", "ftp", "pop3", "smtp"}
 
 	for _, name := range monitorUris {
 		var m Monitors
@@ -912,14 +913,15 @@ func (b *BigIP) AddMonitor(config *Monitor) error {
 
 // GetVirtualServer retrieves a monitor by name. Returns nil if the monitor does not exist
 func (b *BigIP) GetMonitor(name string, monitorType string) (*Monitor, error) {
+
 	// Add a verification that type is an accepted monitor type
-	var monitor Monitor
-	if Debug {
-		fmt.Println()
-		fmt.Println("DEBUG getForEntity:", &monitor, uriLtm, uriMonitor, monitorType, name)
-		fmt.Println()
-	}
+	var monitor monitorDTO
 	err, ok := b.getForEntity(&monitor, uriLtm, uriMonitor, monitorType, name)
+	// if Debug {
+	// 	fmt.Println()
+	// 	fmt.Println("DEBUG getForEntity:", &monitor, uriLtm, uriMonitor, monitorType, name)
+	// 	fmt.Println()
+	// }
 	if err != nil {
 		return nil, err
 	}
@@ -927,7 +929,42 @@ func (b *BigIP) GetMonitor(name string, monitorType string) (*Monitor, error) {
 		return nil, nil
 	}
 
-	return &monitor, nil
+	// translate monitorDTO response to monitor
+	var m Monitor
+	m.Name = monitor.Name
+	m.Type = monitorType
+	m.Description = monitor.Description
+	m.Destination = monitor.Destination
+	res, err := strconv.ParseBool(monitor.ManualResume)
+	if err != nil {
+		res = false
+	}
+	m.ManualResume = res
+	m.ParentMonitor = monitor.ParentMonitor
+	m.Partition = monitor.Partition
+	m.Generation = monitor.Generation
+	m.Interval = monitor.Interval
+	m.Password = monitor.Password
+	m.Timeout = monitor.Timeout
+	m.TimeUntilUp = monitor.TimeUntilUp
+	m.ReceiveString = monitor.ReceiveString
+	m.ReceiveDisable = monitor.ReceiveDisable
+	m.FullPath = monitor.FullPath
+	rev, err := strconv.ParseBool(monitor.Reverse)
+	if err != nil {
+		rev = false
+	}
+	m.Reverse = rev
+	m.IPDSCP = monitor.IPDSCP
+	trans, err := strconv.ParseBool(monitor.Transparent)
+	if err != nil {
+		trans = false
+	}
+	m.Transparent = trans
+	m.UpInterval = monitor.UpInterval
+	m.Username = monitor.Username
+
+	return &m, nil
 }
 
 // DeleteMonitor removes a monitor.

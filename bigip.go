@@ -230,12 +230,14 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 		return err
 	}
 
-	// fmt.Println()
-	// fmt.Println("Request Debug:")
-	// fmt.Println()
-	// fmt.Println(string(marshalJSON))
-	// fmt.Println()
-	//
+	if Debug {
+		fmt.Println()
+		fmt.Println("Request Debug:")
+		fmt.Println()
+		fmt.Println(string(marshalJSON))
+		fmt.Println()
+	}
+
 	req := &APIRequest{
 		Method:      "post",
 		URL:         b.iControlPath(path),
@@ -276,7 +278,7 @@ func (b *BigIP) getForEntity(e interface{}, path ...string) (error, bool) {
 
 	if Debug {
 		fmt.Println()
-		fmt.Println("DEBUG", req)
+		fmt.Println("REQUEST DEBUG:", req)
 		fmt.Println()
 	}
 
@@ -290,7 +292,16 @@ func (b *BigIP) getForEntity(e interface{}, path ...string) (error, bool) {
 		return err, false
 	}
 
+	if Debug {
+		fmt.Println()
+		fmt.Println("RESPONSE DEBUG:", string(resp))
+		fmt.Println()
+	}
+
 	err = json.Unmarshal(resp, e)
+	if Debug {
+		fmt.Println("RESPONSE STRUCT DEBUG:", e)
+	}
 	if err != nil {
 		return err, false
 	}

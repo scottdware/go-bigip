@@ -1,5 +1,7 @@
 package bigip
 
+import "strings"
+
 // Pool contains information about each pool. You can use all of these
 // fields when modifying a pool.
 type Pool struct {
@@ -183,6 +185,10 @@ func (b *BigIP) GetPool(name string) (*Pool, error) {
 	if !ok {
 		return nil, nil
 	}
+
+	pool.Name = strings.Replace(pool.Name, "/Common/", "", -1)
+	pool.Name = strings.Replace(pool.Name, "/Common", "", -1)
+	pool.Name = strings.Replace(pool.Name, "~Common~", "", -1)
 
 	return &pool, nil
 }
