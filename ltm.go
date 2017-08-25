@@ -2,6 +2,7 @@ package bigip
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -778,7 +779,7 @@ func (b *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 		return nil, err
 	}
 	if !ok {
-		return nil, nil
+		return nil, errors.New("Unable to find virtual server by name: " + name)
 	}
 
 	profiles, err := b.VirtualServerProfiles(name)
@@ -811,6 +812,10 @@ func (b *BigIP) ModifyVirtualServer(name string, config *VirtualServer) error {
 func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error) {
 	var p Profiles
 	err, ok := b.getForEntity(&p, uriLtm, uriVirtual, vs, "profiles")
+	// fmt.Println()
+	// fmt.Println("Profiles from entity:")
+	// fmt.Printf("%+v", p)
+	// fmt.Println()
 	if err != nil {
 		return nil, err
 	}

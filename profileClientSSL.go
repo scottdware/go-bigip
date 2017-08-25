@@ -1,7 +1,5 @@
 package bigip
 
-import "fmt"
-
 // ClientSSLProfiles
 // Documentation: https://devcentral.f5.com/wiki/iControlREST.APIRef_tm_ltm_profile_client-ssl.ashx
 
@@ -109,7 +107,6 @@ func (b *BigIP) CreateClientSSLProfile(name string, parent string) error {
 
 // AddClientSSLProfile adds a new client-ssl profile on the BIG-IP system.
 func (b *BigIP) AddClientSSLProfile(config *ClientSSLProfile) error {
-	fmt.Println("TEST")
 	return b.post(config, uriLtm, uriProfile, uriClientSSL)
 }
 

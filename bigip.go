@@ -145,12 +145,12 @@ func NewTokenSession(host, user, passwd, loginProviderName string, configOptions
 // APICall is used to query the BIG-IP web API.
 func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	var req *http.Request
-	if Debug {
-		fmt.Println()
-		fmt.Println("API CALL DEBUG Transport:", b.Transport)
-		fmt.Println("API CALL DEBUG ConfigOptions:", b.ConfigOptions)
-		fmt.Println()
-	}
+	// if Debug {
+	// 	fmt.Println()
+	// 	fmt.Println("API CALL DEBUG Transport:", b.Transport)
+	// 	fmt.Println("API CALL DEBUG ConfigOptions:", b.ConfigOptions)
+	// 	fmt.Println()
+	// }
 	client := &http.Client{
 		Transport: b.Transport,
 		Timeout:   b.ConfigOptions.APICallTimeout,
@@ -163,12 +163,6 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	}
 	url := fmt.Sprintf(format, b.Host, options.URL)
 	body := bytes.NewReader([]byte(options.Body))
-	if Debug {
-		fmt.Println()
-		fmt.Println("DEBUG URL:", options.URL)
-		fmt.Println("DEBUG BODY:", options.Body)
-		fmt.Println()
-	}
 	req, _ = http.NewRequest(strings.ToUpper(options.Method), url, body)
 	if b.Token != "" {
 		req.Header.Set("X-F5-Auth-Token", b.Token)
@@ -180,6 +174,14 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 
 	if len(options.ContentType) > 0 {
 		req.Header.Set("Content-Type", options.ContentType)
+	}
+
+	if Debug {
+		fmt.Println()
+		fmt.Println("DEBUG URL:", url)
+		fmt.Println("DEBUG BODY:", options.Body)
+		fmt.Println("DEBUG CONTENT TYPE:", options.ContentType)
+		fmt.Println()
 	}
 
 	res, err := client.Do(req)
@@ -287,7 +289,7 @@ func (b *BigIP) getForEntity(e interface{}, path ...string) (error, bool) {
 		var reqError RequestError
 		json.Unmarshal(resp, &reqError)
 		if reqError.Code == 404 {
-			return nil, false
+			return errors.New("Server returned a 404 for: " + req.URL), false
 		}
 		return err, false
 	}
