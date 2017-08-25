@@ -14,6 +14,7 @@ const (
 	uriPersistenceSourceAddr = "source-addr"
 	uriPersistenceHash       = "hash"
 	uriProfileTCP            = "tcp"
+	uriProfileFTP            = "ftp"
 	uriProfileUDP            = "udp"
 	uriProfileFastL4         = "fastl4"
 	uriOneConnect            = "one-connect"
