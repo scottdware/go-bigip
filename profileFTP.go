@@ -2,20 +2,16 @@ package bigip
 
 // FTPProfile represents a FTP Profile configuration
 type FTPProfile struct {
-	Kind                  string `json:"kind,omitempty"`
-	Name                  string `json:"name,omitempty"`
-	Partition             string `json:"partition,omitempty"`
-	FullPath              string `json:"fullPath,omitempty"`
-	Generation            int    `json:"generation,omitempty"`
-	SelfLink              string `json:"selfLink,omitempty"`
-	AllowNoPayload        string `json:"allowNoPayload,omitempty"`
-	DatagramLoadBalancing string `json:"datagramLoadBalancing,omitempty"`
-	DefaultsFrom          string `json:"defaultsFrom,omitempty"`
-	IdleTimeout           string `json:"idleTimeout,omitempty"`
-	IPTosToClient         string `json:"ipTosToClient,omitempty"`
-	LinkQosToClient       string `json:"linkQosToClient,omitempty"`
-	NoChecksum            string `json:"noChecksum,omitempty"`
-	ProxyMss              string `json:"proxyMss,omitempty"`
+	Kind                 string `json:"kind"`
+	Name                 string `json:"name"`
+	Partition            string `json:"partition"`
+	FullPath             string `json:"fullPath"`
+	Generation           int    `json:"generation"`
+	SelfLink             string `json:"selfLink"`
+	InheritParentProfile string `json:"inheritParentProfile"`
+	Port                 int    `json:"port"`
+	Security             string `json:"security"`
+	TranslateExtended    string `json:"translateExtended"`
 }
 
 // FTPProfiles is an array of FTPProfile structs
@@ -47,10 +43,9 @@ func (b *BigIP) GetFTPProfile(name string) (*FTPProfile, error) {
 }
 
 // CreateFTPProfile creates a new FTP profile on the BIG-IP system.
-func (b *BigIP) CreateFTPProfile(name string, parent string) error {
+func (b *BigIP) CreateFTPProfile(name string) error {
 	config := &FTPProfile{
-		Name:         name,
-		DefaultsFrom: parent,
+		Name: name,
 	}
 
 	return b.post(config, uriLtm, uriProfile, uriProfileFTP)
