@@ -724,7 +724,19 @@ func (b *BigIP) ModifyInternalDataGroupRecords(name string, records *[]DataGroup
 	return b.put(config, uriLtm, uriDatagroup, uriInternal, name)
 }
 
-// Get the internal data group records for a named internal data group
+// GestInternalDataGroup Gets the internal data group records for a named internal data group
+func (b *BigIP) GetInternalDataGroup(name string) (*DataGroup, error) {
+	var dataGroup DataGroup
+	err, _ := b.getForEntity(&dataGroup, uriLtm, uriDatagroup, uriInternal, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dataGroup, nil
+}
+
+// GetInternalDataGroupRecords gets the internal data group recors for a internal
+// data group name
 func (b *BigIP) GetInternalDataGroupRecords(name string) (*[]DataGroupRecord, error) {
 	var dataGroupRecords []DataGroupRecord
 	err, _ := b.getForEntity(&dataGroupRecords, uriLtm, uriDatagroup, uriInternal, name)

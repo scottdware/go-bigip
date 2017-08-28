@@ -285,6 +285,7 @@ func (b *BigIP) getForEntity(e interface{}, path ...string) (error, bool) {
 	}
 
 	resp, err := b.APICall(req)
+	// fmt.Println("DEBUG:" + string(resp))
 	if err != nil {
 		var reqError RequestError
 		json.Unmarshal(resp, &reqError)
