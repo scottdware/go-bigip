@@ -4,29 +4,37 @@ import "encoding/json"
 
 // DataGroups contains a list of data groups on the BIG-IP system.
 type DataGroups struct {
-	DataGroups []DataGroup `json:"items"`
+	SelfLink   string      `json:"selfLink,omitempty"`
+	Kind       string      `json:"kind,omitempty"`
+	DataGroups []DataGroup `json:"items,omitempty"`
 }
 
 // DataGroups contains information about each data group.
 type DataGroup struct {
-	Name       string
-	Partition  string
-	FullPath   string
-	Generation int
-	Type       string
-	Records    []DataGroupRecord
+	Kind       string            `json:"kind,omitempty"`
+	Name       string            `json:"name"`
+	FullPath   string            `json:"fullPath,omitempty"`
+	Partition  string            `json:"tmPartition,omitempty"`
+	Generation int               `json:"generation,omitempty"`
+	SelfLink   string            `json:"selfLink,omitempty"`
+	Type       string            `json:"type,omitempty"`
+	Records    []DataGroupRecord `json:"records"`
 }
 
 type DataGroupRecord struct {
-	Name string `json:"name,omitempty"`
-	Data string `json:"data,omitempty"`
+	Name      string `json:"name"`
+	Partition string `json:"partition,omitempty"`
+	SubPath   string `json:"subPath,omitempty"`
+	Data      string `json:"data"`
 }
 
 type dataGroupDTO struct {
+	Kind       string            `json:"kind,omitempty"`
 	Name       string            `json:"name,omitempty"`
-	Partition  string            `json:"partition,omitempty"`
 	FullPath   string            `json:"fullPath,omitempty"`
+	Partition  string            `json:"tmPartition,omitempty"`
 	Generation int               `json:"generation,omitempty"`
+	SelfLink   string            `json:"selfLink,omitempty"`
 	Type       string            `json:"type,omitempty"`
 	Records    []DataGroupRecord `json:"records,omitempty"`
 }

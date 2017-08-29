@@ -234,7 +234,7 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 
 	if Debug {
 		fmt.Println()
-		fmt.Println("Request Debug:")
+		fmt.Println("Request JSON Debug:")
 		fmt.Println()
 		fmt.Println(string(marshalJSON))
 		fmt.Println()
@@ -280,7 +280,7 @@ func (b *BigIP) getForEntity(e interface{}, path ...string) (error, bool) {
 
 	if Debug {
 		fmt.Println()
-		fmt.Println("REQUEST DEBUG:", req)
+		fmt.Printf("REQUEST DEBUG: %+v \r\n", req)
 		fmt.Println()
 	}
 
@@ -297,13 +297,13 @@ func (b *BigIP) getForEntity(e interface{}, path ...string) (error, bool) {
 
 	if Debug {
 		fmt.Println()
-		fmt.Println("RESPONSE DEBUG:", string(resp))
+		fmt.Println("RESPONSE STRING DEBUG:", string(resp))
 		fmt.Println()
 	}
 
 	err = json.Unmarshal(resp, e)
 	if Debug {
-		fmt.Println("RESPONSE STRUCT DEBUG:", e)
+		fmt.Printf("RESPONSE STRUCT DEBUG: %+v \r\n", e)
 	}
 	if err != nil {
 		return err, false
