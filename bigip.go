@@ -227,6 +227,9 @@ func (b *BigIP) delete(path ...string) error {
 }
 
 func (b *BigIP) post(body interface{}, path ...string) error {
+	if Debug {
+		fmt.Printf("About to marshal this struct: %+v \r\n", body)
+	}
 	marshalJSON, err := jsonMarshal(body)
 	if err != nil {
 		return err
@@ -340,6 +343,9 @@ func jsonMarshal(t interface{}) ([]byte, error) {
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)
+	if Debug {
+		fmt.Printf("About to encode %+v \r\n", t)
+	}
 	err := encoder.Encode(t)
 	return buffer.Bytes(), err
 }

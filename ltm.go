@@ -467,27 +467,27 @@ type Monitors struct {
 
 // Monitor contains information about each individual monitor.
 type Monitor struct {
-	Name           string
-	Type           string
-	Partition      string
-	FullPath       string
-	Generation     int
-	ParentMonitor  string
-	Description    string
-	Destination    string
-	Interval       int
-	IPDSCP         int
-	ManualResume   bool
-	Password       string
-	ReceiveString  string
-	ReceiveDisable string
-	Reverse        bool
-	SendString     string
-	TimeUntilUp    int
-	Timeout        int
-	Transparent    bool
-	UpInterval     int
-	Username       string
+	Name           string `json:"name,omitempty"`
+	Type           string `json:"-,omitempty"`
+	Partition      string `json:"tmPartition,omitempty"`
+	FullPath       string `json:"-,omitempty"`
+	Generation     int    `json:"generation,omitempty"`
+	ParentMonitor  string `json:"defaultsFrom,omitempty"`
+	Description    string `json:"description,omitempty"`
+	Destination    string `json:"destination,omitempty"`
+	Interval       int    `json:"interval,omitempty"`
+	IPDSCP         int    `json:"-,omitempty"`
+	ManualResume   bool   `json:"manualResumej,omitempty"`
+	Password       string `json:"password,omitempty"`
+	ReceiveString  string `json:"-,omitempty"`
+	ReceiveDisable string `json:"-,omitempty"`
+	// Reverse        string `json:"-,omitempty"`
+	SendString  string `json:"-,omitempty"`
+	TimeUntilUp int    `json:"timeUntilUp,omitempty"`
+	Timeout     int    `json:"timeout,omitempty"`
+	// Transparent    bool   `json:"-,omitempty"`
+	UpInterval int    `json:"upInterval,omitempty"`
+	Username   string `json:"-,omitempty"`
 }
 
 type monitorDTO struct {
@@ -906,7 +906,7 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 
 // CreateMonitor adds a new monitor to the BIG-IP system.
 func (b *BigIP) CreateMonitor(name, monitorType, parentMonitor string, interval, timeout int, send, receive string) error {
-	config := &Monitor{
+	config := Monitor{
 		Name:          name,
 		ParentMonitor: parentMonitor,
 		Type:          monitorType,
@@ -915,16 +915,29 @@ func (b *BigIP) CreateMonitor(name, monitorType, parentMonitor string, interval,
 		SendString:    send,
 		ReceiveString: receive,
 	}
+	// config.TimeUntilUp = 4
+	// config.ReceiveDisable = "true"
+	// config.Destination = "4.4.4.4:25"
+	// config.Password = "pass"
+	// config.ReceiveDisable = "true"
+	// config.UpInterval = 3
+	// config.IPDSCP = 3
+	// config.Partition = "Common"
+	// config.Username = "user"
+	// config.FullPath = "/Common/name"
+	// config.Generation = 3
+	if Debug {
+		fmt.Printf("Translated monitor struct: %+v \r\n", config)
+	}
 
 	return b.AddMonitor(config)
 }
 
 // AddMonitor creates a monitor by supplying a config
-func (b *BigIP) AddMonitor(config *Monitor) error {
-	if strings.Contains(config.ParentMonitor, "gateway") {
-		config.ParentMonitor = "gateway_icmp"
-	}
-
+func (b *BigIP) AddMonitor(config Monitor) error {
+	// if strings.Contains(config.ParentMonitor, "gateway") {
+	// 	config.ParentMonitor = "gateway_icmp"
+	// }
 	return b.post(config, uriLtm, uriMonitor, config.Type)
 }
 
@@ -967,17 +980,17 @@ func (b *BigIP) GetMonitor(name string, monitorType string) (*Monitor, error) {
 	m.ReceiveString = monitor.ReceiveString
 	m.ReceiveDisable = monitor.ReceiveDisable
 	m.FullPath = monitor.FullPath
-	rev, err := strconv.ParseBool(monitor.Reverse)
-	if err != nil {
-		rev = false
-	}
-	m.Reverse = rev
+	// rev, err := strconv.ParseBool(monitor.Reverse)
+	// if err != nil {
+	// 	rev = false
+	// }
+	// m.Reverse = rev
 	m.IPDSCP = monitor.IPDSCP
-	trans, err := strconv.ParseBool(monitor.Transparent)
-	if err != nil {
-		trans = false
-	}
-	m.Transparent = trans
+	// trans, err := strconv.ParseBool(monitor.Transparent)
+	// if err != nil {
+	// 	trans = false
+	// }
+	// m.Transparent = trans
 	m.UpInterval = monitor.UpInterval
 	m.Username = monitor.Username
 
