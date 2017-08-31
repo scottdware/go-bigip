@@ -12,6 +12,7 @@ type FTPProfile struct {
 	Port                 int    `json:"port"`
 	Security             string `json:"security"`
 	TranslateExtended    string `json:"translateExtended"`
+	DefaultsFrom         string `json:defaultsFrom`
 }
 
 // FTPProfiles is an array of FTPProfile structs
