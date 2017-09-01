@@ -3,7 +3,7 @@ package bigip
 // TCPProfile represents a TCP Profile configuration
 type TCPProfile struct {
 	Kind                string `json:"kind,omitempty"`
-	Name                string `json:"name,omitempty"`
+	Name                string `json:"name"`
 	Partition           string `json:"partition,omitempty"`
 	FullPath            string `json:"fullPath,omitempty"`
 	Generation          int    `json:"generation,omitempty"`
@@ -13,7 +13,7 @@ type TCPProfile struct {
 	CloseWaitTimeout    int    `json:"closeWaitTimeout,omitempty"`
 	CmetricsCache       string `json:"cmetricsCache,omitempty"`
 	CongestionControl   string `json:"congestionControl,omitempty"`
-	DefaultsFrom        string `json:"defaultsFrom,omitempty"`
+	DefaultsFrom        string `json:"defaultsFrom"`
 	DeferredAccept      string `json:"deferredAccept,omitempty"`
 	DelayWindowControl  string `json:"delayWindowControl,omitempty"`
 	DelayedAcks         string `json:"delayedAcks,omitempty"`

@@ -5,7 +5,7 @@ import "strings"
 // Pool contains information about each pool. You can use all of these
 // fields when modifying a pool.
 type Pool struct {
-	Name                   string `json:"name,omitempty"`
+	Name                   string `json:"name"`
 	Partition              string `json:"partition,omitempty"`
 	FullPath               string `json:"fullPath,omitempty"`
 	Generation             int    `json:"generation,omitempty"`

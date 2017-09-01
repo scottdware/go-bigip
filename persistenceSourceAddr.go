@@ -1,25 +1,25 @@
 package bigip
 
 type PersistenceSourceAddres struct {
-	PersistenceSourceAddr []PersistenceSourceAddr `json:"items"`
+	PersistenceSourceAddr []PersistenceSourceAddr `json:"items,omitempty"`
 }
 
 type PersistenceSourceAddr struct {
 	Name                    string `json:"name"`
 	DefaultsFrom            string `json:"defaultsFrom"`
-	Kind                    string `json:"kind"`
-	Partition               string `json:"partition"`
-	FullPath                string `json:"fullPath"`
-	Generation              int    `json:"generation"`
-	SelfLink                string `json:"selfLink"`
-	HashAlgorithm           string `json:"hashAlgorithm"`
-	MapProxies              string `json:"mapProxies"`
-	MatchAcrossPools        string `json:"matchAcrossPools"`
-	MatchAcrossServices     string `json:"matchAcrossServices"`
-	MatchAcrossVirtuals     string `json:"matchAcrossVirtuals"`
-	Mirror                  string `json:"mirror"`
-	OverrideConnectionLimit string `json:"overrideConnectionLimit"`
-	Timeout                 string `json:"timeout"`
+	Kind                    string `json:"kind,omitempty"`
+	Partition               string `json:"partition,omitempty"`
+	FullPath                string `json:"fullPath,omitempty"`
+	Generation              int    `json:"generation,omitempty"`
+	SelfLink                string `json:"selfLink,omitempty"`
+	HashAlgorithm           string `json:"hashAlgorithm,omitempty"`
+	MapProxies              string `json:"mapProxies,omitempty"`
+	MatchAcrossPools        string `json:"matchAcrossPools,omitempty"`
+	MatchAcrossServices     string `json:"matchAcrossServices,omitempty"`
+	MatchAcrossVirtuals     string `json:"matchAcrossVirtuals,omitempty"`
+	Mirror                  string `json:"mirror,omitempty"`
+	OverrideConnectionLimit string `json:"overrideConnectionLimit,omitempty"`
+	Timeout                 string `json:"timeout,omitempty"`
 }
 
 // PersistenceSourceAddr returns a list of oersistence profiles.

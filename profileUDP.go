@@ -3,14 +3,14 @@ package bigip
 // UDPProfile represents a UDP Profile configuration
 type UDPProfile struct {
 	Kind                  string `json:"kind,omitempty"`
-	Name                  string `json:"name,omitempty"`
+	Name                  string `json:"name"`
 	Partition             string `json:"partition,omitempty"`
 	FullPath              string `json:"fullPath,omitempty"`
 	Generation            int    `json:"generation,omitempty"`
 	SelfLink              string `json:"selfLink,omitempty"`
 	AllowNoPayload        string `json:"allowNoPayload,omitempty"`
 	DatagramLoadBalancing string `json:"datagramLoadBalancing,omitempty"`
-	DefaultsFrom          string `json:"defaultsFrom,omitempty"`
+	DefaultsFrom          string `json:"defaultsFrom"`
 	IdleTimeout           string `json:"idleTimeout,omitempty"`
 	IPTosToClient         string `json:"ipTosToClient,omitempty"`
 	LinkQosToClient       string `json:"linkQosToClient,omitempty"`

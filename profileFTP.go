@@ -4,14 +4,14 @@ package bigip
 type FTPProfile struct {
 	Kind                 string `json:"kind"`
 	Name                 string `json:"name"`
-	Partition            string `json:"partition"`
-	FullPath             string `json:"fullPath"`
-	Generation           int    `json:"generation"`
-	SelfLink             string `json:"selfLink"`
-	InheritParentProfile string `json:"inheritParentProfile"`
-	Port                 int    `json:"port"`
-	Security             string `json:"security"`
-	TranslateExtended    string `json:"translateExtended"`
+	Partition            string `json:"partition,omitempty"`
+	FullPath             string `json:"fullPath,omitempty"`
+	Generation           int    `json:"generation,omitempty"`
+	SelfLink             string `json:"selfLink,omitempty"`
+	InheritParentProfile string `json:"inheritParentProfile,omitempty"`
+	Port                 int    `json:"port,omitempty"`
+	Security             string `json:"security,omitempty"`
+	TranslateExtended    string `json:"translateExtended,omitempty"`
 	DefaultsFrom         string `json:defaultsFrom`
 }
 

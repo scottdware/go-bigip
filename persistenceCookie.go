@@ -1,36 +1,36 @@
 package bigip
 
 type PersistenceCookies struct {
-	PersistenceCookie []PersistenceCookie `json:"items"`
+	PersistenceCookie []PersistenceCookie `json:"items,omitempty"`
 }
 
 type PersistenceCookie struct {
 	Name                       string `json:"name"`
 	DefaultsFrom               string `json:"defaultsFrom"`
-	Kind                       string `json:"kind"`
-	Mode                       string `json:"mode"`
-	Partition                  string `json:"partition"`
-	FullPath                   string `json:"fullPath"`
-	Generation                 int    `json:"generation"`
-	SelfLink                   string `json:"selfLink"`
-	AlwaysSend                 string `json:"alwaysSend"`
-	Description                string `json:"description"`
-	AppService                 string `json:"appService"`
-	CookieEncryption           string `json:"cookieEncryption"`
-	CookieEncryptionPassphrase string `json:"cookieEncryptionPassphrase"`
-	CookieName                 string `json:"cookieName"`
-	Expiration                 string `json:"expiration"`
-	HashLength                 int    `json:"hashLength"`
-	HashOffset                 int    `json:"hashOffset"`
-	MatchAcrossPools           string `json:"matchAcrossPools"`
-	MatchAcrossServices        string `json:"matchAcrossServices"`
-	MatchAcrossVirtuals        string `json:"matchAcrossVirtuals"`
-	Method                     string `json:"method"`
-	Mirror                     string `json:"mirror"`
-	Secure                     string `json:"secure"`
-	TMPartition                string `json:"tmPartition"`
-	OverrideConnectionLimit    string `json:"overrideConnectionLimit"`
-	Timeout                    string `json:"timeout"`
+	Kind                       string `json:"kind,omitempty"`
+	Mode                       string `json:"mode,omitempty"`
+	Partition                  string `json:"partition,omitempty"`
+	FullPath                   string `json:"fullPath,omitempty"`
+	Generation                 int    `json:"generation,omitempty"`
+	SelfLink                   string `json:"selfLink,omitempty"`
+	AlwaysSend                 string `json:"alwaysSend,omitempty"`
+	Description                string `json:"description,omitempty"`
+	AppService                 string `json:"appService,omitempty"`
+	CookieEncryption           string `json:"cookieEncryption,omitempty"`
+	CookieEncryptionPassphrase string `json:"cookieEncryptionPassphrase,omitempty"`
+	CookieName                 string `json:"cookieName,omitempty"`
+	Expiration                 string `json:"expiration,omitempty"`
+	HashLength                 int    `json:"hashLength,omitempty"`
+	HashOffset                 int    `json:"hashOffset,omitempty"`
+	MatchAcrossPools           string `json:"matchAcrossPools,omitempty"`
+	MatchAcrossServices        string `json:"matchAcrossServices,omitempty"`
+	MatchAcrossVirtuals        string `json:"matchAcrossVirtuals,omitempty"`
+	Method                     string `json:"method,omitempty"`
+	Mirror                     string `json:"mirror,omitempty"`
+	Secure                     string `json:"secure,omitempty"`
+	TMPartition                string `json:"tmPartition,omitempty"`
+	OverrideConnectionLimit    string `json:"overrideConnectionLimit,omitempty"`
+	Timeout                    string `json:"timeout,omitempty"`
 }
 
 // PersistenceCookie returns a list of oersistence profiles.

@@ -11,7 +11,7 @@ type ClientSSLProfiles struct {
 // ClientSSLProfile contains information about each client-ssl profile. You can use all
 // of these fields when modifying a client-ssl profile.
 type ClientSSLProfile struct {
-	Name              string `json:"name,omitempty"`
+	Name              string `json:"name"`
 	Partition         string `json:"partition,omitempty"`
 	FullPath          string `json:"fullPath,omitempty"`
 	Generation        int    `json:"generation,omitempty"`
@@ -37,7 +37,7 @@ type ClientSSLProfile struct {
 	Ciphers                         string   `json:"ciphers,omitempty"`
 	ClientCertCa                    string   `json:"clientCertCa,omitempty"`
 	CrlFile                         string   `json:"crlFile,omitempty"`
-	DefaultsFrom                    string   `json:"defaultsFrom,omitempty"`
+	DefaultsFrom                    string   `json:"defaultsFrom"`
 	ForwardProxyBypassDefaultAction string   `json:"forwardProxyBypassDefaultAction,omitempty"`
 	GenericAlert                    string   `json:"genericAlert,omitempty"`
 	HandshakeTimeout                string   `json:"handshakeTimeout,omitempty"`

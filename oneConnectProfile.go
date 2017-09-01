@@ -12,7 +12,7 @@ type OneConnectProfiles struct {
 // of these fields when modifying a oneConnect profile.
 type OneConnectProfile struct {
 	Kind                string `json:"kind,omitempty"`
-	Name                string `json:"name,omitempty"`
+	Name                string `json:"name"`
 	Partition           string `json:"partition,omitempty"`
 	FullPath            string `json:"fullPath,omitempty"`
 	Generation          int    `json:"generation,omitempty"`
@@ -23,7 +23,7 @@ type OneConnectProfile struct {
 	MaxSize             int    `json:"maxSize,omitempty"`
 	SharePools          string `json:"sharePools,omitempty"`
 	SourceMask          string `json:"sourceMask,omitempty"`
-	DefaultsFrom        string `json:"defaultsFrom,omitempty"`
+	DefaultsFrom        string `json:"defaultsFrom"`
 }
 
 // OneConnectProfiles returns a list of oneConnect profiles.

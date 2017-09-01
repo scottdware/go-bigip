@@ -1,34 +1,34 @@
 package bigip
 
 type PersistenceHashes struct {
-	PersistenceHash []PersistenceHash `json:"items"`
+	PersistenceHash []PersistenceHash `json:"items,omitempty"`
 }
 
 type PersistenceHash struct {
-	Kind                    string `json:"kind"`
+	Kind                    string `json:"kind,omitempty"`
 	DefaultsFrom            string `json:"defaultsFrom"`
 	Name                    string `json:"name"`
-	Partition               string `json:"partition"`
-	FullPath                string `json:"fullPath"`
-	Generation              int    `json:"generation"`
-	SelfLink                string `json:"selfLink"`
-	HashAlgorithm           string `json:"hashAlgorithm"`
-	HashBufferLimit         int    `json:"hashBufferLimit"`
-	HashLength              int    `json:"hashLength"`
-	HashOffset              int    `json:"hashOffset"`
-	MatchAcrossPools        string `json:"matchAcrossPools"`
-	MatchAcrossServices     string `json:"matchAcrossServices"`
-	MatchAcrossVirtuals     string `json:"matchAcrossVirtuals"`
-	AppService              string `json:"appService"`
-	Description             string `json:"description"`
-	HashEndPattern          string `json:"hashEndPattern"`
-	HashStartPattern        string `json:"hashStartPattern"`
-	Mode                    string `json:"mode"`
-	Rule                    string `json:"rule"`
-	TMPartition             string `json:"tmPartition"`
-	Mirror                  string `json:"mirror"`
-	OverrideConnectionLimit string `json:"overrideConnectionLimit"`
-	Timeout                 string `json:"timeout"`
+	Partition               string `json:"partition,omitempty"`
+	FullPath                string `json:"fullPath,omitempty"`
+	Generation              int    `json:"generation,omitempty"`
+	SelfLink                string `json:"selfLink,omitempty"`
+	HashAlgorithm           string `json:"hashAlgorithm,omitempty"`
+	HashBufferLimit         int    `json:"hashBufferLimit,omitempty"`
+	HashLength              int    `json:"hashLength,omitempty"`
+	HashOffset              int    `json:"hashOffset,omitempty"`
+	MatchAcrossPools        string `json:"matchAcrossPools,omitempty"`
+	MatchAcrossServices     string `json:"matchAcrossServices,omitempty"`
+	MatchAcrossVirtuals     string `json:"matchAcrossVirtuals,omitempty"`
+	AppService              string `json:"appService,omitempty"`
+	Description             string `json:"description,omitempty"`
+	HashEndPattern          string `json:"hashEndPattern,omitempty"`
+	HashStartPattern        string `json:"hashStartPattern,omitempty"`
+	Mode                    string `json:"mode,omitempty"`
+	Rule                    string `json:"rule,omitempty"`
+	TMPartition             string `json:"tmPartition,omitempty"`
+	Mirror                  string `json:"mirror,omitempty"`
+	OverrideConnectionLimit string `json:"overrideConnectionLimit,omitempty"`
+	Timeout                 string `json:"timeout,omitempty"`
 }
 
 // PersistenceHash returns a list of oersistence profiles.

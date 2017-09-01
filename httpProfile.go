@@ -6,8 +6,8 @@ type HttpProfiles struct {
 
 type HttpProfile struct {
 	Kind         string `json:"kind,omitempty"`
-	DefaultsFrom string `json:"defaultsFrom,omitempty"`
-	Name         string `json:"name,omitempty"`
+	DefaultsFrom string `json:"defaultsFrom"`
+	Name         string `json:"name"`
 	Partition    string `json:"partition,omitempty"`
 	FullPath     string `json:"fullPath,omitempty"`
 	Generation   int    `json:"generation,omitempty"`

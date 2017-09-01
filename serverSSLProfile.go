@@ -11,7 +11,7 @@ type ServerSSLProfiles struct {
 // ServerSSLProfile contains information about each server-ssl profile. You can use all
 // of these fields when modifying a server-ssl profile.
 type ServerSSLProfile struct {
-	Name                         string   `json:"name,omitempty"`
+	Name                         string   `json:"name"`
 	Partition                    string   `json:"partition,omitempty"`
 	FullPath                     string   `json:"fullPath,omitempty"`
 	Generation                   int      `json:"generation,omitempty"`
@@ -24,7 +24,7 @@ type ServerSSLProfile struct {
 	Cert                         string   `json:"cert,omitempty"`
 	Chain                        string   `json:"chain,omitempty"`
 	Ciphers                      string   `json:"ciphers,omitempty"`
-	DefaultsFrom                 string   `json:"defaultsFrom,omitempty"`
+	DefaultsFrom                 string   `json:"defaultsFrom"`
 	ExpireCertResponseControl    string   `json:"expireCertResponseControl,omitempty"`
 	GenericAlert                 string   `json:"genericAlert,omitempty"`
 	HandshakeTimeout             string   `json:"handshakeTimeout,omitempty"`
