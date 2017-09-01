@@ -467,7 +467,7 @@ type Monitors struct {
 
 // Monitor contains information about each individual monitor.
 type Monitor struct {
-	Name           string `json:"name,omitempty"`
+	Name           string `json:"name"`
 	Type           string `json:"-,omitempty"`
 	Partition      string `json:"tmPartition,omitempty"`
 	FullPath       string `json:"-,omitempty"`
