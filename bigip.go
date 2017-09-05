@@ -145,12 +145,12 @@ func NewTokenSession(host, user, passwd, loginProviderName string, configOptions
 // APICall is used to query the BIG-IP web API.
 func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	var req *http.Request
-	// if Debug {
-	// 	fmt.Println()
-	// 	fmt.Println("API CALL DEBUG Transport:", b.Transport)
-	// 	fmt.Println("API CALL DEBUG ConfigOptions:", b.ConfigOptions)
-	// 	fmt.Println()
-	// }
+	if Debug {
+		fmt.Println()
+		fmt.Println("API CALL DEBUG Transport:", b.Transport)
+		fmt.Println("API CALL DEBUG ConfigOptions:", b.ConfigOptions)
+		fmt.Println()
+	}
 	client := &http.Client{
 		Transport: b.Transport,
 		Timeout:   b.ConfigOptions.APICallTimeout,
