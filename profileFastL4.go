@@ -18,8 +18,8 @@ type FastL4Profile struct {
 	LooseClose              string `json:"looseClose,omitempty"`
 	LooseInitialization     string `json:"looseInitialization,omitempty"`
 	MssOverride             int    `json:"mssOverride,omitempty"`
-	PriorityToClient        int    `json:"priorityToClient,omitempty"`
-	PriorityToServer        int    `json:"priorityToServer,omitempty"`
+	PriorityToClient        string `json:"priorityToClient,omitempty"`
+	PriorityToServer        string `json:"priorityToServer,omitempty"`
 	PvaAcceleration         string `json:"pvaAcceleration,omitempty"`
 	PvaDynamicClientPackets int    `json:"pvaDynamicClientPackets,omitempty"`
 	PvaDynamicServerPackets int    `json:"pvaDynamicServerPackets,omitempty"`
