@@ -214,47 +214,25 @@ func (b *BigIP) delete(path ...string) error {
 }
 
 func (b *BigIP) post(body interface{}, path ...string) error {
-	marshalJSON, err := jsonMarshal(body)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "post",
-		URL:         b.iControlPath(path),
-		Body:        strings.TrimRight(string(marshalJSON), "\n"),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.reqWithBody("post", body, path...)
 }
 
 func (b *BigIP) put(body interface{}, path ...string) error {
-	marshalJSON, err := jsonMarshal(body)
-	if err != nil {
-		return err
-	}
-
-	req := &APIRequest{
-		Method:      "put",
-		URL:         b.iControlPath(path),
-		Body:        strings.TrimRight(string(marshalJSON), "\n"),
-		ContentType: "application/json",
-	}
-
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.reqWithBody("put", body, path...)
 }
 
 func (b *BigIP) patch(body interface{}, path ...string) error {
+	return b.reqWithBody("patch", body, path...)
+}
+
+func (b *BigIP) reqWithBody(method string, body interface{}, path ...string) error {
 	marshalJSON, err := jsonMarshal(body)
 	if err != nil {
 		return err
 	}
 
 	req := &APIRequest{
-		Method:      "patch",
+		Method:      method,
 		URL:         b.iControlPath(path),
 		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
@@ -263,7 +241,6 @@ func (b *BigIP) patch(body interface{}, path ...string) error {
 	_, callErr := b.APICall(req)
 	return callErr
 }
-
 
 //Get a url and populate an entity. If the entity does not exist (404) then the
 //passed entity will be untouched and false will be returned as the second parameter.
