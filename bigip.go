@@ -145,6 +145,12 @@ func NewTokenSession(host, user, passwd, loginProviderName string, configOptions
 // APICall is used to query the BIG-IP web API.
 func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	var req *http.Request
+	if Debug {
+		fmt.Println()
+		fmt.Println("API CALL DEBUG Transport:", b.Transport)
+		fmt.Println("API CALL DEBUG ConfigOptions:", b.ConfigOptions)
+		fmt.Println()
+	}
 	client := &http.Client{
 		Transport: b.Transport,
 		Timeout:   b.ConfigOptions.APICallTimeout,
@@ -168,6 +174,14 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 
 	if len(options.ContentType) > 0 {
 		req.Header.Set("Content-Type", options.ContentType)
+	}
+
+	if Debug {
+		fmt.Println()
+		fmt.Println("DEBUG URL:", url)
+		fmt.Println("DEBUG BODY:", options.Body)
+		fmt.Println("DEBUG CONTENT TYPE:", options.ContentType)
+		fmt.Println()
 	}
 
 	res, err := client.Do(req)
@@ -213,9 +227,20 @@ func (b *BigIP) delete(path ...string) error {
 }
 
 func (b *BigIP) post(body interface{}, path ...string) error {
+	if Debug {
+		fmt.Printf("About to marshal this struct: %+v \r\n", body)
+	}
 	marshalJSON, err := jsonMarshal(body)
 	if err != nil {
 		return err
+	}
+
+	if Debug {
+		fmt.Println()
+		fmt.Println("Request JSON Debug:")
+		fmt.Println()
+		fmt.Println(string(marshalJSON))
+		fmt.Println()
 	}
 
 	req := &APIRequest{
@@ -256,17 +281,33 @@ func (b *BigIP) getForEntity(e interface{}, path ...string) (error, bool) {
 		ContentType: "application/json",
 	}
 
+	if Debug {
+		fmt.Println()
+		fmt.Printf("REQUEST DEBUG: %+v \r\n", req)
+		fmt.Println()
+	}
+
 	resp, err := b.APICall(req)
+	// fmt.Println("DEBUG:" + string(resp))
 	if err != nil {
 		var reqError RequestError
 		json.Unmarshal(resp, &reqError)
 		if reqError.Code == 404 {
-			return nil, false
+			return errors.New("Server returned a 404 for: " + req.URL), false
 		}
 		return err, false
 	}
 
+	if Debug {
+		fmt.Println()
+		fmt.Println("RESPONSE STRING DEBUG:", string(resp))
+		fmt.Println()
+	}
+
 	err = json.Unmarshal(resp, e)
+	if Debug {
+		fmt.Printf("RESPONSE STRUCT DEBUG: %+v \r\n", e)
+	}
 	if err != nil {
 		return err, false
 	}
@@ -302,6 +343,9 @@ func jsonMarshal(t interface{}) ([]byte, error) {
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)
+	if Debug {
+		fmt.Printf("About to encode %+v \r\n", t)
+	}
 	err := encoder.Encode(t)
 	return buffer.Bytes(), err
 }
