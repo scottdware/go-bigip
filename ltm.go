@@ -927,6 +927,7 @@ type Monitor struct {
 	Interval       int
 	IPDSCP         int
 	ManualResume   bool
+	MonitorType    string
 	Password       string
 	ReceiveString  string
 	ReceiveDisable string
@@ -950,6 +951,7 @@ type monitorDTO struct {
 	Interval       int    `json:"interval,omitempty"`
 	IPDSCP         int    `json:"ipDscp,omitempty"`
 	ManualResume   string `json:"manualResume,omitempty" bool:"enabled"`
+	MonitorType    string
 	Password       string `json:"password,omitempty"`
 	ReceiveString  string `json:"recv,omitempty"`
 	ReceiveDisable string `json:"recvDisable,omitempty"`
@@ -1874,10 +1876,20 @@ func (b *BigIP) DeleteVirtualAddress(vaddr string) error {
 	return b.delete(uriLtm, uriVirtualAddress, vaddr)
 }
 
-// Monitors returns a list of all HTTP, HTTPS, Gateway ICMP, ICMP, and TCP monitors.
+// Monitors returns a list of all HTTP, HTTPS, Gateway ICMP, ICMP, and Tcp monitors.
 func (b *BigIP) Monitors() ([]Monitor, error) {
 	var monitors []Monitor
-	monitorUris := []string{"http", "https", "icmp", "gateway-icmp", "tcp"}
+	monitorUris := []string{
+		"gateway-icmp",
+		"http",
+		"https",
+		"icmp",
+		"inband",
+		"mysql",
+		"postgresql",
+		"tcp",
+		"udp",
+	}
 
 	for _, name := range monitorUris {
 		var m Monitors
@@ -1886,6 +1898,7 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 			return nil, err
 		}
 		for _, monitor := range m.Monitors {
+			monitor.MonitorType = name
 			monitors = append(monitors, monitor)
 		}
 	}
@@ -1893,9 +1906,9 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 	return monitors, nil
 }
 
-// CreateMonitor adds a new monitor to the BIG-IP system. <parent> must be one of "http", "https",
-// "icmp", "gateway icmp", or "tcp".
-func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive string) error {
+// CreateMonitor adds a new monitor to the BIG-IP system. <monitorType> must be one of "http", "https",
+// "icmp", "gateway icmp", "inband", "postgresql", "mysql", "udp" or "tcp".
+func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive, monitorType string) error {
 	config := &Monitor{
 		Name:          name,
 		ParentMonitor: parent,
@@ -1905,16 +1918,16 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 		ReceiveString: receive,
 	}
 
-	return b.AddMonitor(config)
+	return b.AddMonitor(config, monitorType)
 }
 
 // Create a monitor by supplying a config
-func (b *BigIP) AddMonitor(config *Monitor) error {
+func (b *BigIP) AddMonitor(config *Monitor, monitorType string) error {
 	if strings.Contains(config.ParentMonitor, "gateway") {
 		config.ParentMonitor = "gateway_icmp"
 	}
 
-	return b.post(config, uriLtm, uriMonitor, config.ParentMonitor)
+	return b.post(config, uriLtm, uriMonitor, monitorType)
 }
 
 // GetVirtualServer retrieves a monitor by name. Returns nil if the monitor does not exist
@@ -1937,15 +1950,15 @@ func (b *BigIP) DeleteMonitor(name, parent string) error {
 	return b.delete(uriLtm, uriMonitor, parent, name)
 }
 
-// ModifyMonitor allows you to change any attribute of a monitor. <parent> must be
-// one of "http", "https", "icmp", "gateway icmp", or "tcp". Fields that
-// can be modified are referenced in the Monitor struct.
-func (b *BigIP) ModifyMonitor(name, parent string, config *Monitor) error {
+// ModifyMonitor allows you to change any attribute of a monitor. <monitorType> must
+// be one of "http", "https", "icmp", "inband", "gateway icmp", "postgresql", "mysql", "udp" or "tcp".
+// Fields that can be modified are referenced in the Monitor struct.
+func (b *BigIP) ModifyMonitor(name, monitorType string, config *Monitor) error {
 	if strings.Contains(config.ParentMonitor, "gateway") {
 		config.ParentMonitor = "gateway_icmp"
 	}
 
-	return b.put(config, uriLtm, uriMonitor, parent, name)
+	return b.put(config, uriLtm, uriMonitor, monitorType, name)
 }
 
 // AddMonitorToPool assigns the monitor, <monitor> to the given <pool>.
