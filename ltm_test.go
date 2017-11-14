@@ -793,7 +793,7 @@ func (s *LTMTestSuite) TestCreateMonitor() {
 		ReceiveString: "200 OK",
 	}
 
-	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString)
+	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString, "http")
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
@@ -810,7 +810,7 @@ func (s *LTMTestSuite) TestCreateMonitorSpecialCharacters() {
 		ReceiveString: "Response &<>",
 	}
 
-	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString)
+	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString, "http")
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
@@ -829,7 +829,7 @@ func (s *LTMTestSuite) TestAddMonitor() {
 		Password:      "monitoring",
 	}
 
-	s.Client.AddMonitor(config)
+	s.Client.AddMonitor(config, "http")
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
