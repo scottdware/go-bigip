@@ -494,6 +494,7 @@ type VirtualServer struct {
 	CMPEnabled               string `json:"cmpEnabled,omitempty"`
 	ConnectionLimit          int    `json:"connectionLimit,omitempty"`
 	Destination              string `json:"destination,omitempty"`
+	Description              string `json:"description,omitempty"`
 	Enabled                  bool   `json:"enabled,omitempty"`
 	GTMScore                 int    `json:"gtmScore,omitempty"`
 	IPProtocol               string `json:"ipProtocol,omitempty"`
