@@ -213,7 +213,7 @@ func (b *BigIP) delete(path ...string) error {
 }
 
 func (b *BigIP) post(body interface{}, path ...string) error {
-	marshalJSON, err := jsonMarshal(body)
+	marshalJSON, err := json.Marshal(body)
 	if err != nil {
 		return err
 	}
@@ -239,6 +239,23 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 		Method:      "put",
 		URL:         b.iControlPath(path),
 		Body:        strings.TrimRight(string(marshalJSON), "\n"),
+		ContentType: "application/json",
+	}
+
+	_, callErr := b.APICall(req)
+	return callErr
+}
+
+func (b *BigIP) patch(body interface{}, path ...string) error {
+	marshalJSON, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "patch",
+		URL:         b.iControlPath(path),
+		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
 
