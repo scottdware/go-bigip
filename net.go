@@ -2,6 +2,7 @@ package bigip
 
 import (
 	"strings"
+	"log"
 )
 
 // Interfaces contains a list of every interface on the BIG-IP system.
@@ -190,7 +191,7 @@ func (b *BigIP) AddInterfaceToVlan(vlan, iface string, tagged bool) error {
 		config.Untagged = true
 	}
 
-	return b.put(config, uriNet, uriVlan, vlan, "interfaces")
+	return b.post(config, uriNet, uriVlan, vlan, "interfaces")
 }
 
 // SelfIPs returns a list of self IP's.
@@ -289,7 +290,7 @@ func (b *BigIP) CreateVlan(name string, tag int) error {
 		Name: name,
 		Tag:  tag,
 	}
-
+log.Println("I am here in vlan post", config)
 	return b.post(config, uriNet, uriVlan)
 }
 

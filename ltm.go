@@ -286,8 +286,8 @@ type poolDTO struct {
 	Partition              string `json:"partition,omitempty"`
 	FullPath               string `json:"fullPath,omitempty"`
 	Generation             int    `json:"generation,omitempty"`
-	AllowNAT               string `json:"allowNat,omitempty" bool:"yes"`
-	AllowSNAT              string `json:"allowSnat,omitempty" bool:"yes"`
+	AllowNAT               string `json:"allowNat,omitempty"`
+	AllowSNAT              string `json:"allowSnat,omitempty"`
 	IgnorePersistedWeight  string `json:"ignorePersistedWeight,omitempty" bool:"enabled"`
 	IPTOSToClient          string `json:"ipTosToClient,omitempty"`
 	IPTOSToServer          string `json:"ipTosToServer,omitempty"`

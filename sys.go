@@ -1,6 +1,7 @@
 package bigip
 
 import "encoding/json"
+import "log"
 
 type NTPs struct {
 	NTPs []NTP `json:"items"`
@@ -143,7 +144,6 @@ const (
 	uriAfm       = "afm"
 	uriAsm       = "asm"
 	uriApm       = "apm"
-	uriGtm       = "gtm"
 	uriAvr       = "avr"
 	uriIlx       = "ilx"
 	uriSyslog    = "syslog"
@@ -183,7 +183,7 @@ func (b *BigIP) CreateDNS(description string, nameservers []string, numberofdots
 		NumberOfDots: numberofdots,
 		Search:       search,
 	}
-
+log.Printf("I am %#v\n  DNS %s   ", config)
 	return b.patch(config, uriSys, uriDNS)
 }
 
