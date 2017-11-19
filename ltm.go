@@ -1554,13 +1554,13 @@ func (b *BigIP) ModifyInternalDataGroupRecords(name string, records *[]DataGroup
 
 // Get the internal data group records for a named internal data group
 func (b *BigIP) GetInternalDataGroupRecords(name string) (*[]DataGroupRecord, error) {
-	var dataGroupRecords []DataGroupRecord
-	err, _ := b.getForEntity(&dataGroupRecords, uriLtm, uriDatagroup, uriInternal, name)
+	var dataGroup DataGroup
+	err, _ := b.getForEntity(&dataGroup, uriLtm, uriDatagroup, uriInternal, name)
 	if err != nil {
 		return nil, err
 	}
 
-	return &dataGroupRecords, nil
+	return &dataGroup.Records, nil
 }
 
 // Pools returns a list of pools.
