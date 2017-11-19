@@ -93,7 +93,7 @@ func (s *NetTestSuite) TestAddInterfaceToVLan() {
 
 	assert.Nil(s.T(), err)
 	assertRestCall(s,
-		"PUT",
+		"POST",
 		"/mgmt/tm/net/vlan/vlan-name/interfaces",
 		`{"name":"iface-name", "untagged":true}`)
 }

@@ -777,7 +777,6 @@ func (s *LTMTestSuite) TestModifyPoolMember() {
 
 	s.Client.ModifyPoolMember(pool, config)
 
-	fmt.Println(s.LastRequest.URL)
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember, "~Common~test-pool-member:80"), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), `{"monitor":"/Common/icmp"}`, s.LastRequestBody)
