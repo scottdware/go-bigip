@@ -1,7 +1,9 @@
 language: go
 
-go:
-    - 1.7
-    - 1.8
-    - 1.9
-    - tip
+matrix:
+  include:
+    - go: 1.8
+    - go: 1.9
+    - go: tip
+  allow_failures:
+    - go: tip
