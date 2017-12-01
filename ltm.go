@@ -966,6 +966,7 @@ type Monitor struct {
 	FullPath       string
 	Generation     int
 	ParentMonitor  string
+	Database       string
 	Description    string
 	Destination    string
 	Interval       int
@@ -973,6 +974,8 @@ type Monitor struct {
 	ManualResume   bool
 	MonitorType    string
 	Password       string
+	ReceiveColumn  string
+	ReceiveRow     string
 	ReceiveString  string
 	ReceiveDisable string
 	Reverse        bool
@@ -990,6 +993,7 @@ type monitorDTO struct {
 	FullPath       string `json:"fullPath,omitempty"`
 	Generation     int    `json:"generation,omitempty"`
 	ParentMonitor  string `json:"defaultsFrom,omitempty"`
+	Database       string `json:"database,omitempty"`
 	Description    string `json:"description,omitempty"`
 	Destination    string `json:"destination,omitempty"`
 	Interval       int    `json:"interval,omitempty"`
@@ -997,6 +1001,8 @@ type monitorDTO struct {
 	ManualResume   string `json:"manualResume,omitempty" bool:"enabled"`
 	MonitorType    string
 	Password       string `json:"password,omitempty"`
+	ReceiveColumn  string `json:"recvColumn,omitempty"`
+	ReceiveRow     string `json:"recvRow,omitempty"`
 	ReceiveString  string `json:"recv,omitempty"`
 	ReceiveDisable string `json:"recvDisable,omitempty"`
 	Reverse        string `json:"reverse,omitempty" bool:"enabled"`
