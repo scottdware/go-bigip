@@ -4,7 +4,7 @@ import "encoding/json"
 import "log"
 
 
-
+// updated
 type Datacenters struct {
 	Datacenters []Datacenter `json:"items"`
 }
