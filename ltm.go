@@ -988,18 +988,18 @@ type Monitor struct {
 }
 
 type monitorDTO struct {
-	Name           string `json:"name,omitempty"`
-	Partition      string `json:"partition,omitempty"`
-	FullPath       string `json:"fullPath,omitempty"`
-	Generation     int    `json:"generation,omitempty"`
-	ParentMonitor  string `json:"defaultsFrom,omitempty"`
-	Database       string `json:"database,omitempty"`
-	Description    string `json:"description,omitempty"`
-	Destination    string `json:"destination,omitempty"`
-	Interval       int    `json:"interval,omitempty"`
-	IPDSCP         int    `json:"ipDscp,omitempty"`
-	ManualResume   string `json:"manualResume,omitempty" bool:"enabled"`
-	MonitorType    string
+	Name          string `json:"name,omitempty"`
+	Partition     string `json:"partition,omitempty"`
+	FullPath      string `json:"fullPath,omitempty"`
+	Generation    int    `json:"generation,omitempty"`
+	ParentMonitor string `json:"defaultsFrom,omitempty"`
+	Database      string `json:"database,omitempty"`
+	Description   string `json:"description,omitempty"`
+	Destination   string `json:"destination,omitempty"`
+	Interval      int    `json:"interval,omitempty"`
+	IPDSCP        int    `json:"ipDscp,omitempty"`
+	ManualResume  string `json:"manualResume,omitempty" bool:"enabled"`
+	// MonitorType    string `json:"monitorType,omitempty"`
 	Password       string `json:"password,omitempty"`
 	ReceiveColumn  string `json:"recvColumn,omitempty"`
 	ReceiveRow     string `json:"recvRow,omitempty"`
@@ -1475,6 +1475,7 @@ const (
 	uriHttp2          = "http2"
 	uriSnat           = "snat"
 	uriSnatpool       = "snatpool"
+	uriUdp            = "udp"
 )
 
 var cidr = map[string]string{
@@ -1820,7 +1821,7 @@ func (b *BigIP) ModifyHttpProfile(name string, config *HttpProfile) error {
 // OneconnectProfiles returns a list of HTTP profiles
 func (b *BigIP) OneconnectProfiles() (*OneconnectProfiles, error) {
 	var oneconnectProfiles OneconnectProfiles
-	err, _ := b.getForEntity(&oneconnectProfiles, uriLtm, uriProfile, uriOneConnect)
+	err, _ := b.getForEntity(&oneconnectProfiles, uriLtm, uriProfile, uriOneconnect)
 	if err != nil {
 		return nil, err
 	}
@@ -1830,7 +1831,7 @@ func (b *BigIP) OneconnectProfiles() (*OneconnectProfiles, error) {
 
 func (b *BigIP) GetOneconnectProfile(name string) (*OneconnectProfile, error) {
 	var oneconnectProfile OneconnectProfile
-	err, ok := b.getForEntity(&oneconnectProfile, uriLtm, uriProfile, uriOneConnect, name)
+	err, ok := b.getForEntity(&oneconnectProfile, uriLtm, uriProfile, uriOneconnect, name)
 	if err != nil {
 		return nil, err
 	}
@@ -1849,28 +1850,28 @@ func (b *BigIP) CreateOneconnectProfile(name string, parent string) error {
 		DefaultsFrom: parent,
 	}
 
-	return b.post(config, uriLtm, uriProfile, uriOneConnect)
+	return b.post(config, uriLtm, uriProfile, uriOneconnect)
 }
 
 func (b *BigIP) AddOneconnectProfile(config *OneconnectProfile) error {
-	return b.post(config, uriLtm, uriProfile, uriOneConnect)
+	return b.post(config, uriLtm, uriProfile, uriOneconnect)
 }
 
 // DeleteOneconnectProfile removes a http profile.
 func (b *BigIP) DeleteOneconnectProfile(name string) error {
-	return b.delete(uriLtm, uriProfile, uriOneConnect, name)
+	return b.delete(uriLtm, uriProfile, uriOneconnect, name)
 }
 
 // ModifyOneconnectProfile allows you to change any attribute of a http profile.
 // Fields that can be modified are referenced in the OneconnectProfile struct.
 func (b *BigIP) ModifyOneconnectProfile(name string, config *OneconnectProfile) error {
-	return b.put(config, uriLtm, uriProfile, uriOneConnect, name)
+	return b.put(config, uriLtm, uriProfile, uriOneconnect, name)
 }
 
 // HttpCompressionProfiles returns a list of HTTP profiles
 func (b *BigIP) HttpCompressionProfiles() (*HttpCompressionProfiles, error) {
 	var httpCompressionProfiles HttpCompressionProfiles
-	err, _ := b.getForEntity(&httpCompressionProfiles, uriLtm, uriProfile, uriHttpCompression)
+	err, _ := b.getForEntity(&httpCompressionProfiles, uriLtm, uriProfile, uriHttpcompress)
 	if err != nil {
 		return nil, err
 	}
@@ -1880,7 +1881,7 @@ func (b *BigIP) HttpCompressionProfiles() (*HttpCompressionProfiles, error) {
 
 func (b *BigIP) GetHttpCompressionProfile(name string) (*HttpCompressionProfile, error) {
 	var httpCompressionProfile HttpCompressionProfile
-	err, ok := b.getForEntity(&httpCompressionProfile, uriLtm, uriProfile, uriHttpCompression, name)
+	err, ok := b.getForEntity(&httpCompressionProfile, uriLtm, uriProfile, uriHttpcompress, name)
 	if err != nil {
 		return nil, err
 	}
@@ -1899,22 +1900,22 @@ func (b *BigIP) CreateHttpCompressionProfile(name string, parent string) error {
 		DefaultsFrom: parent,
 	}
 
-	return b.post(config, uriLtm, uriProfile, uriHttpCompression)
+	return b.post(config, uriLtm, uriProfile, uriHttpcompress)
 }
 
 func (b *BigIP) AddHttpCompressionProfile(config *HttpCompressionProfile) error {
-	return b.post(config, uriLtm, uriProfile, uriHttpCompression)
+	return b.post(config, uriLtm, uriProfile, uriHttpcompress)
 }
 
 // DeleteHttpCompressionProfile removes a http profile.
 func (b *BigIP) DeleteHttpCompressionProfile(name string) error {
-	return b.delete(uriLtm, uriProfile, uriHttpCompression, name)
+	return b.delete(uriLtm, uriProfile, uriHttpcompress, name)
 }
 
 // ModifyHttpCompressionProfile allows you to change any attribute of a http profile.
 // Fields that can be modified are referenced in the HttpCompressionProfile struct.
 func (b *BigIP) ModifyHttpCompressionProfile(name string, config *HttpCompressionProfile) error {
-	return b.put(config, uriLtm, uriProfile, uriHttpCompression, name)
+	return b.put(config, uriLtm, uriProfile, uriHttpcompress, name)
 }
 
 // Nodes returns a list of nodes.
