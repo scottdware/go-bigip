@@ -419,6 +419,7 @@ type Pools struct {
 // fields when modifying a pool.
 type Pool struct {
 	Name                   string `json:"name,omitempty"`
+	Description            string `json:"description,omitempty"`
 	Partition              string `json:"partition,omitempty"`
 	FullPath               string `json:"fullPath,omitempty"`
 	Generation             int    `json:"generation,omitempty"`
@@ -462,6 +463,7 @@ type poolMembers struct {
 // of these fields when modifying a pool member.
 type PoolMember struct {
 	Name            string `json:"name,omitempty"`
+	Description     string `json:"description,omitempty"`
 	Partition       string `json:"partition,omitempty"`
 	FullPath        string `json:"fullPath,omitempty"`
 	Generation      int    `json:"generation,omitempty"`
