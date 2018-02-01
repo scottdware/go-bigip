@@ -938,6 +938,8 @@ type Monitor struct {
 	ReceiveString  string
 	ReceiveDisable string
 	Reverse        bool
+	ResponseTime   int
+	RetryTime      int
 	SendString     string
 	TimeUntilUp    int
 	Timeout        int
@@ -965,6 +967,8 @@ type monitorDTO struct {
 	ReceiveString  string `json:"recv,omitempty"`
 	ReceiveDisable string `json:"recvDisable,omitempty"`
 	Reverse        string `json:"reverse,omitempty" bool:"enabled"`
+	ResponseTime   int    `json:"responseTime,omitempty" bool:"enabled"`
+	RetryTime      int    `json:"retryTime,omitempty" bool:"enabled"`
 	SendString     string `json:"send,omitempty"`
 	TimeUntilUp    int    `json:"timeUntilUp,omitempty"`
 	Timeout        int    `json:"timeout,omitempty"`
