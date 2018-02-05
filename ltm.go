@@ -949,18 +949,18 @@ type Monitor struct {
 }
 
 type monitorDTO struct {
-	Name           string `json:"name,omitempty"`
-	Partition      string `json:"partition,omitempty"`
-	FullPath       string `json:"fullPath,omitempty"`
-	Generation     int    `json:"generation,omitempty"`
-	ParentMonitor  string `json:"defaultsFrom,omitempty"`
-	Database       string `json:"database,omitempty"`
-	Description    string `json:"description,omitempty"`
-	Destination    string `json:"destination,omitempty"`
-	Interval       int    `json:"interval,omitempty"`
-	IPDSCP         int    `json:"ipDscp,omitempty"`
-	ManualResume   string `json:"manualResume,omitempty" bool:"enabled"`
-	MonitorType    string
+	Name          string `json:"name,omitempty"`
+	Partition     string `json:"partition,omitempty"`
+	FullPath      string `json:"fullPath,omitempty"`
+	Generation    int    `json:"generation,omitempty"`
+	ParentMonitor string `json:"defaultsFrom,omitempty"`
+	Database      string `json:"database,omitempty"`
+	Description   string `json:"description,omitempty"`
+	Destination   string `json:"destination,omitempty"`
+	Interval      int    `json:"interval,omitempty"`
+	IPDSCP        int    `json:"ipDscp,omitempty"`
+	ManualResume  string `json:"manualResume,omitempty" bool:"enabled"`
+	// MonitorType    string
 	Password       string `json:"password,omitempty"`
 	ReceiveColumn  string `json:"recvColumn,omitempty"`
 	ReceiveRow     string `json:"recvRow,omitempty"`
