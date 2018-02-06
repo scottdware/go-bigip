@@ -797,7 +797,7 @@ func (s *LTMTestSuite) TestCreateMonitor() {
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
-	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","recv":"200 OK","reverse":"disabled","send":"GET /\\r\\n","timeout":5,"transparent":"disabled"}`, s.LastRequestBody)
+	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","recv":"200 OK","reverse":"disabled","responseTime":0,"retryTime":0,"send":"GET /\\r\\n","timeout":5,"transparent":"disabled"}`, s.LastRequestBody)
 }
 
 func (s *LTMTestSuite) TestCreateMonitorSpecialCharacters() {
@@ -814,7 +814,7 @@ func (s *LTMTestSuite) TestCreateMonitorSpecialCharacters() {
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
-	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","recv":"Response &<>","reverse":"disabled","send":"GET /test&parms=1<2>3\\r\\n","timeout":5,"transparent":"disabled"}`, s.LastRequestBody)
+	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","recv":"Response &<>","reverse":"disabled","responseTime":0,"retryTime":0,"send":"GET /test&parms=1<2>3\\r\\n","timeout":5,"transparent":"disabled"}`, s.LastRequestBody)
 }
 
 func (s *LTMTestSuite) TestAddMonitor() {
@@ -833,7 +833,7 @@ func (s *LTMTestSuite) TestAddMonitor() {
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
-	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","password":"monitoring","recv":"200 OK","reverse":"disabled","send":"GET /\\r\\n","timeout":5,"transparent":"disabled","username":"monitoring"}`, s.LastRequestBody)
+	assert.Equal(s.T(), `{"name":"test-web-monitor","defaultsFrom":"http","interval":15,"manualResume":"disabled","password":"monitoring","recv":"200 OK","reverse":"disabled","responseTime":0,"retryTime":0,"send":"GET /\\r\\n","timeout":5,"transparent":"disabled","username":"monitoring"}`, s.LastRequestBody)
 }
 
 func (s *LTMTestSuite) TestGetMonitor() {

@@ -419,6 +419,7 @@ type Pools struct {
 // fields when modifying a pool.
 type Pool struct {
 	Name                   string `json:"name,omitempty"`
+	Description            string `json:"description,omitempty"`
 	Partition              string `json:"partition,omitempty"`
 	FullPath               string `json:"fullPath,omitempty"`
 	Generation             int    `json:"generation,omitempty"`
@@ -462,6 +463,7 @@ type poolMembers struct {
 // of these fields when modifying a pool member.
 type PoolMember struct {
 	Name            string `json:"name,omitempty"`
+	Description     string `json:"description,omitempty"`
 	Partition       string `json:"partition,omitempty"`
 	FullPath        string `json:"fullPath,omitempty"`
 	Generation      int    `json:"generation,omitempty"`
@@ -936,6 +938,8 @@ type Monitor struct {
 	ReceiveString  string
 	ReceiveDisable string
 	Reverse        bool
+	ResponseTime   int
+	RetryTime      int
 	SendString     string
 	TimeUntilUp    int
 	Timeout        int
@@ -956,13 +960,15 @@ type monitorDTO struct {
 	Interval      int    `json:"interval,omitempty"`
 	IPDSCP        int    `json:"ipDscp,omitempty"`
 	ManualResume  string `json:"manualResume,omitempty" bool:"enabled"`
-	// MonitorType    string `json:"monitorType,omitempty"`
+	// MonitorType    string
 	Password       string `json:"password,omitempty"`
 	ReceiveColumn  string `json:"recvColumn,omitempty"`
 	ReceiveRow     string `json:"recvRow,omitempty"`
 	ReceiveString  string `json:"recv,omitempty"`
 	ReceiveDisable string `json:"recvDisable,omitempty"`
 	Reverse        string `json:"reverse,omitempty" bool:"enabled"`
+	ResponseTime   int    `json:"responseTime"`
+	RetryTime      int    `json:"retryTime"`
 	SendString     string `json:"send,omitempty"`
 	TimeUntilUp    int    `json:"timeUntilUp,omitempty"`
 	Timeout        int    `json:"timeout,omitempty"`
