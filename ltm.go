@@ -337,6 +337,7 @@ type Nodes struct {
 // of these fields when modifying a node.
 type Node struct {
 	Name            string `json:"name,omitempty"`
+	AppService      string `json:"appService,omitempty"`
 	Partition       string `json:"partition,omitempty"`
 	FullPath        string `json:"fullPath,omitempty"`
 	Generation      int    `json:"generation,omitempty"`
@@ -464,6 +465,7 @@ type poolMembers struct {
 type PoolMember struct {
 	Name            string `json:"name,omitempty"`
 	Description     string `json:"description,omitempty"`
+	AppService      string `json:"appService,omitempty"`
 	Partition       string `json:"partition,omitempty"`
 	FullPath        string `json:"fullPath,omitempty"`
 	Generation      int    `json:"generation,omitempty"`
@@ -1703,7 +1705,7 @@ func (b *BigIP) DeletePoolMember(pool string, member string) error {
 // PoolMemberStatus changes the status of a pool member. <state> can be either
 // "enable" or "disable". <member> must be in the form of <node>:<port>,
 // i.e.: "web-server1:443".
-func (b *BigIP) PoolMemberStatus(pool string, member string, state string) error {
+func (b *BigIP) PoolMemberStatus(pool string, member string, state string, owner string) error {
 	config := &Node{}
 
 	switch state {
@@ -1716,6 +1718,10 @@ func (b *BigIP) PoolMemberStatus(pool string, member string, state string) error
 		// case "offline":
 		// 	config.State = "user-down"
 		// 	config.Session = "user-disabled"
+	}
+
+	if owner != "" {
+		config.AppService = owner
 	}
 
 	return b.put(config, uriLtm, uriPool, pool, uriPoolMember, member)
