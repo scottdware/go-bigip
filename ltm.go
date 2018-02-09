@@ -1705,7 +1705,7 @@ func (b *BigIP) DeletePoolMember(pool string, member string) error {
 // PoolMemberStatus changes the status of a pool member. <state> can be either
 // "enable" or "disable". <member> must be in the form of <node>:<port>,
 // i.e.: "web-server1:443".
-func (b *BigIP) PoolMemberStatus(pool string, member string, state string, owner string) error {
+func (b *BigIP) PoolMemberStatus(pool string, member string, state string, owner ...string) error {
 	config := &Node{}
 
 	switch state {
@@ -1720,8 +1720,8 @@ func (b *BigIP) PoolMemberStatus(pool string, member string, state string, owner
 		// 	config.Session = "user-disabled"
 	}
 
-	if owner != "" {
-		config.AppService = owner
+	if owner[0] != "" {
+		config.AppService = owner[0]
 	}
 
 	return b.put(config, uriLtm, uriPool, pool, uriPoolMember, member)
