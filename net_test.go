@@ -29,7 +29,7 @@ func (s *NetTestSuite) SetupSuite() {
 		}
 	}))
 
-	s.Client = NewSession(s.Server.URL, "", "", nil)
+	s.Client = NewSession(s.Server.URL, "", "", nil, false)
 }
 
 func (s *NetTestSuite) TearDownSuite() {
