@@ -370,8 +370,26 @@ func (s *LTMTestSuite) TestCreateVitualAddress() {
 	"enabled":"no",
 	"floating":"disabled",
 	"icmpEcho":"disabled",
+	"inheritedTrafficGroup":"no"}`, s.LastRequestBody)
+
+}
+
+func (s *LTMTestSuite) TestCreateVitualAddressWithAdvertisement() {
+
+	s.Client.CreateVirtualAddress("test-va", &VirtualAddress{Address: "10.10.10.10", ARP: true, AutoDelete: false, RouteAdvertisement: "selective"})
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriVirtualAddress), s.LastRequest.URL.Path)
+	assert.JSONEq(s.T(), `
+	{"name":"test-va",
+	"arp":"enabled",
+	"autoDelete":"false",
+	"address" : "10.10.10.10",
+	"enabled":"no",
+	"floating":"disabled",
+	"icmpEcho":"disabled",
 	"inheritedTrafficGroup":"no",
-	"routeAdvertisement":"disabled"}`, s.LastRequestBody)
+  "routeAdvertisement": "selective"}`, s.LastRequestBody)
 
 }
 
