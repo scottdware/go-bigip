@@ -1991,7 +1991,7 @@ func (b *BigIP) AddMonitorToPool(monitor, pool string) error {
 		Monitor: monitor,
 	}
 
-	return b.put(config, uriLtm, uriPool, pool)
+	return b.patch(config, uriLtm, uriPool, pool)
 }
 
 // IRules returns a list of irules
