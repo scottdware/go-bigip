@@ -1987,11 +1987,12 @@ func (b *BigIP) ModifyMonitor(name, monitorType string, config *Monitor) error {
 
 // AddMonitorToPool assigns the monitor, <monitor> to the given <pool>.
 func (b *BigIP) AddMonitorToPool(monitor, pool string) error {
-	config := &Pool{
-		Monitor: monitor,
+	p, err := b.GetPool(pool)
+	if err != nil {
+		return err
 	}
-
-	return b.put(config, uriLtm, uriPool, pool)
+	p.Monitor = monitor
+	return b.ModifyPool(pool, p)
 }
 
 // IRules returns a list of irules
