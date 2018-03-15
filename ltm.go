@@ -1682,6 +1682,12 @@ func (b *BigIP) ModifyPoolMember(pool string, config *PoolMember) error {
 	return b.put(config, uriLtm, uriPool, pool, uriPoolMember, member)
 }
 
+// PatchPoolMember will update the configuration of a particular pool member.
+// this requires at least PoolMember{FullPath: foo} and additional fields
+func (b *BigIP) PatchPoolMember(pool string, config *PoolMember) error {
+	return b.patch(config, uriLtm, uriPool, pool, uriPoolMember, config.FullPath)
+}
+
 // UpdatePoolMembers does a replace-all-with for the members of a pool.
 func (b *BigIP) UpdatePoolMembers(pool string, pm *[]PoolMember) error {
 	config := &poolMembers{
@@ -1983,6 +1989,11 @@ func (b *BigIP) ModifyMonitor(name, monitorType string, config *Monitor) error {
 	}
 
 	return b.put(config, uriLtm, uriMonitor, monitorType, name)
+}
+
+// PatchMonitor allows you to change any attribute of a monitor.
+func (b *BigIP) PatchMonitor(name, monitorType string, config *Monitor) error {
+	return b.patch(config, uriLtm, uriMonitor, monitorType, name)
 }
 
 // AddMonitorToPool assigns the monitor, <monitor> to the given <pool>.
