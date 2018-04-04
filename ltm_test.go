@@ -356,7 +356,7 @@ func (s *LTMTestSuite) TestDeletePolicy() {
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo", uriLtm, uriPolicy), s.LastRequest.URL.Path)
 }
 
-func (s *LTMTestSuite) TestCreateVitualAddress() {
+func (s *LTMTestSuite) TestCreateVirtualAddress() {
 
 	s.Client.CreateVirtualAddress("test-va", &VirtualAddress{Address: "10.10.10.10", ARP: true, AutoDelete: false})
 
@@ -374,7 +374,7 @@ func (s *LTMTestSuite) TestCreateVitualAddress() {
 
 }
 
-func (s *LTMTestSuite) TestCreateVitualAddressWithAdvertisement() {
+func (s *LTMTestSuite) TestCreateVirtualAddressWithAdvertisement() {
 
 	s.Client.CreateVirtualAddress("test-va", &VirtualAddress{Address: "10.10.10.10", ARP: true, AutoDelete: false, RouteAdvertisement: "selective"})
 
@@ -393,7 +393,7 @@ func (s *LTMTestSuite) TestCreateVitualAddressWithAdvertisement() {
 
 }
 
-func (s *LTMTestSuite) TestDeleteVitualAddress() {
+func (s *LTMTestSuite) TestDeleteVirtualAddress() {
 
 	s.Client.DeleteVirtualAddress("test-va")
 
