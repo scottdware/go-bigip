@@ -1045,6 +1045,9 @@ const (
 	CONTEXT_SERVER     = "serverside"
 	CONTEXT_CLIENT     = "clientside"
 	CONTEXT_ALL        = "all"
+
+	// Newer policy APIs have a draft-publish workflow that this library does not support.
+	policyVersionSuffix = "?ver=11.5.1"
 )
 
 var cidr = map[string]string{
@@ -2051,7 +2054,7 @@ func (b *BigIP) ModifyIRule(name string, irule *IRule) error {
 
 func (b *BigIP) Policies() (*Policies, error) {
 	var p Policies
-	err, _ := b.getForEntity(&p, uriLtm, uriPolicy)
+	err, _ := b.getForEntity(&p, uriLtm, uriPolicy, policyVersionSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -2062,7 +2065,7 @@ func (b *BigIP) Policies() (*Policies, error) {
 //Load a fully policy definition. Policies seem to be best dealt with as one big entity.
 func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 	var p Policy
-	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, name)
+	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, name, policyVersionSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -2071,7 +2074,7 @@ func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 	}
 
 	var rules PolicyRules
-	err, _ = b.getForEntity(&rules, uriLtm, uriPolicy, name, "rules")
+	err, _ = b.getForEntity(&rules, uriLtm, uriPolicy, name, "rules", policyVersionSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -2081,11 +2084,11 @@ func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 		var a PolicyRuleActions
 		var c PolicyRuleConditions
 
-		err, _ = b.getForEntity(&a, uriLtm, uriPolicy, name, "rules", p.Rules[i].Name, "actions")
+		err, _ = b.getForEntity(&a, uriLtm, uriPolicy, name, "rules", p.Rules[i].Name, "actions", policyVersionSuffix)
 		if err != nil {
 			return nil, err
 		}
-		err, _ = b.getForEntity(&c, uriLtm, uriPolicy, name, "rules", p.Rules[i].Name, "conditions")
+		err, _ = b.getForEntity(&c, uriLtm, uriPolicy, name, "rules", p.Rules[i].Name, "conditions", policyVersionSuffix)
 		if err != nil {
 			return nil, err
 		}
@@ -2112,16 +2115,16 @@ func normalizePolicy(p *Policy) {
 //Create a new policy. It is not necessary to set the Ordinal fields on subcollections.
 func (b *BigIP) CreatePolicy(p *Policy) error {
 	normalizePolicy(p)
-	return b.post(p, uriLtm, uriPolicy)
+	return b.post(p, uriLtm, uriPolicy, policyVersionSuffix)
 }
 
 //Update an existing policy.
 func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
 	normalizePolicy(p)
-	return b.put(p, uriLtm, uriPolicy, name)
+	return b.put(p, uriLtm, uriPolicy, name, policyVersionSuffix)
 }
 
 //Delete a policy by name.
 func (b *BigIP) DeletePolicy(name string) error {
-	return b.delete(uriLtm, uriPolicy, name)
+	return b.delete(uriLtm, uriPolicy, name, policyVersionSuffix)
 }

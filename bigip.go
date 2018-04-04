@@ -193,9 +193,15 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 
 func (b *BigIP) iControlPath(parts []string) string {
 	var buffer bytes.Buffer
+	var lastPath int
+	if strings.HasPrefix(parts[len(parts)-1], "?") {
+		lastPath = len(parts) - 2
+	} else {
+		lastPath = len(parts) - 1
+	}
 	for i, p := range parts {
 		buffer.WriteString(strings.Replace(p, "/", "~", -1))
-		if i < len(parts)-1 {
+		if i < lastPath {
 			buffer.WriteString("/")
 		}
 	}
@@ -263,7 +269,6 @@ func (b *BigIP) patch(body interface{}, path ...string) error {
 	_, callErr := b.APICall(req)
 	return callErr
 }
-
 
 //Get a url and populate an entity. If the entity does not exist (404) then the
 //passed entity will be untouched and false will be returned as the second parameter.
