@@ -3474,42 +3474,6 @@ func (b *BigIP) DeleteSnatpool(name string) error {
 
 
 
-// DeleteDestAddrPersistenceProfile removes a dest-addr persist profile.
-func (b *BigIP) DeleteDestAddrPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriDestAddr, name)
-}
-
-// ModifyDestAddrPersistenceProfile allows you to change any attribute of a dest-addr persist profile.
-// Fields that can be modified are referenced in the DestAddrPersistenceProfile struct.
-func (b *BigIP) ModifyDestAddrPersistenceProfile(name string, config *DestAddrPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriDestAddr, name)
-}
-
-// HashPersistenceProfiles returns a list of hash persist profiles
-func (b *BigIP) HashPersistenceProfiles() (*HashPersistenceProfiles, error) {
-	var hashPersistenceProfiles HashPersistenceProfiles
-	err, _ := b.getForEntity(&hashPersistenceProfiles, uriLtm, uriPersistence, uriHash)
-	if err != nil {
-		return nil, err
-	}
-
-	return &hashPersistenceProfiles, nil
-}
-
-// GetHashPersistenceProfile gets a single hash persist profile by name
-func (b *BigIP) GetHashPersistenceProfile(name string) (*HashPersistenceProfile, error) {
-	var hashPersistenceProfile HashPersistenceProfile
-	err, ok := b.getForEntity(&hashPersistenceProfile, uriLtm, uriPersistence, uriHash, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &hashPersistenceProfile, nil
-}
 
 // CreateHashPersistenceProfile creates a new hash persist profile on the BIG-IP system.
 func (b *BigIP) CreateHashPersistenceProfile(name string, parent string) error {
@@ -3537,31 +3501,7 @@ func (b *BigIP) ModifyHashPersistenceProfile(name string, config *HashPersistenc
 	return b.put(config, uriLtm, uriPersistence, uriHash, name)
 }
 
-// HostPersistenceProfiles returns a list of host persist profiles
-func (b *BigIP) HostPersistenceProfiles() (*HostPersistenceProfiles, error) {
-	var hostPersistenceProfiles HostPersistenceProfiles
-	err, _ := b.getForEntity(&hostPersistenceProfiles, uriLtm, uriPersistence, uriHost)
-	if err != nil {
-		return nil, err
-	}
 
-	return &hostPersistenceProfiles, nil
-}
-
-// GetHostPersistenceProfile gets a single host persist profile by name
-func (b *BigIP) GetHostPersistenceProfile(name string) (*HostPersistenceProfile, error) {
-	var hostPersistenceProfile HostPersistenceProfile
-	err, ok := b.getForEntity(&hostPersistenceProfile, uriLtm, uriPersistence, uriHost, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &hostPersistenceProfile, nil
-}
 
 // CreateHostPersistenceProfile creates a new host persist profile on the BIG-IP system.
 func (b *BigIP) CreateHostPersistenceProfile(name string, parent string) error {
