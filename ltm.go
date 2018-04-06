@@ -3544,7 +3544,7 @@ func (b *BigIP) AddRecords(name, rname, data string) error {
 }
 
 // Snats returns a list of snat
-func (b *BigIP) Snats(name string) (*Snats, error) {
+/*func (b *BigIP) Snats(name string) (*Snats, error) {
 	var snats Snats
 	err, _ := b.getForEntity(&snats, uriLtm, uriSnat, name)
 
