@@ -1692,6 +1692,7 @@ const (
 	uriSourceAddr     = "source-addr"
 	uriSSL            = "ssl"
 	uriUniversal      = "universal"
+        uriUdp            = "udp"
 )
 
 var cidr = map[string]string{
