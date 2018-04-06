@@ -954,18 +954,18 @@ type Monitor struct {
 }
 
 type monitorDTO struct {
-	Name          string `json:"name,omitempty"`
-	Partition     string `json:"partition,omitempty"`
-	FullPath      string `json:"fullPath,omitempty"`
-	Generation    int    `json:"generation,omitempty"`
-	ParentMonitor string `json:"defaultsFrom,omitempty"`
-	Database      string `json:"database,omitempty"`
-	Description   string `json:"description,omitempty"`
-	Destination   string `json:"destination,omitempty"`
-	Interval      int    `json:"interval,omitempty"`
-	IPDSCP        int    `json:"ipDscp,omitempty"`
-	ManualResume  string `json:"manualResume,omitempty" bool:"enabled"`
-	// MonitorType    string
+	Name           string `json:"name,omitempty"`
+	Partition      string `json:"partition,omitempty"`
+	FullPath       string `json:"fullPath,omitempty"`
+	Generation     int    `json:"generation,omitempty"`
+	ParentMonitor  string `json:"defaultsFrom,omitempty"`
+	Database       string `json:"database,omitempty"`
+	Description    string `json:"description,omitempty"`
+	Destination    string `json:"destination,omitempty"`
+	Interval       int    `json:"interval,omitempty"`
+	IPDSCP         int    `json:"ipDscp,omitempty"`
+	ManualResume   string `json:"manualResume,omitempty" bool:"enabled"`
+	MonitorType    string `json:"monitorType,omitempty"`
 	Password       string `json:"password,omitempty"`
 	ReceiveColumn  string `json:"recvColumn,omitempty"`
 	ReceiveRow     string `json:"recvRow,omitempty"`
@@ -1964,10 +1964,10 @@ func (b *BigIP) AddMonitor(config *Monitor, monitorType string) error {
 }
 
 // GetVirtualServer retrieves a monitor by name. Returns nil if the monitor does not exist
-func (b *BigIP) GetMonitor(name string, parent string) (*Monitor, error) {
+func (b *BigIP) GetMonitor(name string, monitorType string) (*Monitor, error) {
 	// Add a verification that type is an accepted monitor type
 	var monitor Monitor
-	err, ok := b.getForEntity(&monitor, uriLtm, uriMonitor, parent, name)
+	err, ok := b.getForEntity(&monitor, uriLtm, uriMonitor, monitorType, name)
 	if err != nil {
 		return nil, err
 	}
@@ -1979,8 +1979,8 @@ func (b *BigIP) GetMonitor(name string, parent string) (*Monitor, error) {
 }
 
 // DeleteMonitor removes a monitor.
-func (b *BigIP) DeleteMonitor(name, parent string) error {
-	return b.delete(uriLtm, uriMonitor, parent, name)
+func (b *BigIP) DeleteMonitor(name, monitorType string) error {
+	return b.delete(uriLtm, uriMonitor, monitorType, name)
 }
 
 // ModifyMonitor allows you to change any attribute of a monitor. <monitorType> must

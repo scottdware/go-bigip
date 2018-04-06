@@ -877,15 +877,48 @@ func (s *LTMTestSuite) TestAddMonitor() {
 }
 
 func (s *LTMTestSuite) TestGetMonitor() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+			"kind": "tm:ltm:monitor:http:httpstate",
+			"name": "test-web-monitor",
+			"partition": "Common",
+			"fullPath": "/Common/test-web-monitor",
+			"generation": 0,
+			"selfLink": "https://localhost/mgmt/tm/ltm/monitor/http/~Common~test-monitor?ver=13.1.0.2",
+			"adaptive": "disabled",
+			"adaptiveDivergenceType": "relative",
+			"adaptiveDivergenceValue": 25,
+			"adaptiveLimit": 200,
+			"adaptiveSamplingTimespan": 300,
+			"defaultsFrom": "/Common/http",
+			"destination": "*:*",
+			"interval": 500,
+			"ipDscp": 0,
+			"manualResume": "disabled",
+			"recv": "HTTP 1.1 302 Found",
+			"recvDisable": "HTTP/1.1 429",
+			"reverse": "disabled",
+			"send": "GET /some/path\\r\\n",
+			"timeUntilUp": 0,
+			"timeout": 999,
+			"transparent": "disabled",
+			"upInterval": 0
+		}`))
+	}
+
 	config := &Monitor{
 		Name:          "test-web-monitor",
 		ParentMonitor: "http",
 	}
 
-	s.Client.GetMonitor(config.Name, config.ParentMonitor)
+	m, err := s.Client.GetMonitor(config.Name, config.ParentMonitor)
 
+	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), "GET", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor, config.Name), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "test-web-monitor", m.Name)
+	assert.Equal(s.T(), "HTTP 1.1 302 Found", m.ReceiveString)
+	assert.Equal(s.T(), "HTTP/1.1 429", m.ReceiveDisable)
 }
 
 func (s *LTMTestSuite) TestDeleteMonitor() {
