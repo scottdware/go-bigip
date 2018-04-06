@@ -443,6 +443,9 @@ type Pool struct {
 	ReselectTries          int    `json:"reselectTries,omitempty"`
 	ServiceDownAction      string `json:"serviceDownAction,omitempty"`
 	SlowRampTime           int    `json:"slowRampTime,omitempty"`
+
+	// Setting this field atomically updates all members.
+	Members *[]PoolMember `json:"members,omitempty"`
 }
 
 // Pool Members contains a list of pool members within a pool on the BIG-IP system.

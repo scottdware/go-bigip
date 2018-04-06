@@ -603,7 +603,47 @@ func (s *LTMTestSuite) TestModifyPool() {
 
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
-	assert.Equal(s.T(), `{"name":"test-pool","partition":"Common","allowNat":"yes","allowSnat":"yes","loadBalancingMode":"round-robin","monitor":"/Common/http"}`, s.LastRequestBody)
+	assert.JSONEq(s.T(), `{"name":"test-pool","partition":"Common","allowNat":"yes","allowSnat":"yes","loadBalancingMode":"round-robin","monitor":"/Common/http"}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestModifyPoolWithMembers() {
+	members := []PoolMember{
+		{Name: "test-pool-member"},
+	}
+
+	config := &Pool{
+		Name:              "test-pool",
+		Partition:         "Common",
+		Monitor:           "/Common/http",
+		LoadBalancingMode: "round-robin",
+		AllowSNAT:         "yes",
+		AllowNAT:          "yes",
+		Members:           &members,
+	}
+
+	s.Client.ModifyPool("/Common/test-pool", config)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
+	assert.JSONEq(s.T(), `{"name":"test-pool","partition":"Common","allowNat":"yes","allowSnat":"yes","loadBalancingMode":"round-robin","monitor":"/Common/http", "members": [{"name": "test-pool-member"}]}`, s.LastRequestBody)
+}
+
+func (s *LTMTestSuite) TestModifyPoolWithEmptyMembers() {
+	config := &Pool{
+		Name:              "test-pool",
+		Partition:         "Common",
+		Monitor:           "/Common/http",
+		LoadBalancingMode: "round-robin",
+		AllowSNAT:         "yes",
+		AllowNAT:          "yes",
+		Members:           &[]PoolMember{},
+	}
+
+	s.Client.ModifyPool("/Common/test-pool", config)
+
+	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
+	assert.JSONEq(s.T(), `{"name":"test-pool","partition":"Common","allowNat":"yes","allowSnat":"yes","loadBalancingMode":"round-robin","monitor":"/Common/http", "members": []}`, s.LastRequestBody)
 }
 
 func (s *LTMTestSuite) TestAddPoolMember() {
