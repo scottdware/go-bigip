@@ -130,223 +130,203 @@ type ClientSSLProfile struct {
 	UncleanShutdown                 string   `json:"uncleanShutdown,omitempty"`
 }
 
-// Nodes contains a list of every node on the BIG-IP system.
-type Nodes struct {
-	Nodes []Node `json:"items"`
+// TcpProfiles contains a list of every tcp profile on the BIG-IP system.
+type TcpProfiles struct {
+	TcpProfiles []TcpProfile `json:"items"`
 }
 
-// Node contains information about each individual node. You can use all
-// of these fields when modifying a node.
-type Node struct {
-	Name            string `json:"name,omitempty"`
-	Partition       string `json:"partition,omitempty"`
-	FullPath        string `json:"fullPath,omitempty"`
-	Generation      int    `json:"generation,omitempty"`
-	Address         string `json:"address,omitempty"`
-	ConnectionLimit int    `json:"connectionLimit,omitempty"`
-	DynamicRatio    int    `json:"dynamicRatio,omitempty"`
-	Logging         string `json:"logging,omitempty"`
-	Monitor         string `json:"monitor,omitempty"`
-	RateLimit       string `json:"rateLimit,omitempty"`
-	Ratio           int    `json:"ratio,omitempty"`
-	Session         string `json:"session,omitempty"`
-	State           string `json:"state,omitempty"`
-	FQDN            struct {
-		AddressFamily string `json:"addressFamily,omitempty"`
-		AutoPopulate  string `json:"autopopulate,omitempty"`
-		DownInterval  int    `json:"downInterval,omitempty"`
-		Interval      string `json:"interval,omitempty"`
-		Name          string `json:"tmName,omitempty"`
-	} `json:"fqdn,omitempty"`
+type TcpProfile struct {
+	Abc                      string `json:"abc,omitempty"`
+	AckOnPush                string `json:"ackOnPush,omitempty"`
+	AppService               string `json:"appService,omitempty"`
+	AutoProxyBufferSize      string `json:"autoProxyBufferSize,omitempty"`
+	AutoReceiveWindowSize    string `json:"autoReceiveWindowSize,omitempty"`
+	AutoSendBufferSize       string `json:"autoSendBufferSize,omitempty"`
+	CloseWaitTimeout         int    `json:"closeWaitTimeout,omitempty"`
+	CmetricsCache            string `json:"cmetricsCache,omitempty"`
+	CmetricsCacheTimeout     int    `json:"cmetricsCacheTimeout,omitempty"`
+	CongestionControl        string `json:"congestionControl,omitempty"`
+	DefaultsFrom             string `json:"defaultsFrom,omitempty"`
+	DeferredAccept           string `json:"deferredAccept,omitempty"`
+	DelayWindowControl       string `json:"delayWindowControl,omitempty"`
+	DelayedAcks              string `json:"delayedAcks,omitempty"`
+	Description              string `json:"description,omitempty"`
+	Dsack                    string `json:"dsack,omitempty"`
+	EarlyRetransmit          string `json:"earlyRetransmit,omitempty"`
+	Ecn                      string `json:"ecn,omitempty"`
+	EnhancedLossRecovery     string `json:"enhancedLossRecovery,omitempty"`
+	FastOpen                 string `json:"fastOpen,omitempty"`
+	FastOpenCookieExpiration int    `json:"fastOpenCookieExpiration,omitempty"`
+	FinWait_2Timeout         int    `json:"finWait_2Timeout,omitempty"`
+	FinWaitTimeout           int    `json:"finWaitTimeout,omitempty"`
+	HardwareSynCookie        string `json:"hardwareSynCookie,omitempty"`
+	IdleTimeout              int    `json:"idleTimeout,omitempty"`
+	InitCwnd                 int    `json:"initCwnd,omitempty"`
+	InitRwnd                 int    `json:"initRwnd,omitempty"`
+	IpDfMode                 string `json:"ipDfMode,omitempty"`
+	IpTosToClient            string `json:"ipTosToClient,omitempty"`
+	IpTtlMode                string `json:"ipTtlMode,omitempty"`
+	IpTtlV4                  int    `json:"ipTtlV4,omitempty"`
+	IpTtlV6                  int    `json:"ipTtlV6,omitempty"`
+	KeepAliveInterval        int    `json:"keepAliveInterval,omitempty"`
+	LimitedTransmit          string `json:"limitedTransmit,omitempty"`
+	LinkQosToClient          string `json:"linkQosToClient,omitempty"`
+	MaxRetrans               int    `json:"maxRetrans,omitempty"`
+	MaxSegmentSize           int    `json:"maxSegmentSize,omitempty"`
+	Md5Signature             string `json:"md5Signature,omitempty"`
+	Md5SignaturePassphrase   string `json:"md5SignaturePassphrase,omitempty"`
+	MinimumRto               int    `json:"minimumRto,omitempty"`
+	Mptcp                    string `json:"mptcp,omitempty"`
+	MptcpCsum                string `json:"mptcpCsum,omitempty"`
+	MptcpCsumVerify          string `json:"mptcpCsumVerify,omitempty"`
+	MptcpDebug               string `json:"mptcpDebug,omitempty"`
+	MptcpFallback            string `json:"mptcpFallback,omitempty"`
+	MptcpFastjoin            string `json:"mptcpFastjoin,omitempty"`
+	MptcpIdleTimeout         int    `json:"mptcpIdleTimeout,omitempty"`
+	MptcpJoinMax             int    `json:"mptcpJoinMax,omitempty"`
+	MptcpMakeafterbreak      string `json:"mptcpMakeafterbreak,omitempty"`
+	MptcpNojoindssack        string `json:"mptcpNojoindssack,omitempty"`
+	MptcpRtomax              int    `json:"mptcpRtomax,omitempty"`
+	MptcpRxmitmin            int    `json:"mptcpRxmitmin,omitempty"`
+	MptcpSubflowmax          int    `json:"mptcpSubflowmax,omitempty"`
+	MptcpTimeout             int    `json:"mptcpTimeout,omitempty"`
+	Nagle                    string `json:"nagle,omitempty"`
+	Name                     string `json:"name,omitempty"`
+	TmPartition              string `json:"tmPartition,omitempty"`
+	PktLossIgnoreBurst       int    `json:"pktLossIgnoreBurst,omitempty"`
+	PktLossIgnoreRate        int    `json:"pktLossIgnoreRate,omitempty"`
+	ProxyBufferHigh          int    `json:"proxyBufferHigh,omitempty"`
+	ProxyBufferLow           int    `json:"proxyBufferLow,omitempty"`
+	ProxyMss                 string `json:"proxyMss,omitempty"`
+	ProxyOptions             string `json:"proxyOptions,omitempty"`
+	RatePace                 string `json:"ratePace,omitempty"`
+	RatePaceMaxRate          int    `json:"ratePaceMaxRate,omitempty"`
+	ReceiveWindowSize        int    `json:"receiveWindowSize,omitempty"`
+	ResetOnTimeout           string `json:"resetOnTimeout,omitempty"`
+	RexmtThresh              int    `json:"rexmtThresh,omitempty"`
+	SelectiveAcks            string `json:"selectiveAcks,omitempty"`
+	SelectiveNack            string `json:"selectiveNack,omitempty"`
+	SendBufferSize           int    `json:"sendBufferSize,omitempty"`
+	SlowStart                string `json:"slowStart,omitempty"`
+	SynCookieEnable          string `json:"synCookieEnable,omitempty"`
+	SynCookieWhitelist       string `json:"synCookieWhitelist,omitempty"`
+	SynMaxRetrans            int    `json:"synMaxRetrans,omitempty"`
+	SynRtoBase               int    `json:"synRtoBase,omitempty"`
+	TailLossProbe            string `json:"tailLossProbe,omitempty"`
+	TcpOptions               string `json:"tcpOptions,omitempty"`
+	TimeWaitRecycle          string `json:"timeWaitRecycle,omitempty"`
+	TimeWaitTimeout          string `json:"timeWaitTimeout,omitempty"`
+	Timestamps               string `json:"timestamps,omitempty"`
+	VerifiedAccept           string `json:"verifiedAccept,omitempty"`
 }
 
-// DataGroups contains a list of data groups on the BIG-IP system.
-type DataGroups struct {
-	DataGroups []DataGroup `json:"items"`
+// UdpProfiles contains a list of every tcp profile on the BIG-IP system.
+type UdpProfiles struct {
+	UdpProfiles []UdpProfile `json:"items"`
 }
 
-// DataGroups contains information about each data group.
-type DataGroup struct {
-	Name       string
-	Partition  string
-	FullPath   string
-	Generation int
-	Type       string
-	Records    []DataGroupRecord
+type UdpProfile struct {
+	AllowNoPayload        string `json:"allowNoPayload,omitempty"`
+	AppService            string `json:"appService,omitempty"`
+	BufferMaxBytes        int    `json:"bufferMaxBytes,omitempty"`
+	BufferMaxPackets      int    `json:"bufferMaxPackets,omitempty"`
+	DatagramLoadBalancing string `json:"datagramLoadBalancing,omitempty"`
+	DefaultsFrom          string `json:"defaultsFrom,omitempty"`
+	Description           string `json:"description,omitempty"`
+	IdleTimeout           string `json:"idleTimeout,omitempty"`
+	IpDfMode              string `json:"ipDfMode,omitempty"`
+	IpTosToClient         string `json:"ipTosToClient,omitempty"`
+	IpTtlMode             string `json:"ipTtlMode,omitempty"`
+	IpTtlV4               int    `json:"ipTtlV4,omitempty"`
+	IpTtlV6               int    `json:"ipTtlV6,omitempty"`
+	LinkQosToClient       string `json:"linkQosToClient,omitempty"`
+	Name                  string `json:"name,omitempty"`
+	NoChecksum            string `json:"noChecksum,omitempty"`
+	TmPartition           string `json:"tmPartition,omitempty"`
+	ProxyMss              string `json:"proxyMss,omitempty"`
 }
 
-type DataGroupRecords struct {
-	Items []DataGroupRecord `json:"items,omitempty"`
+type HttpProfiles struct {
+	HttpProfiles []HttpProfile `json:"items"`
 }
 
-type DataGroupRecord struct {
-	Name string `json:"name,omitempty"`
-	Data string `json:"data,omitempty"`
+type HttpProfile struct {
+	AcceptXff                 string `json:"acceptXff,omitempty"`
+	AppService                string `json:"appService,omitempty"`
+	BasicAuthRealm            string `json:"basicAuthRealm,omitempty"`
+	DefaultsFrom              string `json:"defaultsFrom,omitempty"`
+	Description               string `json:"description,omitempty"`
+	EncryptCookieSecret       string `json:"encryptCookieSecret,omitempty"`
+	EncryptCookies            string `json:"encryptCookies,omitempty"`
+	FallbackHost              string `json:"fallbackHost,omitempty"`
+	FallbackStatusCodes       string `json:"fallbackStatusCodes,omitempty"`
+	HeaderErase               string `json:"headerErase,omitempty"`
+	HeaderInsert              string `json:"headerInsert,omitempty"`
+	InsertXforwardedFor       string `json:"insertXforwardedFor,omitempty"`
+	LwsSeparator              string `json:"lwsSeparator,omitempty"`
+	LwsWidth                  int    `json:"lwsWidth,omitempty"`
+	Name                      string `json:"name,omitempty"`
+	OneconnectTransformations string `json:"oneconnectTransformations,omitempty"`
+	TmPartition               string `json:"tmPartition,omitempty"`
+	ProxyType                 string `json:"proxyType,omitempty"`
+	RedirectRewrite           string `json:"redirectRewrite,omitempty"`
+	RequestChunking           string `json:"requestChunking,omitempty"`
+	ResponseChunking          string `json:"responseChunking,omitempty"`
+	ResponseHeadersPermitted  string `json:"responseHeadersPermitted,omitempty"`
+	ServerAgentName           string `json:"serverAgentName,omitempty"`
+	ViaHostName               string `json:"viaHostName,omitempty"`
+	ViaRequest                string `json:"viaRequest,omitempty"`
+	ViaResponse               string `json:"viaResponse,omitempty"`
+	XffAlternativeNames       string `json:"xffAlternativeNames,omitempty"`
 }
 
-type dataGroupDTO struct {
-	Name       string `json:"name,omitempty"`
-	Partition  string `json:"partition,omitempty"`
-	FullPath   string `json:"fullPath,omitempty"`
-	Generation int    `json:"generation,omitempty"`
-	Type       string `json:"type,omitempty"`
-	Records    struct {
-		Items []DataGroupRecord `json:"items,omitempty"`
-	} `json:"recordsReference,omitempty"`
+type OneconnectProfiles struct {
+	OneconnectProfiles []OneconnectProfile `json:"items"`
 }
 
-func (p *DataGroup) MarshalJSON() ([]byte, error) {
-	return json.Marshal(dataGroupDTO{
-		Name:       p.Name,
-		Partition:  p.Partition,
-		FullPath:   p.FullPath,
-		Generation: p.Generation,
-		Type:       p.Type,
-		Records: struct {
-			Items []DataGroupRecord `json:"items,omitempty"`
-		}{Items: p.Records},
-	})
+type OneconnectProfile struct {
+	AppService          string `json:"appService,omitempty"`
+	DefaultsFrom        string `json:"defaultsFrom,omitempty"`
+	Description         string `json:"description,omitempty"`
+	IdleTimeoutOverride string `json:"idleTimeoutOverride,omitempty"`
+	LimitType           string `json:"limitType,omitempty"`
+	MaxAge              int    `json:"maxAge,omitempty"`
+	MaxReuse            int    `json:"maxReuse,omitempty"`
+	MaxSize             int    `json:"maxSize,omitempty"`
+	Name                string `json:"name,omitempty"`
+	TmPartition         string `json:"tmPartition,omitempty"`
+	SharePools          string `json:"sharePools,omitempty"`
+	SourceMask          string `json:"sourceMask,omitempty"`
 }
 
-func (p *DataGroup) UnmarshalJSON(b []byte) error {
-	var dto dataGroupDTO
-	err := json.Unmarshal(b, &dto)
-	if err != nil {
-		return err
-	}
-
-	p.Name = dto.Name
-	p.Partition = dto.Partition
-	p.Type = dto.Type
-	p.FullPath = dto.FullPath
-	p.Generation = dto.Generation
-	p.Records = dto.Records.Items
-	return nil
+type HttpCompressionProfiles struct {
+	HttpCompressionProfiles []HttpCompressionProfile `json:"items"`
 }
 
-// SnatPools contains a list of every snatpool on the BIG-IP system.
-type SnatPools struct {
-	SnatPools []SnatPool `json:"items"`
-}
-
-// SnatPool contains information about each individual snatpool. You can use all
-// of these fields when modifying a snatpool.
-type SnatPool struct {
-	Name       string   `json:"name,omitempty"`
-	Partition  string   `json:"partition,omitempty"`
-	FullPath   string   `json:"fullPath,omitempty"`
-	Generation int      `json:"generation,omitempty"`
-	Members    []string `json:"members,omitempty"`
-}
-
-// Pools contains a list of pools on the BIG-IP system.
-type Pools struct {
-	Pools []Pool `json:"items"`
-}
-
-// Pool contains information about each pool. You can use all of these
-// fields when modifying a pool.
-type Pool struct {
-	Name                   string `json:"name,omitempty"`
-	Partition              string `json:"partition,omitempty"`
-	FullPath               string `json:"fullPath,omitempty"`
-	Generation             int    `json:"generation,omitempty"`
-	AllowNAT               string `json:"allowNat,omitempty"`
-	AllowSNAT              string `json:"allowSnat,omitempty"`
-	IgnorePersistedWeight  string `json:"ignorePersistedWeight,omitempty"`
-	IPTOSToClient          string `json:"ipTosToClient,omitempty"`
-	IPTOSToServer          string `json:"ipTosToServer,omitempty"`
-	LinkQoSToClient        string `json:"linkQosToClient,omitempty"`
-	LinkQoSToServer        string `json:"linkQosToServer,omitempty"`
-	LoadBalancingMode      string `json:"loadBalancingMode,omitempty"`
-	MinActiveMembers       int    `json:"minActiveMembers,omitempty"`
-	MinUpMembers           int    `json:"minUpMembers,omitempty"`
-	MinUpMembersAction     string `json:"minUpMembersAction,omitempty"`
-	MinUpMembersChecking   string `json:"minUpMembersChecking,omitempty"`
-	Monitor                string `json:"monitor,omitempty"`
-	QueueDepthLimit        int    `json:"queueDepthLimit,omitempty"`
-	QueueOnConnectionLimit string `json:"queueOnConnectionLimit,omitempty"`
-	QueueTimeLimit         int    `json:"queueTimeLimit,omitempty"`
-	ReselectTries          int    `json:"reselectTries"`
-	ServiceDownAction      string `json:"serviceDownAction,omitempty"`
-	SlowRampTime           int    `json:"slowRampTime"`
-}
-
-// Pool Members contains a list of pool members within a pool on the BIG-IP system.
-type PoolMembers struct {
-	PoolMembers []PoolMember `json:"items"`
-}
-
-// poolMember is used only when adding members to a pool.
-type poolMember struct {
-	Name string `json:"name"`
-}
-
-// poolMembers is used only when modifying members on a pool.
-type poolMembers struct {
-	Members []PoolMember `json:"members"`
-}
-
-// Pool Member contains information about each individual member in a pool. You can use all
-// of these fields when modifying a pool member.
-type PoolMember struct {
-	Name            string `json:"name,omitempty"`
-	Partition       string `json:"partition,omitempty"`
-	FullPath        string `json:"fullPath,omitempty"`
-	Generation      int    `json:"generation,omitempty"`
-	Address         string `json:"address,omitempty"`
-	ConnectionLimit int    `json:"connectionLimit,omitempty"`
-	DynamicRatio    int    `json:"dynamicRatio,omitempty"`
-	InheritProfile  string `json:"inheritProfile,omitempty"`
-	Logging         string `json:"logging,omitempty"`
-	Monitor         string `json:"monitor,omitempty"`
-	PriorityGroup   int    `json:"priorityGroup,omitempty"`
-	RateLimit       string `json:"rateLimit,omitempty"`
-	Ratio           int    `json:"ratio,omitempty"`
-	Session         string `json:"session,omitempty"`
-	State           string `json:"state,omitempty"`
-}
-
-// Pool transfer object so we can mask the bool data munging
-type poolDTO struct {
-	Name                   string `json:"name,omitempty"`
-	Partition              string `json:"partition,omitempty"`
-	FullPath               string `json:"fullPath,omitempty"`
-	Generation             int    `json:"generation,omitempty"`
-	AllowNAT               string `json:"allowNat,omitempty"`
-	AllowSNAT              string `json:"allowSnat,omitempty"`
-	IgnorePersistedWeight  string `json:"ignorePersistedWeight,omitempty" bool:"enabled"`
-	IPTOSToClient          string `json:"ipTosToClient,omitempty"`
-	IPTOSToServer          string `json:"ipTosToServer,omitempty"`
-	LinkQoSToClient        string `json:"linkQosToClient,omitempty"`
-	LinkQoSToServer        string `json:"linkQosToServer,omitempty"`
-	LoadBalancingMode      string `json:"loadBalancingMode,omitempty"`
-	MinActiveMembers       int    `json:"minActiveMembers,omitempty"`
-	MinUpMembers           int    `json:"minUpMembers,omitempty"`
-	MinUpMembersAction     string `json:"minUpMembersAction,omitempty"`
-	MinUpMembersChecking   string `json:"minUpMembersChecking,omitempty"`
-	Monitor                string `json:"monitor,omitempty"`
-	QueueDepthLimit        int    `json:"queueDepthLimit,omitempty"`
-	QueueOnConnectionLimit string `json:"queueOnConnectionLimit,omitempty"`
-	QueueTimeLimit         int    `json:"queueTimeLimit,omitempty"`
-	ReselectTries          int    `json:"reselectTries"`
-	ServiceDownAction      string `json:"serviceDownAction,omitempty"`
-	SlowRampTime           int    `json:"slowRampTime"`
-}
-
-func (p *Pool) MarshalJSON() ([]byte, error) {
-	var dto poolDTO
-	marshal(&dto, p)
-	return json.Marshal(dto)
-}
-
-func (p *Pool) UnmarshalJSON(b []byte) error {
-	var dto poolDTO
-	err := json.Unmarshal(b, &dto)
-	if err != nil {
-		return err
-	}
-	return marshal(p, &dto)
+type HttpCompressionProfile struct {
+	AllowHttp_10       string   `json:"allowHttp_10,omitempty"`
+	AppService         string   `json:"appService,omitempty"`
+	BrowserWorkarounds string   `json:"browserWorkarounds,omitempty"`
+	BufferSize         int      `json:"bufferSize,omitempty"`
+	ContentTypeExclude []string `json:"contentTypeExclude,omitempty"`
+	ContentTypeInclude []string `json:"contentTypeInclude,omitempty"`
+	CpuSaver           string   `json:"cpuSaver,omitempty"`
+	CpuSaverHigh       int      `json:"cpuSaverHigh,omitempty"`
+	CpuSaverLow        int      `json:"cpuSaverLow,omitempty"`
+	DefaultsFrom       string   `json:"defaultsFrom,omitempty"`
+	Description        string   `json:"description,omitempty"`
+	GzipLevel          int      `json:"gzipLevel,omitempty"`
+	GzipMemoryLevel    int      `json:"gzipMemoryLevel,omitempty"`
+	GzipWindowSize     int      `json:"gzipWindowSize,omitempty"`
+	KeepAcceptEncoding string   `json:"keepAcceptEncoding,omitempty"`
+	MethodPrefer       string   `json:"methodPrefer,omitempty"`
+	MinSize            int      `json:"minSize,omitempty"`
+	Name               string   `json:"name,omitempty"`
+	TmPartition        string   `json:"tmPartition,omitempty"`
+	Selective          string   `json:"selective,omitempty"`
+	UriExclude         []string `json:"uriExclude,omitempty"`
+	UriInclude         []string `json:"uriInclude,omitempty"`
+	VaryHeader         string   `json:"varyHeader,omitempty"`
 }
 
 // PersistenceProfiles contains of list of persistence profiles
@@ -488,6 +468,198 @@ type UniversalPersistenceProfile struct {
 	Rule string `json:"rule,omitempty"`
 }
 
+// Nodes contains a list of every node on the BIG-IP system.
+type Nodes struct {
+	Nodes []Node `json:"items"`
+}
+
+// Node contains information about each individual node. You can use all
+// of these fields when modifying a node.
+type Node struct {
+	Name            string `json:"name,omitempty"`
+	Partition       string `json:"partition,omitempty"`
+	FullPath        string `json:"fullPath,omitempty"`
+	Generation      int    `json:"generation,omitempty"`
+	Address         string `json:"address,omitempty"`
+	ConnectionLimit int    `json:"connectionLimit,omitempty"`
+	DynamicRatio    int    `json:"dynamicRatio,omitempty"`
+	Logging         string `json:"logging,omitempty"`
+	Monitor         string `json:"monitor,omitempty"`
+	RateLimit       string `json:"rateLimit,omitempty"`
+	Ratio           int    `json:"ratio,omitempty"`
+	Session         string `json:"session,omitempty"`
+	State           string `json:"state,omitempty"`
+}
+
+// DataGroups contains a list of data groups on the BIG-IP system.
+type DataGroups struct {
+	DataGroups []DataGroup `json:"items"`
+}
+
+// DataGroups contains information about each data group.
+type DataGroup struct {
+	Name       string
+	Partition  string
+	FullPath   string
+	Generation int
+	Type       string
+	Records    []DataGroupRecord
+}
+
+type DataGroupRecord struct {
+	Name string `json:"name,omitempty"`
+	Data string `json:"data,omitempty"`
+}
+
+type dataGroupDTO struct {
+	Name       string            `json:"name,omitempty"`
+	Partition  string            `json:"partition,omitempty"`
+	FullPath   string            `json:"fullPath,omitempty"`
+	Generation int               `json:"generation,omitempty"`
+	Type       string            `json:"type,omitempty"`
+	Records    []DataGroupRecord `json:"records,omitempty"`
+}
+
+func (p *DataGroup) MarshalJSON() ([]byte, error) {
+	var dto dataGroupDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
+}
+
+func (p *DataGroup) UnmarshalJSON(b []byte) error {
+	var dto dataGroupDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
+}
+
+// SnatPools contains a list of every snatpool on the BIG-IP system.
+type SnatPools struct {
+	SnatPools []SnatPool `json:"items"`
+}
+
+// SnatPool contains information about each individual snatpool. You can use all
+// of these fields when modifying a snatpool.
+type SnatPool struct {
+	Name       string   `json:"name,omitempty"`
+	Partition  string   `json:"partition,omitempty"`
+	FullPath   string   `json:"fullPath,omitempty"`
+	Generation int      `json:"generation,omitempty"`
+	Members    []string `json:"members,omitempty"`
+}
+
+// Pools contains a list of pools on the BIG-IP system.
+type Pools struct {
+	Pools []Pool `json:"items"`
+}
+
+// Pool contains information about each pool. You can use all of these
+// fields when modifying a pool.
+type Pool struct {
+	Name                   string `json:"name,omitempty"`
+	Partition              string `json:"partition,omitempty"`
+	FullPath               string `json:"fullPath,omitempty"`
+	Generation             int    `json:"generation,omitempty"`
+	AllowNAT               string `json:"allowNat,omitempty"`
+	AllowSNAT              string `json:"allowSnat,omitempty"`
+	IgnorePersistedWeight  string `json:"ignorePersistedWeight,omitempty"`
+	IPTOSToClient          string `json:"ipTosToClient,omitempty"`
+	IPTOSToServer          string `json:"ipTosToServer,omitempty"`
+	LinkQoSToClient        string `json:"linkQosToClient,omitempty"`
+	LinkQoSToServer        string `json:"linkQosToServer,omitempty"`
+	LoadBalancingMode      string `json:"loadBalancingMode,omitempty"`
+	MinActiveMembers       int    `json:"minActiveMembers,omitempty"`
+	MinUpMembers           int    `json:"minUpMembers,omitempty"`
+	MinUpMembersAction     string `json:"minUpMembersAction,omitempty"`
+	MinUpMembersChecking   string `json:"minUpMembersChecking,omitempty"`
+	Monitor                string `json:"monitor,omitempty"`
+	QueueDepthLimit        int    `json:"queueDepthLimit,omitempty"`
+	QueueOnConnectionLimit string `json:"queueOnConnectionLimit,omitempty"`
+	QueueTimeLimit         int    `json:"queueTimeLimit,omitempty"`
+	ReselectTries          int    `json:"reselectTries,omitempty"`
+	ServiceDownAction      string `json:"serviceDownAction,omitempty"`
+	SlowRampTime           int    `json:"slowRampTime,omitempty"`
+}
+
+// Pool Members contains a list of pool members within a pool on the BIG-IP system.
+type PoolMembers struct {
+	PoolMembers []PoolMember `json:"items"`
+}
+
+// poolMember is used only when adding members to a pool.
+type poolMember struct {
+	Name string `json:"name"`
+}
+
+// poolMembers is used only when modifying members on a pool.
+type poolMembers struct {
+	Members []PoolMember `json:"members"`
+}
+
+// Pool Member contains information about each individual member in a pool. You can use all
+// of these fields when modifying a pool member.
+type PoolMember struct {
+	Name            string `json:"name,omitempty"`
+	Partition       string `json:"partition,omitempty"`
+	FullPath        string `json:"fullPath,omitempty"`
+	Generation      int    `json:"generation,omitempty"`
+	Address         string `json:"address,omitempty"`
+	ConnectionLimit int    `json:"connectionLimit,omitempty"`
+	DynamicRatio    int    `json:"dynamicRatio,omitempty"`
+	InheritProfile  string `json:"inheritProfile,omitempty"`
+	Logging         string `json:"logging,omitempty"`
+	Monitor         string `json:"monitor,omitempty"`
+	PriorityGroup   int    `json:"priorityGroup,omitempty"`
+	RateLimit       string `json:"rateLimit,omitempty"`
+	Ratio           int    `json:"ratio,omitempty"`
+	Session         string `json:"session,omitempty"`
+	State           string `json:"state,omitempty"`
+}
+
+// Pool transfer object so we can mask the bool data munging
+type poolDTO struct {
+	Name                   string `json:"name,omitempty"`
+	Partition              string `json:"partition,omitempty"`
+	FullPath               string `json:"fullPath,omitempty"`
+	Generation             int    `json:"generation,omitempty"`
+	AllowNAT               string `json:"allowNat,omitempty"`
+	AllowSNAT              string `json:"allowSnat,omitempty"`
+	IgnorePersistedWeight  string `json:"ignorePersistedWeight,omitempty" bool:"enabled"`
+	IPTOSToClient          string `json:"ipTosToClient,omitempty"`
+	IPTOSToServer          string `json:"ipTosToServer,omitempty"`
+	LinkQoSToClient        string `json:"linkQosToClient,omitempty"`
+	LinkQoSToServer        string `json:"linkQosToServer,omitempty"`
+	LoadBalancingMode      string `json:"loadBalancingMode,omitempty"`
+	MinActiveMembers       int    `json:"minActiveMembers,omitempty"`
+	MinUpMembers           int    `json:"minUpMembers,omitempty"`
+	MinUpMembersAction     string `json:"minUpMembersAction,omitempty"`
+	MinUpMembersChecking   string `json:"minUpMembersChecking,omitempty"`
+	Monitor                string `json:"monitor,omitempty"`
+	QueueDepthLimit        int    `json:"queueDepthLimit,omitempty"`
+	QueueOnConnectionLimit string `json:"queueOnConnectionLimit,omitempty"`
+	QueueTimeLimit         int    `json:"queueTimeLimit,omitempty"`
+	ReselectTries          int    `json:"reselectTries,omitempty"`
+	ServiceDownAction      string `json:"serviceDownAction,omitempty"`
+	SlowRampTime           int    `json:"slowRampTime,omitempty"`
+}
+
+func (p *Pool) MarshalJSON() ([]byte, error) {
+	var dto poolDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
+}
+
+func (p *Pool) UnmarshalJSON(b []byte) error {
+	var dto poolDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	return marshal(p, &dto)
+}
+
 // VirtualServers contains a list of all virtual servers on the BIG-IP system.
 type VirtualServers struct {
 	VirtualServers []VirtualServer `json:"items"`
@@ -504,9 +676,10 @@ type VirtualServer struct {
 	CMPEnabled                 string `json:"cmpEnabled,omitempty"`
 	ConnectionLimit            int    `json:"connectionLimit,omitempty"`
 	Destination                string `json:"destination,omitempty"`
+	Description                string `json:"description,omitempty"`
 	Enabled                    bool   `json:"enabled,omitempty"`
-	GTMScore                   int    `json:"gtmScore,omitempty"`
 	FallbackPersistenceProfile string `json:"fallbackPersistence,omitempty"`
+	GTMScore                   int    `json:"gtmScore,omitempty"`
 	IPProtocol                 string `json:"ipProtocol,omitempty"`
 	Mask                       string `json:"mask,omitempty"`
 	Mirror                     string `json:"mirror,omitempty"`
@@ -590,13 +763,8 @@ type VirtualServerPolicies struct {
 	PolicyRef Policies `json:"policiesReference"`
 }
 
-type PolicyPublish struct {
-	Name string `json:"name"`
-	PublishCopy string `json:"publishedCopy"`
-}
 type Policy struct {
 	Name      string
-	PublishCopy string
 	Partition string
 	FullPath  string
 	Controls  []string
@@ -607,7 +775,6 @@ type Policy struct {
 
 type policyDTO struct {
 	Name      string   `json:"name"`
-	PublishCopy string `json:"publishedCopy"`
 	Partition string   `json:"partition,omitempty"`
 	Controls  []string `json:"controls,omitempty"`
 	Requires  []string `json:"requires,omitempty"`
@@ -621,7 +788,6 @@ type policyDTO struct {
 func (p *Policy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(policyDTO{
 		Name:      p.Name,
-		PublishCopy: p.PublishCopy,
 		Partition: p.Partition,
 		Controls:  p.Controls,
 		Requires:  p.Requires,
@@ -641,7 +807,6 @@ func (p *Policy) UnmarshalJSON(b []byte) error {
 	}
 
 	p.Name = dto.Name
-	p.PublishCopy = dto.PublishCopy
 	p.Partition = dto.Partition
 	p.Controls = dto.Controls
 	p.Requires = dto.Requires
@@ -915,8 +1080,6 @@ type PolicyRuleCondition struct {
 	VlanId                bool     `json:"vlanId,omitempty"`
 }
 
-
-
 func (p *VirtualAddress) MarshalJSON() ([]byte, error) {
 	var dto virtualAddressDTO
 	marshal(&dto, p)
@@ -941,48 +1104,53 @@ type Monitors struct {
 type Monitor struct {
 	Name           string
 	Partition      string
-	DefaultsFrom   string
 	FullPath       string
 	Generation     int
 	ParentMonitor  string
+	Database       string
 	Description    string
 	Destination    string
 	Interval       int
 	IPDSCP         int
-	ManualResume   string
+	ManualResume   bool
+	MonitorType    string
 	Password       string
+	ReceiveColumn  string
+	ReceiveRow     string
 	ReceiveString  string
 	ReceiveDisable string
-	Reverse        string
+	Reverse        bool
 	SendString     string
 	TimeUntilUp    int
 	Timeout        int
-	Transparent    string
+	Transparent    bool
 	UpInterval     int
 	Username       string
-
 }
 
 type monitorDTO struct {
-	Name           string `json:"name,omitempty"`
-	Partition      string `json:"partition,omitempty"`
-	DefaultsFrom   string `json:"defaultsFrom,omitempty"`
-	FullPath       string `json:"fullPath,omitempty"`
-	Generation     int    `json:"generation,omitempty"`
-	ParentMonitor  string `json:"defaultsFrom,omitempty"`
-	Description    string `json:"description,omitempty"`
-	Destination    string `json:"destination,omitempty"`
-	Interval       int    `json:"interval,omitempty"`
-	IPDSCP         int    `json:"ipDscp,omitempty"`
-	ManualResume   string `json:"manualResume,omitempty"`
+	Name          string `json:"name,omitempty"`
+	Partition     string `json:"partition,omitempty"`
+	FullPath      string `json:"fullPath,omitempty"`
+	Generation    int    `json:"generation,omitempty"`
+	ParentMonitor string `json:"defaultsFrom,omitempty"`
+	Database      string `json:"database,omitempty"`
+	Description   string `json:"description,omitempty"`
+	Destination   string `json:"destination,omitempty"`
+	Interval      int    `json:"interval,omitempty"`
+	IPDSCP        int    `json:"ipDscp,omitempty"`
+	ManualResume  string `json:"manualResume,omitempty" bool:"enabled"`
+	// MonitorType    string `json:"monitorType,omitempty"`
 	Password       string `json:"password,omitempty"`
+	ReceiveColumn  string `json:"recvColumn,omitempty"`
+	ReceiveRow     string `json:"recvRow,omitempty"`
 	ReceiveString  string `json:"recv,omitempty"`
 	ReceiveDisable string `json:"recvDisable,omitempty"`
-	Reverse        string `json:"reverse,omitempty"`
+	Reverse        string `json:"reverse,omitempty" bool:"enabled"`
 	SendString     string `json:"send,omitempty"`
 	TimeUntilUp    int    `json:"timeUntilUp,omitempty"`
 	Timeout        int    `json:"timeout,omitempty"`
-	Transparent    string `json:"transparent,omitempty"`
+	Transparent    string `json:"transparent,omitempty" bool:"enabled"`
 	UpInterval     int    `json:"upInterval,omitempty"`
 	Username       string `json:"username,omitempty"`
 }
@@ -1347,52 +1515,31 @@ type Snat struct {
 	Partition     string
 	FullPath      string
 	AutoLasthop   string
-	Mirror        string
+	Mirror        bool
 	SourcePort    string
 	Translation   string
 	Snatpool      string
 	VlansDisabled bool
-	Origins       []Originsrecord
+	Origins       []string
 }
 
 type snatDTO struct {
-	Name          string `json:"name"`
-	Partition     string `json:"partition,omitempty"`
-	FullPath      string `json:"fullPath,omitempty"`
-	AutoLasthop   string `json:"autoLastHop,omitempty"`
-	Mirror        string `json:"mirror,omitempty"`
-	SourcePort    string `json:"sourePort,omitempty"`
-	Translation   string `json:"translation,omitempty"`
-	Snatpool      string `json:"snatpool,omitempty"`
-	VlansDisabled bool   `json:"vlansDisabled,omitempty" bool:"disabled"`
-	Origins       struct {
-		Items []Originsrecord `json:"items,omitempty"`
-	} `json:"originsReference,omitempty"`
-}
-
-type Originsrecords struct {
-	Items []Originsrecord `json:"items,omitempty"`
-}
-
-type Originsrecord struct {
-	Name        string `json:"name"`
-	app_service string `json:"appService,omitempty"`
+	Name          string   `json:"name"`
+	Partition     string   `json:"partition,omitempty"`
+	FullPath      string   `json:"fullPath,omitempty"`
+	AutoLasthop   string   `json:"autoLastHop,omitempty"`
+	Mirror        bool     `json:"mirror,omitempty" bool:"disabled"`
+	SourcePort    string   `json:"sourePort,omitempty"`
+	Translation   string   `json:"translation,omitempty"`
+	Snatpool      string   `json:"snatpool,omitempty"`
+	VlansDisabled bool     `json:"vlansDisabled,omitempty" bool:"disabled"`
+	Origins       []string `json:"origins,omitempty"`
 }
 
 func (p *Snat) MarshalJSON() ([]byte, error) {
-	return json.Marshal(snatDTO{
-		Name:          p.Name,
-		Partition:     p.Partition,
-		FullPath:      p.FullPath,
-		Mirror:        p.Mirror,
-		SourcePort:    p.SourcePort,
-		Translation:   p.Translation,
-		Snatpool:      p.Snatpool,
-		VlansDisabled: p.VlansDisabled,
-		Origins: struct {
-			Items []Originsrecord `json:"items,omitempty"`
-		}{Items: p.Origins},
-	})
+	var dto snatDTO
+	marshal(&dto, p)
+	return json.Marshal(dto)
 }
 
 func (p *Snat) UnmarshalJSON(b []byte) error {
@@ -1401,18 +1548,8 @@ func (p *Snat) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-
-	p.Name = dto.Name
-	p.Partition = dto.Partition
-	p.FullPath = dto.FullPath
-	p.AutoLasthop = dto.AutoLasthop
-	p.Mirror = dto.Mirror
-	p.SourcePort = dto.SourcePort
-	p.Translation = dto.Translation
-	p.Snatpool = dto.Snatpool
-	p.VlansDisabled = dto.VlansDisabled
-	p.Origins = dto.Origins.Items
-
+	p.Origins = dto.Origins
+	//return marshal(p, &dto)
 	return nil
 }
 
@@ -1480,6 +1617,7 @@ const (
 	uriHttp2          = "http2"
 	uriSnat           = "snat"
 	uriSnatpool       = "snatpool"
+	uriUdp            = "udp"
 	uriCookie         = "cookie"
 	uriDestAddr       = "dest-addr"
 	uriHash           = "hash"
@@ -1557,13 +1695,13 @@ func (b *BigIP) AddSnatPool(config *SnatPool) error {
 // GetSnatPool retrieves a SnatPool by name. Returns nil if the snatpool does not exist
 func (b *BigIP) GetSnatPool(name string) (*SnatPool, error) {
 	var snatPool SnatPool
-	err, _ := b.getForEntity(&snatPool, uriLtm, uriSnatPool, name)
+	err, ok := b.getForEntity(&snatPool, uriLtm, uriSnatPool, name)
 	if err != nil {
 		return nil, err
 	}
-	//if !ok {
-	//	return nil, nil
-	//}
+	if !ok {
+		return nil, nil
+	}
 
 	return &snatPool, nil
 }
@@ -2410,32 +2548,12 @@ func (b *BigIP) Nodes() (*Nodes, error) {
 	return &nodes, nil
 }
 
-// CreateNode adds a new IP based node to the BIG-IP system.
-func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state string) error {
+// CreateNode adds a new node to the BIG-IP system.
+func (b *BigIP) CreateNode(name, address string) error {
 	config := &Node{
 		Name:    name,
 		Address: address,
-		RateLimit: rate_limit,
-		ConnectionLimit: connection_limit,
-		DynamicRatio: dynamic_ratio,
-		Monitor: monitor,
-		State: state,
 	}
-
-	return b.post(config, uriLtm, uriNode)
-}
-
-// CreateFQDNNode adds a new FQDN based node to the BIG-IP system.
-func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state string) error {
-	config := &Node{
-		Name: name,
-		RateLimit: rate_limit,
-		ConnectionLimit: connection_limit,
-		DynamicRatio: dynamic_ratio,
-		Monitor: monitor,
-		State: state,
-	}
-	config.FQDN.Name = address
 
 	return b.post(config, uriLtm, uriNode)
 }
@@ -2708,7 +2826,7 @@ func (b *BigIP) VirtualServers() (*VirtualServers, error) {
 // CreateVirtualServer adds a new virtual server to the BIG-IP system. <mask> can either be
 // in CIDR notation or decimal, i.e.: "24" or "255.255.255.0". A CIDR mask of "0" is the same
 // as "0.0.0.0".
-func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, vlans_enabled, vlans_disabled bool, port int, translate_address, translate_port string) error {
+func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, port int) error {
 	subnetMask := cidr[mask]
 
 	if strings.Contains(mask, ".") {
@@ -2716,12 +2834,10 @@ func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, vlans_
 	}
 
 	config := &VirtualServer{
-		Name:             name,
-		Destination:      fmt.Sprintf("%s:%d", destination, port),
-		Mask:             subnetMask,
-		Pool:             pool,
-		TranslateAddress: translate_address,
-		TranslatePort:    translate_port,
+		Name:        name,
+		Destination: fmt.Sprintf("%s:%d", destination, port),
+		Mask:        subnetMask,
+		Pool:        pool,
 	}
 
 	return b.post(config, uriLtm, uriVirtual)
@@ -2981,12 +3097,7 @@ func (b *BigIP) Policies() (*Policies, error) {
 //Load a fully policy definition. Policies seem to be best dealt with as one big entity.
 func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 	var p Policy
-	values := []string{}
-	values = append(values, "Drafts/")
-	values = append(values, name)
-	// Join three strings into one.
-	result := strings.Join(values, "")
-	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, result)
+	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, name)
 	if err != nil {
 		return nil, err
 	}
@@ -3039,42 +3150,18 @@ func (b *BigIP) CreatePolicy(p *Policy) error {
 	return b.post(p, uriLtm, uriPolicy)
 }
 
-func (b *BigIP) PublishPolicy(name, publish string) error {
-	config := &Policy{
-		PublishCopy: publish,
-	}
-	values := []string{}
- values = append(values, "~Common~Drafts~")
- values = append(values, name)
- // Join three strings into one.
- result := strings.Join(values, "")
-
-	log.Println( "  ================== here in publish ", result, publish)
-
- return b.patch(config, uriLtm, uriPolicy, result)
-}
-
 //Update an existing policy.
- func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
+func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
 	normalizePolicy(p)
-	values := []string{}
-	values = append(values, "Drafts/")
-	values = append(values, name)
-	// Join three strings into one.
-	result := strings.Join(values, "")
-	return b.put(p, uriLtm, uriPolicy, result)
+	return b.put(p, uriLtm, uriPolicy, name)
 }
 
 //Delete a policy by name.
 func (b *BigIP) DeletePolicy(name string) error {
-	values := []string{}
-	values = append(values, "Drafts/")
-	values = append(values, name)
-	// Join three strings into one.
-	result := strings.Join(values, "")
-return b.delete(uriLtm, uriPolicy, result)
+	return b.delete(uriLtm, uriPolicy, name)
 }
- // Oneconnect profile creation
+
+// Oneconnect profile creation
 func (b *BigIP) CreateOneconnect(name, idleTimeoutOverride, partition, defaultsFrom, sharePools, sourceMask string, maxAge, maxReuse, maxSize int) error {
 	oneconnect := &Oneconnect{
 		Name:                name,
@@ -3090,17 +3177,15 @@ func (b *BigIP) CreateOneconnect(name, idleTimeoutOverride, partition, defaultsF
 	return b.post(oneconnect, uriLtm, uriProfile, uriOneconnect)
 }
 
-func (b *BigIP) GetOneconnect(name string) (*Oneconnect, error) {
-	var oneconnect Oneconnect
-	err, ok := b.getForEntity(&oneconnect, uriLtm, uriProfile, uriOneconnect, name)
+func (b *BigIP) Oneconnect(name string) (*Oneconnects, error) {
+	var oneconnects Oneconnects
+	err, _ := b.getForEntity(&oneconnects, uriLtm, uriProfile, uriOneconnect)
+
 	if err != nil {
 		return nil, err
 	}
-	if !ok {
-		return nil, nil
-	}
 
-	return &oneconnect, nil
+	return &oneconnects, nil
 }
 
 // DeleteOneconnect removes an OneConnect profile from the system.
@@ -3143,17 +3228,15 @@ func (b *BigIP) ModifyTcp(name string, tcp *Tcp) error {
 	return b.put(tcp, uriLtm, uriProfile, uriTcp, name)
 }
 
-func (b *BigIP) GetTcp(name string) (*Tcp, error) {
-	var tcp Tcp
-	err, ok := b.getForEntity(&tcp, uriLtm, uriProfile, uriTcp, name)
+func (b *BigIP) Tcp(name string) (*Tcps, error) {
+	var tcps Tcps
+	err, _ := b.getForEntity(&tcps, uriLtm, uriProfile, uriTcp)
+
 	if err != nil {
 		return nil, err
 	}
-	if !ok {
-		return nil, nil
-	}
 
-	return &tcp, nil
+	return &tcps, nil
 }
 
 func (b *BigIP) CreateFasthttp(name, defaultsFrom string, idleTimeout, connpoolIdleTimeoutOverride, connpoolMaxReuse, connpoolMaxSize, connpoolMinSize int, connpoolReplenish string, connpoolStep int, forceHttp_10Response string, maxHeaderSize int) error {
@@ -3184,15 +3267,15 @@ func (b *BigIP) ModifyFasthttp(name string, fasthttp *Fasthttp) error {
 	return b.put(fasthttp, uriLtm, uriProfile, uriFasthttp, name)
 }
 
-func (b *BigIP) GetFasthttp(name string) (*Fasthttp, error) {
-	var fasthttp Fasthttp
-	err, _ := b.getForEntity(&fasthttp, uriLtm, uriProfile, uriFasthttp)
+func (b *BigIP) Fasthttp() (*Fasthttps, error) {
+	var fasthttps Fasthttps
+	err, _ := b.getForEntity(&fasthttps, uriLtm, uriProfile, uriFasthttp)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &fasthttp, nil
+	return &fasthttps, nil
 }
 
 func (b *BigIP) CreateFastl4(name, partition, defaultsFrom string, clientTimeout int, explicitFlowMigration, hardwareSynCookie string, idleTimeout string, ipTosToClient, ipTosToServer, keepAliveInterval string) error {
@@ -3222,17 +3305,15 @@ func (b *BigIP) ModifyFastl4(name string, fastl4 *Fastl4) error {
 	return b.put(fastl4, uriLtm, uriProfile, uriFastl4, name)
 }
 
-func (b *BigIP) GetFastl4(name string) (*Fastl4, error) {
-	var fastl4 Fastl4
-	err, ok := b.getForEntity(&fastl4, uriLtm, uriProfile, uriFastl4, name)
+func (b *BigIP) Fastl4(name string) (*Fastl4s, error) {
+	var fastl4s Fastl4s
+	err, _ := b.getForEntity(&fastl4s, uriLtm, uriProfile, uriFastl4)
+
 	if err != nil {
 		return nil, err
 	}
-	if !ok {
-		return nil, nil
-	}
 
-	return &fastl4, nil
+	return &fastl4s, nil
 }
 
 // ===============
@@ -3258,17 +3339,15 @@ func (b *BigIP) ModifyHttpcompress(name string, httpcompress *Httpcompress) erro
 	return b.put(httpcompress, uriLtm, uriProfile, uriHttpcompress, name)
 }
 
-func (b *BigIP) GetHttpcompress(name string) (*Httpcompress, error) {
-	var httpcompress Httpcompress
-	err, ok := b.getForEntity(&httpcompress, uriLtm, uriProfile, uriHttpcompress, name)
+func (b *BigIP) Httpcompress() (*Httpcompresss, error) {
+	var httpcompresss Httpcompresss
+	err, _ := b.getForEntity(&httpcompresss, uriLtm, uriProfile, uriHttpcompress)
+
 	if err != nil {
 		return nil, err
 	}
-	if !ok {
-		return nil, nil
-	}
 
-	return &httpcompress, nil
+	return &httpcompresss, nil
 }
 
 func (b *BigIP) CreateHttp2(name, defaultsFrom string, concurrentStreamsPerConnection, connectionIdleTimeout, headerTableSize int, activationModes []string) error {
@@ -3294,17 +3373,15 @@ func (b *BigIP) ModifyHttp2(name string, http2 *Http2) error {
 	return b.put(http2, uriLtm, uriProfile, uriHttp2, name)
 }
 
-func (b *BigIP) GetHttp2(name string) (*Http2, error) {
-	var http2 Http2
-	err, ok := b.getForEntity(&http2, uriLtm, uriProfile, uriHttp2, name)
+func (b *BigIP) Http2() (*Http2s, error) {
+	var http2s Http2s
+	err, _ := b.getForEntity(&http2s, uriLtm, uriProfile, uriHttp2)
+
 	if err != nil {
 		return nil, err
 	}
-	if !ok {
-		return nil, nil
-	}
 
-	return &http2, nil
+	return &http2s, nil
 }
 
 // Datagroups returns a list of datagroups.
@@ -3355,7 +3432,7 @@ func (b *BigIP) AddRecords(name, rname, data string) error {
 }
 
 // Snats returns a list of snat
-/*func (b *BigIP) Snats(name string) (*Snats, error) {
+func (b *BigIP) Snats(name string) (*Snats, error) {
 	var snats Snats
 	err, _ := b.getForEntity(&snats, uriLtm, uriSnat, name)
 
@@ -3364,9 +3441,9 @@ func (b *BigIP) AddRecords(name, rname, data string) error {
 	}
 
 	return &snats, nil
-}*/
+}
 
-/*func (b *BigIP) CreateSnat(name, partition, autoLastHop, sourcePort, translation, snatpool, mirror string, vlansDisabled bool, origins []string) error {
+func (b *BigIP) CreateSnat(name, partition, autoLastHop, sourcePort, translation, snatpool string, vlansDisabled, mirror bool, origins []string) error {
 	snat := &Snat{
 		Name:          name,
 		Partition:     partition,
@@ -3380,10 +3457,6 @@ func (b *BigIP) AddRecords(name, rname, data string) error {
 	}
 	log.Println("[INFO] Creating snat  ", snat)
 	return b.post(snat, uriLtm, uriSnat)
-} */
-func (b *BigIP) CreateSnat(p *Snat) error {
-	log.Println(" what is the complete payload    ", p)
-	return b.post(p, uriLtm, uriSnat)
 }
 
 func (b *BigIP) ModifySnat(config *Snat) error {
@@ -3406,10 +3479,6 @@ func (b *BigIP) GetSnat(name string) (*Snat, error) {
 
 func (b *BigIP) DeleteSnat(name string) error {
 	return b.delete(uriLtm, uriSnat, name)
-}
-
-func (b *BigIP) UpdateSnat(name string, p *Snat) error {
-	return b.put(p, uriLtm, uriSnat, name)
 }
 
 // Snats returns a list of snat
@@ -3454,472 +3523,4 @@ func (b *BigIP) GetSnatpool(name string) (*Snatpool, error) {
 
 func (b *BigIP) DeleteSnatpool(name string) error {
 	return b.delete(uriLtm, uriSnatpool, name)
-}
-
-// CookiePersistenceProfiles returns a list of cookie persist profiles
-func (b *BigIP) CookiePersistenceProfiles() (*CookiePersistenceProfiles, error) {
-	var cookiePersistenceProfiles CookiePersistenceProfiles
-	err, _ := b.getForEntity(&cookiePersistenceProfiles, uriLtm, uriPersistence, uriCookie)
-	if err != nil {
-		return nil, err
-	}
-
-	return &cookiePersistenceProfiles, nil
-}
-
-// GetCookiePersistenceProfile gets a single cookie persist profile by name
-func (b *BigIP) GetCookiePersistenceProfile(name string) (*CookiePersistenceProfile, error) {
-	var cookiePersistenceProfile CookiePersistenceProfile
-	err, ok := b.getForEntity(&cookiePersistenceProfile, uriLtm, uriPersistence, uriCookie, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &cookiePersistenceProfile, nil
-}
-
-// CreateCookiePersistenceProfile creates a new cookie persist profile on the BIG-IP system.
-func (b *BigIP) CreateCookiePersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriCookie)
-}
-
-// AddCookiePersistenceProfile adds a cookie persist profile to the BIG-IP system
-func (b *BigIP) AddCookiePersistenceProfile(config *CookiePersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriCookie)
-}
-
-// DeleteCookiePersistenceProfile removes a cookie persist profile.
-func (b *BigIP) DeleteCookiePersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriCookie, name)
-}
-
-// ModifyCookiePersistenceProfile allows you to change any attribute of a cookie persist profile.
-// Fields that can be modified are referenced in the CookiePersistenceProfile struct.
-func (b *BigIP) ModifyCookiePersistenceProfile(name string, config *CookiePersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriCookie, name)
-}
-
-// DestAddrPersistenceProfiles returns a list of dest-addr persist profiles
-func (b *BigIP) DestAddrPersistenceProfiles() (*DestAddrPersistenceProfiles, error) {
-	var destAddrPersistenceProfiles DestAddrPersistenceProfiles
-	err, _ := b.getForEntity(&destAddrPersistenceProfiles, uriLtm, uriPersistence, uriDestAddr)
-	if err != nil {
-		return nil, err
-	}
-
-	return &destAddrPersistenceProfiles, nil
-}
-
-// GetDestAddrPersistenceProfile gets a single dest-addr persist profile by name
-func (b *BigIP) GetDestAddrPersistenceProfile(name string) (*DestAddrPersistenceProfile, error) {
-	var destAddrPersistenceProfile DestAddrPersistenceProfile
-	err, ok := b.getForEntity(&destAddrPersistenceProfile, uriLtm, uriPersistence, uriDestAddr, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &destAddrPersistenceProfile, nil
-}
-
-// CreateDestAddrPersistenceProfile creates a new dest-addr persist profile on the BIG-IP system.
-func (b *BigIP) CreateDestAddrPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriDestAddr)
-}
-
-// AddDestAddrPersistenceProfile adds a dest-addr persist profile to the BIG-IP system
-func (b *BigIP) AddDestAddrPersistenceProfile(config *DestAddrPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriDestAddr)
-}
-
-// DeleteDestAddrPersistenceProfile removes a dest-addr persist profile.
-func (b *BigIP) DeleteDestAddrPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriDestAddr, name)
-}
-
-// ModifyDestAddrPersistenceProfile allows you to change any attribute of a dest-addr persist profile.
-// Fields that can be modified are referenced in the DestAddrPersistenceProfile struct.
-func (b *BigIP) ModifyDestAddrPersistenceProfile(name string, config *DestAddrPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriDestAddr, name)
-}
-
-// HashPersistenceProfiles returns a list of hash persist profiles
-func (b *BigIP) HashPersistenceProfiles() (*HashPersistenceProfiles, error) {
-	var hashPersistenceProfiles HashPersistenceProfiles
-	err, _ := b.getForEntity(&hashPersistenceProfiles, uriLtm, uriPersistence, uriHash)
-	if err != nil {
-		return nil, err
-	}
-
-	return &hashPersistenceProfiles, nil
-}
-
-// GetHashPersistenceProfile gets a single hash persist profile by name
-func (b *BigIP) GetHashPersistenceProfile(name string) (*HashPersistenceProfile, error) {
-	var hashPersistenceProfile HashPersistenceProfile
-	err, ok := b.getForEntity(&hashPersistenceProfile, uriLtm, uriPersistence, uriHash, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &hashPersistenceProfile, nil
-}
-
-// CreateHashPersistenceProfile creates a new hash persist profile on the BIG-IP system.
-func (b *BigIP) CreateHashPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriHash)
-}
-
-// AddHashPersistenceProfile adds a hash persist profile to the BIG-IP system
-func (b *BigIP) AddHashPersistenceProfile(config *HashPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriHash)
-}
-
-// DeleteHashPersistenceProfile removes a dest-addr persist profile.
-func (b *BigIP) DeleteHashPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriHash, name)
-}
-
-// ModifyHashPersistenceProfile allows you to change any attribute of a hash persist profile.
-// Fields that can be modified are referenced in the HashPersistenceProfile struct.
-func (b *BigIP) ModifyHashPersistenceProfile(name string, config *HashPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriHash, name)
-}
-
-// HostPersistenceProfiles returns a list of host persist profiles
-func (b *BigIP) HostPersistenceProfiles() (*HostPersistenceProfiles, error) {
-	var hostPersistenceProfiles HostPersistenceProfiles
-	err, _ := b.getForEntity(&hostPersistenceProfiles, uriLtm, uriPersistence, uriHost)
-	if err != nil {
-		return nil, err
-	}
-
-	return &hostPersistenceProfiles, nil
-}
-
-// GetHostPersistenceProfile gets a single host persist profile by name
-func (b *BigIP) GetHostPersistenceProfile(name string) (*HostPersistenceProfile, error) {
-	var hostPersistenceProfile HostPersistenceProfile
-	err, ok := b.getForEntity(&hostPersistenceProfile, uriLtm, uriPersistence, uriHost, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &hostPersistenceProfile, nil
-}
-
-// CreateHostPersistenceProfile creates a new host persist profile on the BIG-IP system.
-func (b *BigIP) CreateHostPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriHost)
-}
-
-// AddHostPersistenceProfile adds a host persist profile to the BIG-IP system
-func (b *BigIP) AddHostPersistenceProfile(config *HostPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriHost)
-}
-
-// DeleteHashHostPersistenceProfile removes a host persist profile.
-func (b *BigIP) DeleteHashHostPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriHost, name)
-}
-
-// ModifyHostPersistenceProfile allows you to change any attribute of a host persist profile.
-// Fields that can be modified are referenced in the HostPersistenceProfile struct.
-func (b *BigIP) ModifyHostPersistenceProfile(name string, config *HostPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriHost, name)
-}
-
-// MSRDPPersistenceProfiles returns a list of msrdp persist profiles
-func (b *BigIP) MSRDPPersistenceProfiles() (*MSRDPPersistenceProfiles, error) {
-	var msrdpPersistenceProfiles MSRDPPersistenceProfiles
-	err, _ := b.getForEntity(&msrdpPersistenceProfiles, uriLtm, uriPersistence, uriMSRDP)
-	if err != nil {
-		return nil, err
-	}
-
-	return &msrdpPersistenceProfiles, nil
-}
-
-// GetMSRDPPersistenceProfile gets a single msrdp persist profile by name
-func (b *BigIP) GetMSRDPPersistenceProfile(name string) (*MSRDPPersistenceProfile, error) {
-	var msrdpPersistenceProfile MSRDPPersistenceProfile
-	err, ok := b.getForEntity(&msrdpPersistenceProfile, uriLtm, uriPersistence, uriMSRDP, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &msrdpPersistenceProfile, nil
-}
-
-// CreateMSRDPPersistenceProfile creates a new msrdp persist profile on the BIG-IP system.
-func (b *BigIP) CreateMSRDPPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriMSRDP)
-}
-
-// AddMSRDPPersistenceProfile adds a msrdp persist profile to the BIG-IP system
-func (b *BigIP) AddMSRDPPersistenceProfile(config *MSRDPPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriMSRDP)
-}
-
-// DeleteMSRDPPersistenceProfile removes a msrdp persist profile.
-func (b *BigIP) DeleteMSRDPPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriMSRDP, name)
-}
-
-// ModifyMSRDPPersistenceProfile allows you to change any attribute of a msrdp persist profile.
-// Fields that can be modified are referenced in the MSRDPPersistenceProfile struct.
-func (b *BigIP) ModifyMSRDPPersistenceProfile(name string, config *MSRDPPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriMSRDP, name)
-}
-
-// SIPPersistenceProfiles returns a list of sip persist profiles
-func (b *BigIP) SIPPersistenceProfiles() (*SIPPersistenceProfiles, error) {
-	var sipPersistenceProfiles SIPPersistenceProfiles
-	err, _ := b.getForEntity(&sipPersistenceProfiles, uriLtm, uriPersistence, uriSIP)
-	if err != nil {
-		return nil, err
-	}
-
-	return &sipPersistenceProfiles, nil
-}
-
-// GetSIPPersistenceProfile gets a single sip persist profile by name
-func (b *BigIP) GetSIPPersistenceProfile(name string) (*SIPPersistenceProfile, error) {
-	var sipPersistenceProfile SIPPersistenceProfile
-	err, ok := b.getForEntity(&sipPersistenceProfile, uriLtm, uriPersistence, uriSIP, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &sipPersistenceProfile, nil
-}
-
-// CreateSIPPersistenceProfile creates a new sip persist profile on the BIG-IP system.
-func (b *BigIP) CreateSIPPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriSIP)
-}
-
-// AddSIPPersistenceProfile adds a sip persist profile to the BIG-IP system
-func (b *BigIP) AddSIPPersistenceProfile(config *SIPPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriSIP)
-}
-
-// DeleteSIPPersistenceProfile removes a sip persist profile.
-func (b *BigIP) DeleteSIPPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriSIP, name)
-}
-
-// ModifySIPPersistenceProfile allows you to change any attribute of a sip persist profile.
-// Fields that can be modified are referenced in the SIPPersistenceProfile struct.
-func (b *BigIP) ModifySIPPersistenceProfile(name string, config *SIPPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriSIP, name)
-}
-
-// SourceAddrPersistenceProfiles returns a list of source-addr persist profiles
-func (b *BigIP) SourceAddrPersistenceProfiles() (*SourceAddrPersistenceProfiles, error) {
-	var sourceAddrPersistenceProfiles SourceAddrPersistenceProfiles
-	err, _ := b.getForEntity(&sourceAddrPersistenceProfiles, uriLtm, uriPersistence, uriSourceAddr)
-	if err != nil {
-		return nil, err
-	}
-
-	return &sourceAddrPersistenceProfiles, nil
-}
-
-// GetSourceAddrPersistenceProfile gets a single source-addr persist profile by name
-func (b *BigIP) GetSourceAddrPersistenceProfile(name string) (*SourceAddrPersistenceProfile, error) {
-	var sourceAddrPersistenceProfile SourceAddrPersistenceProfile
-	err, ok := b.getForEntity(&sourceAddrPersistenceProfile, uriLtm, uriPersistence, uriSourceAddr, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &sourceAddrPersistenceProfile, nil
-}
-
-// CreateSourceAddrPersistenceProfile creates a new source-addr persist profile on the BIG-IP system.
-func (b *BigIP) CreateSourceAddrPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriSourceAddr)
-}
-
-// AddSourceAddrPersistenceProfile adds a source-addr persist profile to the BIG-IP system
-func (b *BigIP) AddSourceAddrPersistenceProfile(config *SourceAddrPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriSourceAddr)
-}
-
-// DeleteSourceAddrPersistenceProfile removes a source-addr persist profile.
-func (b *BigIP) DeleteSourceAddrPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriSourceAddr, name)
-}
-
-// ModifySourceAddrPersistenceProfile allows you to change any attribute of a source-addr persist profile.
-// Fields that can be modified are referenced in the SourceAddrPersistenceProfile struct.
-func (b *BigIP) ModifySourceAddrPersistenceProfile(name string, config *SourceAddrPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriSourceAddr, name)
-}
-
-// SSLPersistenceProfiles returns a list of ssl persist profiles
-func (b *BigIP) SSLPersistenceProfiles() (*SSLPersistenceProfiles, error) {
-	var sslPersistenceProfiles SSLPersistenceProfiles
-	err, _ := b.getForEntity(&sslPersistenceProfiles, uriLtm, uriPersistence, uriSSL)
-	if err != nil {
-		return nil, err
-	}
-
-	return &sslPersistenceProfiles, nil
-}
-
-// GetSSLPersistenceProfile gets a single ssl persist profile by name
-func (b *BigIP) GetSSLPersistenceProfile(name string) (*SSLPersistenceProfile, error) {
-	var sslPersistenceProfile SSLPersistenceProfile
-	err, ok := b.getForEntity(&sslPersistenceProfile, uriLtm, uriPersistence, uriSSL, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &sslPersistenceProfile, nil
-}
-
-// CreateSSLPersistenceProfile creates a new ssl persist profile on the BIG-IP system.
-func (b *BigIP) CreateSSLPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriSSL)
-}
-
-// AddSSLPersistenceProfile adds a ssl persist profile to the BIG-IP system
-func (b *BigIP) AddSSLPersistenceProfile(config *SSLPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriSSL)
-}
-
-// DeleteSSLPersistenceProfile removes a ssl persist profile.
-func (b *BigIP) DeleteSSLPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriSSL, name)
-}
-
-// ModifySSLPersistenceProfile allows you to change any attribute of a ssl persist profile.
-// Fields that can be modified are referenced in the SSLPersistenceProfile struct.
-func (b *BigIP) ModifySSLPersistenceProfile(name string, config *SSLPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriSSL, name)
-}
-
-// UniversalPersistenceProfiles returns a list of universal persist profiles
-func (b *BigIP) UniversalPersistenceProfiles() (*UniversalPersistenceProfiles, error) {
-	var universalPersistenceProfiles UniversalPersistenceProfiles
-	err, _ := b.getForEntity(&universalPersistenceProfiles, uriLtm, uriPersistence, uriUniversal)
-	if err != nil {
-		return nil, err
-	}
-
-	return &universalPersistenceProfiles, nil
-}
-
-// GetUniversalPersistenceProfile gets a single universal persist profile by name
-func (b *BigIP) GetUniversalPersistenceProfile(name string) (*UniversalPersistenceProfile, error) {
-	var universalPersistenceProfile UniversalPersistenceProfile
-	err, ok := b.getForEntity(&universalPersistenceProfile, uriLtm, uriPersistence, uriUniversal, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		return nil, nil
-	}
-
-	return &universalPersistenceProfile, nil
-}
-
-// CreateUniversalPersistenceProfile creates a new universal persist profile on the BIG-IP system.
-func (b *BigIP) CreateUniversalPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
-
-	return b.post(config, uriLtm, uriPersistence, uriUniversal)
-}
-
-// AddUniversalPersistenceProfile adds a universal persist profile to the BIG-IP system
-func (b *BigIP) AddUniversalPersistenceProfile(config *UniversalPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriUniversal)
-}
-
-// DeleteUniversalPersistenceProfile removes a universal persist profile.
-func (b *BigIP) DeleteUniversalPersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriUniversal, name)
-}
-
-// ModifyUniversalPersistenceProfile allows you to change any attribute of a universal persist profile.
-// Fields that can be modified are referenced in the UniversalPersistenceProfile struct.
-func (b *BigIP) ModifyUniversalPersistenceProfile(name string, config *UniversalPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriUniversal, name)
 }

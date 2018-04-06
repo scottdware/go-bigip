@@ -1,9 +1,6 @@
 package bigip
 
-import (
-	"encoding/json"
-	"log"
-)
+import "encoding/json"
 
 type NTPs struct {
 	NTPs []NTP `json:"items"`
@@ -174,6 +171,7 @@ func (b *BigIP) NTPs() (*NTP, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &ntp, nil
 }
 
@@ -191,7 +189,6 @@ func (b *BigIP) ModifyDNS(config *DNS) error {
 	return b.put(config, uriSys, uriDNS)
 }
 
-// DNS & NTP resource does not support Delete API
 func (b *BigIP) DNSs() (*DNS, error) {
 	var dns DNS
 	err, _ := b.getForEntity(&dns, uriSys, uriDNS)
@@ -212,87 +209,46 @@ func (b *BigIP) CreateProvision(name string, fullPath string, cpuRatio int, disk
 		Level:       level,
 		MemoryRatio: memoryRatio,
 	}
-	if fullPath == "/Common/asm" {
+	if name == "/Common/asm" {
 		return b.put(config, uriSys, uriProvision, uriAsm)
 	}
-	if fullPath == "/Common/afm" {
+	if name == "/Common/afm" {
 		return b.put(config, uriSys, uriProvision, uriAfm)
-
 	}
-	if fullPath == "/Common/gtm" {
+	if name == "/Common/gtm" {
 		return b.put(config, uriSys, uriProvision, uriGtm)
 	}
 
-	if fullPath == "/Common/apm" {
+	if name == "/Common/apm" {
 		return b.put(config, uriSys, uriProvision, uriApm)
 	}
 
-	if fullPath == "/Common/avr" {
+	if name == "/Common/avr" {
 		return b.put(config, uriSys, uriProvision, uriAvr)
 	}
-	if fullPath == "/Common/ilx" {
+	if name == "/Common/ilx" {
 		return b.put(config, uriSys, uriProvision, uriIlx)
 	}
 	return nil
 }
 
 func (b *BigIP) ModifyProvision(config *Provision) error {
+
 	return b.put(config, uriSys, uriProvision, uriAfm)
 }
 
 func (b *BigIP) DeleteProvision(name string) error {
-	// Delete API does not exists for resource Provision
 	return b.delete(uriSys, uriProvision, uriIlx, name)
 }
 
-func (b *BigIP) Provisions(name string) (*Provision, error) {
+func (b *BigIP) Provisions() (*Provision, error) {
 	var provision Provision
-	if name == "afm" {
-		err, _ := b.getForEntity(&provision, uriSys, uriProvision, uriAfm)
+	err, _ := b.getForEntity(&provision, uriProvision, uriAfm)
 
-		if err != nil {
-			return nil, err
-		}
-	}
-	if name == "asm" {
-		err, _ := b.getForEntity(&provision, uriSys, uriProvision, uriAsm)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	if name == "gtm" {
-		err, _ := b.getForEntity(&provision, uriSys, uriProvision, uriGtm)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	if name == "apm" {
-		err, _ := b.getForEntity(&provision, uriSys, uriProvision, uriApm)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	if name == "avr" {
-		err, _ := b.getForEntity(&provision, uriSys, uriProvision, uriAvr)
-
-		if err != nil {
-			return nil, err
-		}
-
-	}
-	if name == "ilx" {
-		err, _ := b.getForEntity(&provision, uriSys, uriProvision, uriIlx)
-
-		if err != nil {
-			return nil, err
-		}
-
+	if err != nil {
+		return nil, err
 	}
 
-	log.Println("Display ****************** provision  ", provision)
 	return &provision, nil
 }
 

@@ -1,8 +1,6 @@
 package bigip
 
-import (
-	"encoding/json"
-)
+import "encoding/json"
 
 //  LIC contains device license for BIG-IP system.
 type LICs struct {
@@ -58,77 +56,10 @@ type Devicegroups struct {
 }
 
 type Devicegroup struct {
-	AutoSync                     string
-	Name                         string
-	Partition                    string
-	Description                  string
-	Type                         string
-	FullLoadOnSync               string
-	SaveOnAutoSync               string
-	NetworkFailover              string
-	IncrementalConfigSyncSizeMax int
-	Deviceb                      []Devicerecord
-}
-type devicegroupDTO struct {
-	AutoSync                     string `json:"autoSync,omitempty"`
-	Name                         string `json:"name,omitempty"`
-	Partition                    string `json:"partition,omitempty"`
-	Description                  string `json:"description,omitempty"`
-	Type                         string `json:"type,omitempty"`
-	FullLoadOnSync               string `json:"fullLoadOnSync,omitempty"`
-	SaveOnAutoSync               string `json:"saveOnAutoSync,omitempty"`
-	NetworkFailover              string `json:"networkFailover,omitempty"`
-	IncrementalConfigSyncSizeMax int    `json:"incrementalConfigSyncSizeMax,omitempty"`
-	Deviceb                      struct {
-		Items []Devicerecord `json:"items,omitempty"`
-	} `json:"devicesReference,omitempty"`
-}
-
-type Devicerecords struct {
-	Items []Devicerecord `json:"items,omitempty"`
-}
-
-type Devicerecord struct {
-	SetSyncLeader bool   `json:"setSyncLeader"`
-	Name          string `json:"name"`
-}
-
-func (p *Devicegroup) MarshalJSON() ([]byte, error) {
-	return json.Marshal(devicegroupDTO{
-		Name:                         p.Name,
-		Partition:                    p.Partition,
-		AutoSync:                     p.AutoSync,
-		Description:                  p.Description,
-		Type:                         p.Type,
-		FullLoadOnSync:               p.FullLoadOnSync,
-		SaveOnAutoSync:               p.SaveOnAutoSync,
-		NetworkFailover:              p.NetworkFailover,
-		IncrementalConfigSyncSizeMax: p.IncrementalConfigSyncSizeMax,
-		Deviceb: struct {
-			Items []Devicerecord `json:"items,omitempty"`
-		}{Items: p.Deviceb},
-	})
-}
-
-func (p *Devicegroup) UnmarshalJSON(b []byte) error {
-	var dto devicegroupDTO
-	err := json.Unmarshal(b, &dto)
-	if err != nil {
-		return err
-	}
-
-	p.Name = dto.Name
-	p.Partition = dto.Partition
-	p.AutoSync = dto.AutoSync
-	p.Description = dto.Description
-	p.Type = dto.Type
-	p.FullLoadOnSync = dto.FullLoadOnSync
-	p.SaveOnAutoSync = dto.SaveOnAutoSync
-	p.NetworkFailover = dto.NetworkFailover
-	p.IncrementalConfigSyncSizeMax = dto.IncrementalConfigSyncSizeMax
-	p.Deviceb = dto.Deviceb.Items
-
-	return nil
+	AutoSync       string `json:"autoSync,omitempty"`
+	Name           string `json:"name,omitempty"`
+	Type           string `json:"type,omitempty"`
+	FullLoadOnSync string `json:"fullLoadOnSync,omitempty"`
 }
 
 // https://10.192.74.80/mgmt/cm/device/licensing/pool/purchased-pool/licenses
@@ -137,8 +68,6 @@ const (
 	uriMgmt          = "mgmt"
 	uriCm            = "cm"
 	uriDiv           = "device"
-	uriDevices       = "devices"
-	uriDG            = "device-group"
 	uriLins          = "licensing"
 	uriPoo           = "pool"
 	uriPur           = "purchased-pool"
@@ -229,6 +158,31 @@ func (b *BigIP) LICs() (*LIC, error) {
 	return &members, nil
 }
 
+func (b *BigIP) CreateDevicename(command, name, target string) error {
+	config := &Devicename{
+		Command: command,
+		Name:    name,
+		Target:  target,
+	}
+
+	return b.post(config, uriCm, uriDiv)
+}
+
+func (b *BigIP) ModifyDevicename(config *Devicename) error {
+	return b.put(config, uriCm, uriDiv)
+}
+
+func (b *BigIP) Devicenames() (*Devicename, error) {
+	var devicename Devicename
+	err, _ := b.getForEntity(&devicename, uriCm, uriDiv)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &devicename, nil
+}
+
 func (b *BigIP) CreateDevice(name, configsyncIp, mirrorIp, mirrorSecondaryIp string) error {
 	config := &Device{
 		Name:              name,
@@ -240,18 +194,13 @@ func (b *BigIP) CreateDevice(name, configsyncIp, mirrorIp, mirrorSecondaryIp str
 	return b.post(config, uriCm, uriDiv)
 }
 
-// API does not work, you cannot modify API issue
 func (b *BigIP) ModifyDevice(config *Device) error {
 	return b.put(config, uriCm, uriDiv)
 }
 
-func (b *BigIP) DeleteDevice(name string) error {
-	return b.delete(uriCm, uriDiv, name)
-}
-
-func (b *BigIP) Devices(name string) (*Device, error) {
+func (b *BigIP) Devices() (*Device, error) {
 	var device Device
-	err, _ := b.getForEntity(&device, uriCm, uriDiv, name)
+	err, _ := b.getForEntity(&device, uriCm, uriDiv)
 
 	if err != nil {
 		return nil, err
@@ -260,38 +209,25 @@ func (b *BigIP) Devices(name string) (*Device, error) {
 	return &device, nil
 }
 
-func (b *BigIP) CreateDevicegroup(p *Devicegroup) error {
-	return b.post(p, uriCm, uriDG)
-}
-
-func (b *BigIP) UpdateDevicegroup(name string, p *Devicegroup) error {
-	return b.put(p, uriCm, uriDG, name)
-}
-func (b *BigIP) ModifyDevicegroup(config *Devicegroup) error {
-	return b.put(config, uriCm, uriDG)
-}
-
-func (b *BigIP) Devicegroups(name string) (*Devicegroup, error) {
-	var devicegroup Devicegroup
-	err, _ := b.getForEntity(&devicegroup, uriCm, uriDG, name)
-	if err != nil {
-		return nil, err
+func (b *BigIP) CreateDevicegroup(name, autoSync, typo, fullLoadOnSync string) error {
+	config := &Devicegroup{
+		Name:           name,
+		AutoSync:       autoSync,
+		Type:           typo,
+		FullLoadOnSync: fullLoadOnSync,
 	}
 
-	return &devicegroup, nil
+	return b.post(config, uriCm, uriDiv)
 }
 
-func (b *BigIP) DeleteDevicegroup(name string) error {
-	return b.delete(uriCm, uriDG, name)
+func (b *BigIP) ModifyDevicegroup(config *Devicegroup) error {
+	return b.put(config, uriCm, uriDiv)
 }
 
-func (b *BigIP) DeleteDevicegroupDevices(name, rname string) error {
-	return b.delete(uriCm, uriDG, name, uriDevices, rname)
-}
-
-func (b *BigIP) DevicegroupsDevices(name, rname string) (*Devicegroup, error) {
+func (b *BigIP) Devicegroups() (*Devicegroup, error) {
 	var devicegroup Devicegroup
-	err, _ := b.getForEntity(&devicegroup, uriCm, uriDG, name, uriDevices, rname)
+	err, _ := b.getForEntity(&devicegroup, uriCm, uriDiv)
+
 	if err != nil {
 		return nil, err
 	}
