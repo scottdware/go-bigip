@@ -489,6 +489,13 @@ type Node struct {
 	Ratio           int    `json:"ratio,omitempty"`
 	Session         string `json:"session,omitempty"`
 	State           string `json:"state,omitempty"`
+	FQDN            struct {
+		AddressFamily string `json:"addressFamily,omitempty"`
+		AutoPopulate  string `json:"autopopulate,omitempty"`
+		DownInterval  int    `json:"downInterval,omitempty"`
+		Interval      string `json:"interval,omitempty"`
+		Name          string `json:"tmName,omitempty"`
+	} `json:"fqdn,omitempty"`
 }
 
 // DataGroups contains a list of data groups on the BIG-IP system.
@@ -506,24 +513,37 @@ type DataGroup struct {
 	Records    []DataGroupRecord
 }
 
+type DataGroupRecords struct {
+	Items []DataGroupRecord `json:"items,omitempty"`
+}
+
 type DataGroupRecord struct {
 	Name string `json:"name,omitempty"`
 	Data string `json:"data,omitempty"`
 }
 
 type dataGroupDTO struct {
-	Name       string            `json:"name,omitempty"`
-	Partition  string            `json:"partition,omitempty"`
-	FullPath   string            `json:"fullPath,omitempty"`
-	Generation int               `json:"generation,omitempty"`
-	Type       string            `json:"type,omitempty"`
-	Records    []DataGroupRecord `json:"records,omitempty"`
+	Name       string `json:"name,omitempty"`
+	Partition  string `json:"partition,omitempty"`
+	FullPath   string `json:"fullPath,omitempty"`
+	Generation int    `json:"generation,omitempty"`
+	Type       string `json:"type,omitempty"`
+	Records    struct {
+		Items []DataGroupRecord `json:"items,omitempty"`
+	} `json:"recordsReference,omitempty"`
 }
 
 func (p *DataGroup) MarshalJSON() ([]byte, error) {
-	var dto dataGroupDTO
-	marshal(&dto, p)
-	return json.Marshal(dto)
+	return json.Marshal(dataGroupDTO{
+		Name:       p.Name,
+		Partition:  p.Partition,
+		FullPath:   p.FullPath,
+		Generation: p.Generation,
+		Type:       p.Type,
+		Records: struct {
+			Items []DataGroupRecord `json:"items,omitempty"`
+		}{Items: p.Records},
+	})
 }
 
 func (p *DataGroup) UnmarshalJSON(b []byte) error {
@@ -532,7 +552,14 @@ func (p *DataGroup) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	return marshal(p, &dto)
+
+	p.Name = dto.Name
+	p.Partition = dto.Partition
+	p.Type = dto.Type
+	p.FullPath = dto.FullPath
+	p.Generation = dto.Generation
+	p.Records = dto.Records.Items
+	return nil
 }
 
 // SnatPools contains a list of every snatpool on the BIG-IP system.
@@ -578,9 +605,9 @@ type Pool struct {
 	QueueDepthLimit        int    `json:"queueDepthLimit,omitempty"`
 	QueueOnConnectionLimit string `json:"queueOnConnectionLimit,omitempty"`
 	QueueTimeLimit         int    `json:"queueTimeLimit,omitempty"`
-	ReselectTries          int    `json:"reselectTries,omitempty"`
+	ReselectTries          int    `json:"reselectTries"`
 	ServiceDownAction      string `json:"serviceDownAction,omitempty"`
-	SlowRampTime           int    `json:"slowRampTime,omitempty"`
+	SlowRampTime           int    `json:"slowRampTime"`
 }
 
 // Pool Members contains a list of pool members within a pool on the BIG-IP system.
@@ -640,9 +667,9 @@ type poolDTO struct {
 	QueueDepthLimit        int    `json:"queueDepthLimit,omitempty"`
 	QueueOnConnectionLimit string `json:"queueOnConnectionLimit,omitempty"`
 	QueueTimeLimit         int    `json:"queueTimeLimit,omitempty"`
-	ReselectTries          int    `json:"reselectTries,omitempty"`
+	ReselectTries          int    `json:"reselectTries"`
 	ServiceDownAction      string `json:"serviceDownAction,omitempty"`
-	SlowRampTime           int    `json:"slowRampTime,omitempty"`
+	SlowRampTime           int    `json:"slowRampTime"`
 }
 
 func (p *Pool) MarshalJSON() ([]byte, error) {
@@ -763,8 +790,13 @@ type VirtualServerPolicies struct {
 	PolicyRef Policies `json:"policiesReference"`
 }
 
+type PolicyPublish struct {
+	Name string `json:"name"`
+	PublishCopy string `json:"publishedCopy"`
+}
 type Policy struct {
 	Name      string
+	PublishCopy string
 	Partition string
 	FullPath  string
 	Controls  []string
@@ -775,6 +807,7 @@ type Policy struct {
 
 type policyDTO struct {
 	Name      string   `json:"name"`
+	PublishCopy string `json:"publishedCopy"`
 	Partition string   `json:"partition,omitempty"`
 	Controls  []string `json:"controls,omitempty"`
 	Requires  []string `json:"requires,omitempty"`
@@ -788,6 +821,7 @@ type policyDTO struct {
 func (p *Policy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(policyDTO{
 		Name:      p.Name,
+		PublishCopy: p.PublishCopy,
 		Partition: p.Partition,
 		Controls:  p.Controls,
 		Requires:  p.Requires,
@@ -807,6 +841,7 @@ func (p *Policy) UnmarshalJSON(b []byte) error {
 	}
 
 	p.Name = dto.Name
+	p.PublishCopy = dto.PublishCopy
 	p.Partition = dto.Partition
 	p.Controls = dto.Controls
 	p.Requires = dto.Requires
@@ -1515,31 +1550,52 @@ type Snat struct {
 	Partition     string
 	FullPath      string
 	AutoLasthop   string
-	Mirror        bool
+	Mirror        string
 	SourcePort    string
 	Translation   string
 	Snatpool      string
 	VlansDisabled bool
-	Origins       []string
+	Origins       []Originsrecord
 }
 
 type snatDTO struct {
-	Name          string   `json:"name"`
-	Partition     string   `json:"partition,omitempty"`
-	FullPath      string   `json:"fullPath,omitempty"`
-	AutoLasthop   string   `json:"autoLastHop,omitempty"`
-	Mirror        bool     `json:"mirror,omitempty" bool:"disabled"`
-	SourcePort    string   `json:"sourePort,omitempty"`
-	Translation   string   `json:"translation,omitempty"`
-	Snatpool      string   `json:"snatpool,omitempty"`
-	VlansDisabled bool     `json:"vlansDisabled,omitempty" bool:"disabled"`
-	Origins       []string `json:"origins,omitempty"`
+	Name          string `json:"name"`
+	Partition     string `json:"partition,omitempty"`
+	FullPath      string `json:"fullPath,omitempty"`
+	AutoLasthop   string `json:"autoLastHop,omitempty"`
+	Mirror        string `json:"mirror,omitempty"`
+	SourcePort    string `json:"sourePort,omitempty"`
+	Translation   string `json:"translation,omitempty"`
+	Snatpool      string `json:"snatpool,omitempty"`
+	VlansDisabled bool   `json:"vlansDisabled,omitempty" bool:"disabled"`
+	Origins       struct {
+		Items []Originsrecord `json:"items,omitempty"`
+	} `json:"originsReference,omitempty"`
+}
+
+type Originsrecords struct {
+	Items []Originsrecord `json:"items,omitempty"`
+}
+
+type Originsrecord struct {
+	Name        string `json:"name"`
+	app_service string `json:"appService,omitempty"`
 }
 
 func (p *Snat) MarshalJSON() ([]byte, error) {
-	var dto snatDTO
-	marshal(&dto, p)
-	return json.Marshal(dto)
+	return json.Marshal(snatDTO{
+		Name:          p.Name,
+		Partition:     p.Partition,
+		FullPath:      p.FullPath,
+		Mirror:        p.Mirror,
+		SourcePort:    p.SourcePort,
+		Translation:   p.Translation,
+		Snatpool:      p.Snatpool,
+		VlansDisabled: p.VlansDisabled,
+		Origins: struct {
+			Items []Originsrecord `json:"items,omitempty"`
+		}{Items: p.Origins},
+	})
 }
 
 func (p *Snat) UnmarshalJSON(b []byte) error {
@@ -1548,8 +1604,18 @@ func (p *Snat) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	p.Origins = dto.Origins
-	//return marshal(p, &dto)
+
+	p.Name = dto.Name
+	p.Partition = dto.Partition
+	p.FullPath = dto.FullPath
+	p.AutoLasthop = dto.AutoLasthop
+	p.Mirror = dto.Mirror
+	p.SourcePort = dto.SourcePort
+	p.Translation = dto.Translation
+	p.Snatpool = dto.Snatpool
+	p.VlansDisabled = dto.VlansDisabled
+	p.Origins = dto.Origins.Items
+
 	return nil
 }
 
@@ -1617,7 +1683,6 @@ const (
 	uriHttp2          = "http2"
 	uriSnat           = "snat"
 	uriSnatpool       = "snatpool"
-	uriUdp            = "udp"
 	uriCookie         = "cookie"
 	uriDestAddr       = "dest-addr"
 	uriHash           = "hash"
@@ -1695,13 +1760,13 @@ func (b *BigIP) AddSnatPool(config *SnatPool) error {
 // GetSnatPool retrieves a SnatPool by name. Returns nil if the snatpool does not exist
 func (b *BigIP) GetSnatPool(name string) (*SnatPool, error) {
 	var snatPool SnatPool
-	err, ok := b.getForEntity(&snatPool, uriLtm, uriSnatPool, name)
+	err, _ := b.getForEntity(&snatPool, uriLtm, uriSnatPool, name)
 	if err != nil {
 		return nil, err
 	}
-	if !ok {
-		return nil, nil
-	}
+	//if !ok {
+	//	return nil, nil
+	//}
 
 	return &snatPool, nil
 }
@@ -2548,12 +2613,32 @@ func (b *BigIP) Nodes() (*Nodes, error) {
 	return &nodes, nil
 }
 
-// CreateNode adds a new node to the BIG-IP system.
-func (b *BigIP) CreateNode(name, address string) error {
+// CreateNode adds a new IP based node to the BIG-IP system.
+func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state string) error {
 	config := &Node{
 		Name:    name,
 		Address: address,
+		RateLimit: rate_limit,
+		ConnectionLimit: connection_limit,
+		DynamicRatio: dynamic_ratio,
+		Monitor: monitor,
+		State: state,
 	}
+
+	return b.post(config, uriLtm, uriNode)
+}
+
+// CreateFQDNNode adds a new FQDN based node to the BIG-IP system.
+func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state string) error {
+	config := &Node{
+		Name: name,
+		RateLimit: rate_limit,
+		ConnectionLimit: connection_limit,
+		DynamicRatio: dynamic_ratio,
+		Monitor: monitor,
+		State: state,
+	}
+	config.FQDN.Name = address
 
 	return b.post(config, uriLtm, uriNode)
 }
@@ -2826,7 +2911,7 @@ func (b *BigIP) VirtualServers() (*VirtualServers, error) {
 // CreateVirtualServer adds a new virtual server to the BIG-IP system. <mask> can either be
 // in CIDR notation or decimal, i.e.: "24" or "255.255.255.0". A CIDR mask of "0" is the same
 // as "0.0.0.0".
-func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, port int) error {
+func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, vlans_enabled, vlans_disabled bool, port int, translate_address, translate_port string) error {
 	subnetMask := cidr[mask]
 
 	if strings.Contains(mask, ".") {
@@ -2834,10 +2919,12 @@ func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, port i
 	}
 
 	config := &VirtualServer{
-		Name:        name,
-		Destination: fmt.Sprintf("%s:%d", destination, port),
-		Mask:        subnetMask,
-		Pool:        pool,
+		Name:             name,
+		Destination:      fmt.Sprintf("%s:%d", destination, port),
+		Mask:             subnetMask,
+		Pool:             pool,
+		TranslateAddress: translate_address,
+		TranslatePort:    translate_port,
 	}
 
 	return b.post(config, uriLtm, uriVirtual)
@@ -3150,15 +3237,40 @@ func (b *BigIP) CreatePolicy(p *Policy) error {
 	return b.post(p, uriLtm, uriPolicy)
 }
 
+func (b *BigIP) PublishPolicy(name, publish string) error {
+	config := &Policy{
+		PublishCopy: publish,
+	}
+	values := []string{}
+ values = append(values, "~Common~Drafts~")
+ values = append(values, name)
+ // Join three strings into one.
+ result := strings.Join(values, "")
+
+	log.Println( "  ================== here in publish ", result, publish)
+
+ return b.patch(config, uriLtm, uriPolicy, result)
+}
+
 //Update an existing policy.
-func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
+ func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
 	normalizePolicy(p)
-	return b.put(p, uriLtm, uriPolicy, name)
+	values := []string{}
+	values = append(values, "Drafts/")
+	values = append(values, name)
+	// Join three strings into one.
+	result := strings.Join(values, "")
+	return b.put(p, uriLtm, uriPolicy, result)
 }
 
 //Delete a policy by name.
 func (b *BigIP) DeletePolicy(name string) error {
-	return b.delete(uriLtm, uriPolicy, name)
+	values := []string{}
+	values = append(values, "Drafts/")
+	values = append(values, name)
+	// Join three strings into one.
+	result := strings.Join(values, "")
+return b.delete(uriLtm, uriPolicy, result)
 }
 
 // Oneconnect profile creation
@@ -3441,9 +3553,9 @@ func (b *BigIP) Snats(name string) (*Snats, error) {
 	}
 
 	return &snats, nil
-}
+}*/
 
-func (b *BigIP) CreateSnat(name, partition, autoLastHop, sourcePort, translation, snatpool string, vlansDisabled, mirror bool, origins []string) error {
+/*func (b *BigIP) CreateSnat(name, partition, autoLastHop, sourcePort, translation, snatpool, mirror string, vlansDisabled bool, origins []string) error {
 	snat := &Snat{
 		Name:          name,
 		Partition:     partition,
@@ -3457,6 +3569,10 @@ func (b *BigIP) CreateSnat(name, partition, autoLastHop, sourcePort, translation
 	}
 	log.Println("[INFO] Creating snat  ", snat)
 	return b.post(snat, uriLtm, uriSnat)
+} */
+func (b *BigIP) CreateSnat(p *Snat) error {
+	log.Println(" what is the complete payload    ", p)
+	return b.post(p, uriLtm, uriSnat)
 }
 
 func (b *BigIP) ModifySnat(config *Snat) error {
@@ -3479,6 +3595,10 @@ func (b *BigIP) GetSnat(name string) (*Snat, error) {
 
 func (b *BigIP) DeleteSnat(name string) error {
 	return b.delete(uriLtm, uriSnat, name)
+}
+
+func (b *BigIP) UpdateSnat(name string, p *Snat) error {
+	return b.put(p, uriLtm, uriSnat, name)
 }
 
 // Snats returns a list of snat
