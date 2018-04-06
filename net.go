@@ -318,24 +318,6 @@ func (b *BigIP) Routes() (*Routes, error) {
 	return &routes, nil
 }
 
-func (b *BigIP) GetRoute(name string) (*Route, error) {
- var route Route
- values := []string{}
- values = append(values, "~Common~")
- values = append(values, name)
- // Join three strings into one.
- result := strings.Join(values, "")
- err, ok := b.getForEntity(&route, uriNet, uriRoute, result)
- if err != nil {
-	 return nil, err
- }
- if !ok {
-	 return nil, nil
- }
-
- return &route, nil
-}
-
 // CreateRoute adds a new static route to the BIG-IP system. <dest> must include the
 // subnet mask in CIDR notation, i.e.: "10.1.1.0/24".
 func (b *BigIP) CreateRoute(name, dest, gateway string) error {
@@ -356,13 +338,7 @@ func (b *BigIP) DeleteRoute(name string) error {
 // ModifyRoute allows you to change any attribute of a static route. Fields that
 // can be modified are referenced in the Route struct.
 func (b *BigIP) ModifyRoute(name string, config *Route) error {
-	values := []string{}
-	values = append(values, "~Common~")
-	values = append(values, name)
-	// Join three strings into one.
-	result := strings.Join(values, "")
-	log.Println("value of result +======================", result)
-	return b.put(config, uriNet, uriRoute, result)
+	return b.put(config, uriNet, uriRoute, name)
 }
 
 // RouteDomains returns a list of route domains.
