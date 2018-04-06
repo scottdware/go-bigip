@@ -3456,98 +3456,23 @@ func (b *BigIP) DeleteSnatpool(name string) error {
 	return b.delete(uriLtm, uriSnatpool, name)
 }
 
-// CookiePersistenceProfiles returns a list of cookie persist profiles
-func (b *BigIP) CookiePersistenceProfiles() (*CookiePersistenceProfiles, error) {
-	var cookiePersistenceProfiles CookiePersistenceProfiles
-	err, _ := b.getForEntity(&cookiePersistenceProfiles, uriLtm, uriPersistence, uriCookie)
-	if err != nil {
-		return nil, err
-	}
 
-	return &cookiePersistenceProfiles, nil
-}
 
-// GetCookiePersistenceProfile gets a single cookie persist profile by name
-func (b *BigIP) GetCookiePersistenceProfile(name string) (*CookiePersistenceProfile, error) {
-	var cookiePersistenceProfile CookiePersistenceProfile
-	err, ok := b.getForEntity(&cookiePersistenceProfile, uriLtm, uriPersistence, uriCookie, name)
-	if err != nil {
-		return nil, err
-	}
 
-	if !ok {
-		return nil, nil
-	}
 
-	return &cookiePersistenceProfile, nil
-}
 
-// CreateCookiePersistenceProfile creates a new cookie persist profile on the BIG-IP system.
-func (b *BigIP) CreateCookiePersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
 
-	return b.post(config, uriLtm, uriPersistence, uriCookie)
-}
 
-// AddCookiePersistenceProfile adds a cookie persist profile to the BIG-IP system
-func (b *BigIP) AddCookiePersistenceProfile(config *CookiePersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriCookie)
-}
 
-// DeleteCookiePersistenceProfile removes a cookie persist profile.
-func (b *BigIP) DeleteCookiePersistenceProfile(name string) error {
-	return b.delete(uriLtm, uriPersistence, uriCookie, name)
-}
 
-// ModifyCookiePersistenceProfile allows you to change any attribute of a cookie persist profile.
-// Fields that can be modified are referenced in the CookiePersistenceProfile struct.
-func (b *BigIP) ModifyCookiePersistenceProfile(name string, config *CookiePersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriCookie, name)
-}
 
-// DestAddrPersistenceProfiles returns a list of dest-addr persist profiles
-func (b *BigIP) DestAddrPersistenceProfiles() (*DestAddrPersistenceProfiles, error) {
-	var destAddrPersistenceProfiles DestAddrPersistenceProfiles
-	err, _ := b.getForEntity(&destAddrPersistenceProfiles, uriLtm, uriPersistence, uriDestAddr)
-	if err != nil {
-		return nil, err
-	}
 
-	return &destAddrPersistenceProfiles, nil
-}
 
-// GetDestAddrPersistenceProfile gets a single dest-addr persist profile by name
-func (b *BigIP) GetDestAddrPersistenceProfile(name string) (*DestAddrPersistenceProfile, error) {
-	var destAddrPersistenceProfile DestAddrPersistenceProfile
-	err, ok := b.getForEntity(&destAddrPersistenceProfile, uriLtm, uriPersistence, uriDestAddr, name)
-	if err != nil {
-		return nil, err
-	}
 
-	if !ok {
-		return nil, nil
-	}
 
-	return &destAddrPersistenceProfile, nil
-}
 
-// CreateDestAddrPersistenceProfile creates a new dest-addr persist profile on the BIG-IP system.
-func (b *BigIP) CreateDestAddrPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
-		Name:         name,
-		DefaultsFrom: parent,
-	}
 
-	return b.post(config, uriLtm, uriPersistence, uriDestAddr)
-}
 
-// AddDestAddrPersistenceProfile adds a dest-addr persist profile to the BIG-IP system
-func (b *BigIP) AddDestAddrPersistenceProfile(config *DestAddrPersistenceProfile) error {
-	return b.post(config, uriLtm, uriPersistence, uriDestAddr)
-}
 
 // DeleteDestAddrPersistenceProfile removes a dest-addr persist profile.
 func (b *BigIP) DeleteDestAddrPersistenceProfile(name string) error {
