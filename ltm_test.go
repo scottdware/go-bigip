@@ -151,6 +151,7 @@ func (s *LTMTestSuite) TestGetPolicies() {
 	p, e := s.Client.Policies()
 
 	assert.Nil(s.T(), e, "Fetching policy list should not return an error")
+	assert.Equal(s.T(), policyVersionSuffix, "?"+s.LastRequest.URL.RawQuery)
 	assert.Equal(s.T(), 2, len(p.Policies), "Wrong number of policies returned")
 	assert.Equal(s.T(), "policy1", p.Policies[0].Name)
 	assert.Equal(s.T(), "Common", p.Policies[0].Partition)
@@ -161,6 +162,7 @@ func (s *LTMTestSuite) TestGetPolicies() {
 
 func (s *LTMTestSuite) TestGetPolicy() {
 	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(s.T(), policyVersionSuffix, "?"+s.LastRequest.URL.RawQuery)
 		if strings.HasSuffix(r.URL.Path, "rules") {
 			w.Write([]byte(`{
 			  "kind": "tm:ltm:policy:rules:rulescollectionstate",
@@ -256,6 +258,7 @@ func (s *LTMTestSuite) TestGetPolicy() {
 	p, err := s.Client.GetPolicy("my_policy")
 
 	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), policyVersionSuffix, "?"+s.LastRequest.URL.RawQuery)
 	assert.Equal(s.T(), "my_policy", p.Name)
 	assert.Equal(s.T(), 1, len(p.Rules), "Not enough rules")
 	assert.Equal(s.T(), 1, len(p.Rules[0].Actions), "Not enough actions")
@@ -310,6 +313,7 @@ func (s *LTMTestSuite) TestCreatePolicy() {
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriPolicy), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), policyVersionSuffix, "?"+s.LastRequest.URL.RawQuery)
 	assert.JSONEq(s.T(), `{"name":"test",
 		"controls":["forwarding"],
 		"requires":["http"],
@@ -347,6 +351,7 @@ func (s *LTMTestSuite) TestUpdatePolicy() {
 
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo", uriLtm, uriPolicy), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), policyVersionSuffix, "?"+s.LastRequest.URL.RawQuery)
 }
 
 func (s *LTMTestSuite) TestDeletePolicy() {
@@ -354,6 +359,7 @@ func (s *LTMTestSuite) TestDeletePolicy() {
 
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo", uriLtm, uriPolicy), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), policyVersionSuffix, "?"+s.LastRequest.URL.RawQuery)
 }
 
 func (s *LTMTestSuite) TestCreateVirtualAddress() {
