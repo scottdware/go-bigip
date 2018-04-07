@@ -2131,7 +2131,6 @@ func (b *BigIP) AddMonitor(config *Monitor) error {
 	if strings.Contains(config.ParentMonitor, "tcp-half-open") {
 		config.ParentMonitor = "tcp-half-open"
 	}
-	 log.Println( " value of config in create monitor ------------- %+v\n", *config, uriLtm, uriMonitor, config.ParentMonitor)
 	return b.post(config, uriLtm, uriMonitor, config.ParentMonitor)
 }
 
