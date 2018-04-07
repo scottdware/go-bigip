@@ -315,6 +315,24 @@ func (b *BigIP) Routes() (*Routes, error) {
 	return &routes, nil
 }
 
+func (b *BigIP) GetRoute(name string) (*Route, error) {
+ var route Route
+ values := []string{}
+ values = append(values, "~Common~")
+ values = append(values, name)
+ // Join three strings into one.
+ result := strings.Join(values, "")
+ err, ok := b.getForEntity(&route, uriNet, uriRoute, result)
+ if err != nil {
+	 return nil, err
+ }
+ if !ok {
+	 return nil, nil
+ }
+
+ return &route, nil
+}
+
 // CreateRoute adds a new static route to the BIG-IP system. <dest> must include the
 // subnet mask in CIDR notation, i.e.: "10.1.1.0/24".
 func (b *BigIP) CreateRoute(name, dest, gateway string) error {
