@@ -582,10 +582,6 @@ type Policies struct {
 	Policies []Policy `json:"items"`
 }
 
-type VirtualServerPolicies struct {
-	PolicyRef Policies `json:"policiesReference"`
-}
-
 type Policy struct {
 	Name      string
 	Partition string
@@ -1867,13 +1863,13 @@ func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error) {
 
 //Get the names of policies associated with a particular virtual server
 func (b *BigIP) VirtualServerPolicyNames(vs string) ([]string, error) {
-	var policies VirtualServerPolicies
+	var policies Policies
 	err, _ := b.getForEntity(&policies, uriLtm, uriVirtual, vs, "policies")
 	if err != nil {
 		return nil, err
 	}
-	retval := make([]string, 0, len(policies.PolicyRef.Policies))
-	for _, p := range policies.PolicyRef.Policies {
+	retval := make([]string, 0, len(policies.Policies))
+	for _, p := range policies.Policies {
 		retval = append(retval, p.FullPath)
 	}
 	return retval, nil

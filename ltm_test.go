@@ -962,28 +962,24 @@ func (s *LTMTestSuite) TestVirtualServerPolicies() {
 		w.Write([]byte(`{
 		  "kind": "tm:ltm:virtual:policies:policiescollectionstate",
 		  "selfLink": "https://localhost/mgmt/tm/ltm/virtual/foo/policies?ver=11.5.1",
-		  "policiesReference": {
-		    "link": "https://localhost/mgmt/tm/ltm/virtual/foo/policies?ver=11.5.1",
-		    "isSubcollection": true,
-		    "items": [
-		      {
-			"kind": "tm:ltm:virtual:policies:policiesstate",
-			"name": "policy1",
-			"partition": "Common",
-			"fullPath": "/Common/policy1",
-			"generation": 1,
-			"selfLink": "https://localhost/mgmt/tm/ltm/virtual/foo/policies/~Common~policy1?ver=11.5.1"
-		      },
-		      {
-			"kind": "tm:ltm:virtual:policies:policiesstate",
-			"name": "policy2",
-			"partition": "Common",
-			"fullPath": "/Common/policy2",
-			"generation": 1,
-			"selfLink": "https://localhost/mgmt/tm/ltm/virtual/foo/policies/~Common~policy2?ver=11.5.1"
-		      }
-		    ]
-		  }
+			"items": [
+				{
+					"kind": "tm:ltm:virtual:policies:policiesstate",
+					"name": "policy1",
+					"partition": "Common",
+					"fullPath": "/Common/policy1",
+					"generation": 1,
+					"selfLink": "https://localhost/mgmt/tm/ltm/virtual/foo/policies/~Common~policy1?ver=11.5.1"
+				},
+				{
+					"kind": "tm:ltm:virtual:policies:policiesstate",
+					"name": "policy2",
+					"partition": "Common",
+					"fullPath": "/Common/policy2",
+					"generation": 1,
+					"selfLink": "https://localhost/mgmt/tm/ltm/virtual/foo/policies/~Common~policy2?ver=11.5.1"
+				}
+			]
 		}`))
 	}
 
@@ -991,8 +987,7 @@ func (s *LTMTestSuite) TestVirtualServerPolicies() {
 
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/foo/policies", uriLtm, uriVirtual), s.LastRequest.URL.Path)
-	assert.Equal(s.T(), "/Common/policy1", p[0])
-	assert.Equal(s.T(), "/Common/policy2", p[1])
+	assert.Equal(s.T(), []string{"/Common/policy1", "/Common/policy2"}, p)
 }
 
 func (s *LTMTestSuite) TestInternalDataGroups() {
