@@ -155,7 +155,7 @@ type Node struct {
 		AddressFamily string `json:"addressFamily,omitempty"`
 		AutoPopulate  string `json:"autopopulate,omitempty"`
 		DownInterval  int    `json:"downInterval,omitempty"`
-		Interval      string `json:"interval,omitempty"`
+		Interval      int    `json:"interval,omitempty"`
 		Name          string `json:"tmName,omitempty"`
 	} `json:"fqdn,omitempty"`
 }
@@ -591,42 +591,42 @@ type VirtualServerPolicies struct {
 }
 
 type PolicyPublish struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
 	PublishCopy string `json:"publishedCopy"`
 }
 type Policy struct {
-	Name      string
+	Name        string
 	PublishCopy string
-	Partition string
-	FullPath  string
-	Controls  []string
-	Requires  []string
-	Strategy  string
-	Rules     []PolicyRule
+	Partition   string
+	FullPath    string
+	Controls    []string
+	Requires    []string
+	Strategy    string
+	Rules       []PolicyRule
 }
 
 type policyDTO struct {
-	Name      string   `json:"name"`
-	PublishCopy string `json:"publishedCopy"`
-	Partition string   `json:"partition,omitempty"`
-	Controls  []string `json:"controls,omitempty"`
-	Requires  []string `json:"requires,omitempty"`
-	Strategy  string   `json:"strategy,omitempty"`
-	FullPath  string   `json:"fullPath,omitempty"`
-	Rules     struct {
+	Name        string   `json:"name"`
+	PublishCopy string   `json:"publishedCopy"`
+	Partition   string   `json:"partition,omitempty"`
+	Controls    []string `json:"controls,omitempty"`
+	Requires    []string `json:"requires,omitempty"`
+	Strategy    string   `json:"strategy,omitempty"`
+	FullPath    string   `json:"fullPath,omitempty"`
+	Rules       struct {
 		Items []PolicyRule `json:"items,omitempty"`
 	} `json:"rulesReference,omitempty"`
 }
 
 func (p *Policy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(policyDTO{
-		Name:      p.Name,
+		Name:        p.Name,
 		PublishCopy: p.PublishCopy,
-		Partition: p.Partition,
-		Controls:  p.Controls,
-		Requires:  p.Requires,
-		Strategy:  p.Strategy,
-		FullPath:  p.FullPath,
+		Partition:   p.Partition,
+		Controls:    p.Controls,
+		Requires:    p.Requires,
+		Strategy:    p.Strategy,
+		FullPath:    p.FullPath,
 		Rules: struct {
 			Items []PolicyRule `json:"items,omitempty"`
 		}{Items: p.Rules},
@@ -915,8 +915,6 @@ type PolicyRuleCondition struct {
 	VlanId                bool     `json:"vlanId,omitempty"`
 }
 
-
-
 func (p *VirtualAddress) MarshalJSON() ([]byte, error) {
 	var dto virtualAddressDTO
 	marshal(&dto, p)
@@ -960,7 +958,6 @@ type Monitor struct {
 	Transparent    string
 	UpInterval     int
 	Username       string
-
 }
 
 type monitorDTO struct {
@@ -1449,6 +1446,7 @@ func (p *Snatpool) UnmarshalJSON(b []byte) error {
 	//return marshal(p, &dto)
 	return nil
 }
+
 // TcpProfiles contains a list of every tcp profile on the BIG-IP system.
 type TcpProfiles struct {
 	TcpProfiles []TcpProfile `json:"items"`
@@ -1538,6 +1536,7 @@ type TcpProfile struct {
 	Timestamps               string `json:"timestamps,omitempty"`
 	VerifiedAccept           string `json:"verifiedAccept,omitempty"`
 }
+
 // UdpProfiles contains a list of every tcp profile on the BIG-IP system.
 type UdpProfiles struct {
 	UdpProfiles []UdpProfile `json:"items"`
@@ -1892,13 +1891,13 @@ func (b *BigIP) Nodes() (*Nodes, error) {
 // CreateNode adds a new IP based node to the BIG-IP system.
 func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state string) error {
 	config := &Node{
-		Name:    name,
-		Address: address,
-		RateLimit: rate_limit,
+		Name:            name,
+		Address:         address,
+		RateLimit:       rate_limit,
 		ConnectionLimit: connection_limit,
-		DynamicRatio: dynamic_ratio,
-		Monitor: monitor,
-		State: state,
+		DynamicRatio:    dynamic_ratio,
+		Monitor:         monitor,
+		State:           state,
 	}
 
 	return b.post(config, uriLtm, uriNode)
@@ -1907,12 +1906,12 @@ func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, d
 // CreateFQDNNode adds a new FQDN based node to the BIG-IP system.
 func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state string) error {
 	config := &Node{
-		Name: name,
-		RateLimit: rate_limit,
+		Name:            name,
+		RateLimit:       rate_limit,
 		ConnectionLimit: connection_limit,
-		DynamicRatio: dynamic_ratio,
-		Monitor: monitor,
-		State: state,
+		DynamicRatio:    dynamic_ratio,
+		Monitor:         monitor,
+		State:           state,
 	}
 	config.FQDN.Name = address
 
@@ -2307,13 +2306,13 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 // "icmp", "gateway icmp", or "tcp".
 func (b *BigIP) CreateMonitor(name, parent, defaults_from string, interval, timeout int, send, receive, receive_disable string) error {
 	config := &Monitor{
-		Name:          name,
-		ParentMonitor: parent,
-		DefaultsFrom: defaults_from,
-		Interval:      interval,
-		Timeout:       timeout,
-		SendString:    send,
-		ReceiveString: receive,
+		Name:           name,
+		ParentMonitor:  parent,
+		DefaultsFrom:   defaults_from,
+		Interval:       interval,
+		Timeout:        timeout,
+		SendString:     send,
+		ReceiveString:  receive,
 		ReceiveDisable: receive_disable,
 	}
 
@@ -2348,7 +2347,7 @@ func (b *BigIP) GetMonitor(name string, parent string) (*Monitor, error) {
 
 // DeleteMonitor removes a monitor.
 func (b *BigIP) DeleteMonitor(name, parent string) error {
-	log.Println( " in delete +++++++++++++++++ ", parent, name)
+	log.Println(" in delete +++++++++++++++++ ", parent, name)
 	return b.delete(uriLtm, uriMonitor, parent, name)
 }
 
@@ -2495,18 +2494,18 @@ func (b *BigIP) PublishPolicy(name, publish string) error {
 		PublishCopy: publish,
 	}
 	values := []string{}
- values = append(values, "~Common~Drafts~")
- values = append(values, name)
- // Join three strings into one.
- result := strings.Join(values, "")
+	values = append(values, "~Common~Drafts~")
+	values = append(values, name)
+	// Join three strings into one.
+	result := strings.Join(values, "")
 
-	log.Println( "  ================== here in publish ", result, publish)
+	log.Println("  ================== here in publish ", result, publish)
 
- return b.patch(config, uriLtm, uriPolicy, result)
+	return b.patch(config, uriLtm, uriPolicy, result)
 }
 
 //Update an existing policy.
- func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
+func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
 	normalizePolicy(p)
 	values := []string{}
 	values = append(values, "Drafts/")
@@ -2523,9 +2522,10 @@ func (b *BigIP) DeletePolicy(name string) error {
 	values = append(values, name)
 	// Join three strings into one.
 	result := strings.Join(values, "")
-return b.delete(uriLtm, uriPolicy, result)
+	return b.delete(uriLtm, uriPolicy, result)
 }
- // Oneconnect profile creation
+
+// Oneconnect profile creation
 func (b *BigIP) CreateOneconnect(name, idleTimeoutOverride, partition, defaultsFrom, sharePools, sourceMask string, maxAge, maxReuse, maxSize int) error {
 	oneconnect := &Oneconnect{
 		Name:                name,
@@ -3374,7 +3374,6 @@ func (b *BigIP) DeleteUniversalPersistenceProfile(name string) error {
 func (b *BigIP) ModifyUniversalPersistenceProfile(name string, config *UniversalPersistenceProfile) error {
 	return b.put(config, uriLtm, uriPersistence, uriUniversal, name)
 }
-
 
 // HttpProfiles returns a list of HTTP profiles
 func (b *BigIP) HttpProfiles() (*HttpProfiles, error) {
