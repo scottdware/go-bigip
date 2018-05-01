@@ -1,13 +1,14 @@
 package bigip
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"io/ioutil"
 )
 
 type NetTestSuite struct {
@@ -43,6 +44,13 @@ func (s *NetTestSuite) SetupTest() {
 
 func TestNetSuite(t *testing.T) {
 	suite.Run(t, new(NetTestSuite))
+}
+
+func (s *NetTestSuite) requireReserializesTo(expected string, actual interface{}, message string) {
+	b, err := json.Marshal(actual)
+	s.Require().Nil(err, message)
+
+	s.Require().JSONEq(expected, string(b), message)
 }
 
 func (s *NetTestSuite) TestGetInterfaces() {
@@ -294,11 +302,76 @@ func (s *NetTestSuite) TestRoutes() {
 	assert.Equal(s.T(), "default_route", routes.Routes[0].Name)
 }
 
+func (s *NetTestSuite) TestGetRoute() {
+	resp := `{
+		"name": "default_route",
+		"partition": "Common",
+		"fullPath": "/Common/default_route",
+		"gw": "0.0.0.0",
+		"mtu": 1500,
+		"network": "default"
+	}`
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(resp))
+	}
+
+	route, err := s.Client.GetRoute("/Common/default_route")
+
+	s.Require().NoError(err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/route/~Common~default_route", "")
+	assert.Equal(s.T(), "default_route", route.Name)
+	s.requireReserializesTo(resp, route, "Route should reserialize to itself")
+}
+
 func (s *NetTestSuite) TestCreateRoute() {
 	err := s.Client.CreateRoute("default_route", "default", "0.0.0.0")
 
 	assert.Nil(s.T(), err)
 	assertRestCall(s, "POST", "/mgmt/tm/net/route", `{"name":"default_route", "network":"default", "gw":"0.0.0.0"}`)
+}
+
+func (s *NetTestSuite) TestAddRoute() {
+	err := s.Client.AddRoute(&Route{
+		Name:    "default_route",
+		Network: "default",
+		Gateway: "0.0.0.0",
+	})
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/route", `{"name":"default_route", "network":"default", "gw":"0.0.0.0"}`)
+}
+
+func (s *NetTestSuite) TestAddRouteBlackhole() {
+	err := s.Client.AddRoute(&Route{
+		Name:      "default_route",
+		Network:   "default",
+		Blackhole: true,
+	})
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/route", `{"name":"default_route", "network":"default", "blackhole":true}`)
+}
+
+func (s *NetTestSuite) TestAddRouteInterface() {
+	err := s.Client.AddRoute(&Route{
+		Name:      "default_route",
+		Network:   "default",
+		Interface: "/Common/internal",
+	})
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/route", `{"name":"default_route", "network":"default", "tmInterface":"/Common/internal"}`)
+}
+
+func (s *NetTestSuite) TestAddRoutePool() {
+	err := s.Client.AddRoute(&Route{
+		Name:    "default_route",
+		Network: "default",
+		Pool:    "/Common/test-pool",
+	})
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/route", `{"name":"default_route", "network":"default", "pool":"/Common/test-pool"}`)
 }
 
 func (s *NetTestSuite) TestDeleteRoute() {
