@@ -308,6 +308,11 @@ func jsonMarshal(t interface{}) ([]byte, error) {
 	return buffer.Bytes(), err
 }
 
+// Helper function to return a boolean pointer.
+func Bool(b bool) *bool {
+	return &b
+}
+
 // Helper to copy between transfer objects and model objects to hide the myriad of boolean representations
 // in the iControlREST api. DTO fields can be tagged with bool:"yes|enabled|true" to set what true and false
 // marshal to.
@@ -332,6 +337,17 @@ func marshal(to, from interface{}) error {
 			default:
 				return fmt.Errorf("Unknown boolean conversion for %s: %s", toFieldType.Name, fromField.Interface())
 			}
+		} else if _, ok := toField.Interface().(*bool); ok && fromField.Kind() == reflect.String {
+			switch fromField.Interface() {
+			case "yes", "enabled", "true":
+				toField.Set(reflect.ValueOf(Bool(true)))
+				break
+			case "no", "disabled", "false":
+				toField.Set(reflect.ValueOf(Bool(false)))
+				break
+			default:
+				return fmt.Errorf("Unknown boolean conversion for %s: %s", toFieldType.Name, fromField.Interface())
+			}
 		} else if fromField.Kind() == reflect.Bool && toField.Kind() == reflect.String {
 			tag := toFieldType.Tag.Get("bool")
 			switch tag {
@@ -343,6 +359,23 @@ func marshal(to, from interface{}) error {
 				break
 			case "true":
 				toField.SetString(toBoolString(fromField.Interface().(bool), "true", "false"))
+				break
+			}
+		} else if b, ok := fromField.Interface().(*bool); ok && toField.Kind() == reflect.String {
+			if b == nil {
+				continue
+			}
+
+			tag := toFieldType.Tag.Get("bool")
+			switch tag {
+			case "yes":
+				toField.SetString(toBoolString(*b, "yes", "no"))
+				break
+			case "enabled":
+				toField.SetString(toBoolString(*b, "enabled", "disabled"))
+				break
+			case "true":
+				toField.SetString(toBoolString(*b, "true", "false"))
 				break
 			}
 		} else {
