@@ -135,9 +135,14 @@ type Route struct {
 	Partition  string `json:"partition,omitempty"`
 	FullPath   string `json:"fullPath,omitempty"`
 	Generation int    `json:"generation,omitempty"`
-	Gateway    string `json:"gw,omitempty"`
 	MTU        int    `json:"mtu,omitempty"`
 	Network    string `json:"network,omitempty"`
+
+	// Mutually exclusive fields
+	Blackhole bool   `json:"blackhole,omitempty"`
+	Gateway   string `json:"gw,omitempty"`
+	Pool      string `json:"pool,omitempty"`
+	Interface string `json:"tmInterface,omitempty"`
 }
 
 // RouteDomains contains a list of every route domain on the BIG-IP system.
@@ -326,6 +331,23 @@ func (b *BigIP) CreateRoute(name, dest, gateway string) error {
 	}
 
 	return b.post(config, uriNet, uriRoute)
+}
+
+// AddRoute adds a new static route to the BIG-IP system.
+func (b *BigIP) AddRoute(config *Route) error {
+	return b.post(config, uriNet, uriRoute)
+}
+
+// GetRoute gets a static route.
+func (b *BigIP) GetRoute(name string) (*Route, error) {
+	var route Route
+	err, _ := b.getForEntity(&route, uriNet, uriRoute, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &route, nil
 }
 
 // DeleteRoute removes a static route.
