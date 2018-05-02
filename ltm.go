@@ -404,11 +404,12 @@ type SnatPools struct {
 // SnatPool contains information about each individual snatpool. You can use all
 // of these fields when modifying a snatpool.
 type SnatPool struct {
-	Name       string   `json:"name,omitempty"`
-	Partition  string   `json:"partition,omitempty"`
-	FullPath   string   `json:"fullPath,omitempty"`
-	Generation int      `json:"generation,omitempty"`
-	Members    []string `json:"members,omitempty"`
+	Name        string   `json:"name,omitempty"`
+	Partition   string   `json:"partition,omitempty"`
+	FullPath    string   `json:"fullPath,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Generation  int      `json:"generation,omitempty"`
+	Members     []string `json:"members,omitempty"`
 }
 
 // Pools contains a list of pools on the BIG-IP system.
