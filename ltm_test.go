@@ -429,6 +429,21 @@ func (s *LTMTestSuite) TestAddVirtualServer() {
 	assert.Equal(s.T(), `{"name":"/Common/test-vs","destination":"10.10.10.10:80","pool":"/Common/test-pool","sourceAddressTranslation":{}}`, s.LastRequestBody)
 }
 
+func (s *LTMTestSuite) TestAddVirtualServerIPForward() {
+	config := &VirtualServer{
+		Name:        "/Common/test-vs",
+		Destination: "10.10.10.10:80",
+		Pool:        "/Common/test-pool",
+		IPForward:   true,
+	}
+
+	s.Client.AddVirtualServer(config)
+
+	assert.Equal(s.T(), "POST", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriVirtual), s.LastRequest.URL.Path)
+	assert.JSONEq(s.T(), `{"name":"/Common/test-vs","destination":"10.10.10.10:80","pool":"/Common/test-pool","sourceAddressTranslation":{},"ipForward":true}`, s.LastRequestBody)
+}
+
 func (s *LTMTestSuite) TestModifyVirtualServer() {
 	vs := &VirtualServer{
 		Name: "test",
