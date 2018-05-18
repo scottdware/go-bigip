@@ -505,6 +505,7 @@ type VirtualServer struct {
 	Description              string `json:"description,omitempty"`
 	Enabled                  bool   `json:"enabled,omitempty"`
 	GTMScore                 int    `json:"gtmScore,omitempty"`
+	IPForward                bool   `json:"ipForward,omitempty"`
 	IPProtocol               string `json:"ipProtocol,omitempty"`
 	Mask                     string `json:"mask,omitempty"`
 	Mirror                   string `json:"mirror,omitempty"`
