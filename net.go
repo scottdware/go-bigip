@@ -2,6 +2,7 @@ package bigip
 
 import (
 	"strings"
+	"regexp"
 )
 
 // Interfaces contains a list of every interface on the BIG-IP system.
