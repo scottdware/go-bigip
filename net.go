@@ -318,9 +318,13 @@ func (b *BigIP) Routes() (*Routes, error) {
 func (b *BigIP) GetRoute(name string) (*Route, error) {
  var route Route
  values := []string{}
- values = append(values, "~Common~")
+ regex := regexp.MustCompile(`^(\/.+\/)?(.+)`)
+ match := regex.FindStringSubmatch(name)
+ if match[1] == "" {
+   values = append(values, "~Common~")
+ }
  values = append(values, name)
- // Join three strings into one.
+ // Join the strings into one.
  result := strings.Join(values, "")
  err, ok := b.getForEntity(&route, uriNet, uriRoute, result)
  if err != nil {
