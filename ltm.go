@@ -1991,7 +1991,7 @@ func (b *BigIP) ModifyInternalDataGroupRecords(name string, records []DataGroupR
 }
 
 // Get an internal data group by name, returns nil if the data group does not exist
-func (b *BigIP) GetInternalDatagroup(name string) (*DataGroup, error) {
+func (b *BigIP) GetInternalDataGroup(name string) (*DataGroup, error) {
         var datagroup DataGroup
         err, ok := b.getForEntity(&datagroup, uriLtm, uriDatagroup, uriInternal, name)
         if err != nil {
