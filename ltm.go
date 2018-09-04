@@ -2335,7 +2335,7 @@ func (b *BigIP) CreateMonitor(name, parent, defaults_from string, interval, time
 // Create a monitor by supplying a config
 func (b *BigIP) AddMonitor(config *Monitor) error {
 	if strings.Contains(config.ParentMonitor, "gateway") {
-		config.ParentMonitor = "gateway_icmp"
+		config.ParentMonitor = "gatewayIcmp"
 	}
 	if strings.Contains(config.ParentMonitor, "tcp-half-open") {
 		config.ParentMonitor = "tcp-half-open"
