@@ -478,7 +478,7 @@ func (s *LTMTestSuite) TestDeleteVirtualServer() {
 func (s *LTMTestSuite) TestCreatePool() {
 	name := "/Common/test-pool"
 
-	s.Client.CreatePool(name)
+	s.Client.CreatePool(name, "")
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriPool), s.LastRequest.URL.Path)
@@ -533,7 +533,7 @@ func (s *LTMTestSuite) TestGetPool() {
 		}`))
 	}
 
-	p, err := s.Client.GetPool("/Common/test-pool")
+	p, err := s.Client.GetPool("/Common/test-pool", "")
 
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
@@ -622,7 +622,7 @@ func (s *LTMTestSuite) TestPools() {
 
 func (s *LTMTestSuite) TestDeletePool() {
 	name := "/Common/test-pool"
-	s.Client.DeletePool(name)
+	s.Client.DeletePool(name, "")
 
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
@@ -689,7 +689,7 @@ func (s *LTMTestSuite) TestAddPoolMember() {
 	pool := "/Common/test-pool"
 	poolmember := "/Common/test-pool-member"
 
-	s.Client.AddPoolMember(pool, poolmember)
+	s.Client.AddPoolMember(pool, poolmember, "")
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember), s.LastRequest.URL.Path)
@@ -813,7 +813,7 @@ func (s *LTMTestSuite) TestPoolMembers() {
 	}
 
 	pool := "/Common/test-pool"
-	p, err := s.Client.PoolMembers(pool)
+	p, err := s.Client.PoolMembers(pool, "")
 
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember), s.LastRequest.URL.Path)
@@ -826,7 +826,7 @@ func (s *LTMTestSuite) TestDeletePoolMember() {
 
 	pool := "/Common/test-pool"
 	poolmember := "/Common/test-pool-member:80"
-	s.Client.DeletePoolMember(pool, poolmember)
+	s.Client.DeletePoolMember(pool, poolmember, "")
 
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool", uriPoolMember, "~Common~test-pool-member:80"), s.LastRequest.URL.Path)
@@ -872,7 +872,7 @@ func (s *LTMTestSuite) TestCreateMonitor() {
 		ReceiveString: "200 OK",
 	}
 
-	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString, "http")
+	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString, "http", "")
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
@@ -889,7 +889,7 @@ func (s *LTMTestSuite) TestCreateMonitorSpecialCharacters() {
 		ReceiveString: "Response &<>",
 	}
 
-	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString, "http")
+	s.Client.CreateMonitor(config.Name, config.ParentMonitor, config.Interval, config.Timeout, config.SendString, config.ReceiveString, "http", "")
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor), s.LastRequest.URL.Path)
@@ -966,7 +966,7 @@ func (s *LTMTestSuite) TestDeleteMonitor() {
 		ParentMonitor: "http",
 	}
 
-	s.Client.DeleteMonitor(config.Name, config.ParentMonitor)
+	s.Client.DeleteMonitor(config.Name, config.ParentMonitor, "")
 
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriMonitor, config.ParentMonitor, config.Name), s.LastRequest.URL.Path)
