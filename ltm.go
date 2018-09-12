@@ -456,7 +456,8 @@ type PoolMembers struct {
 
 // poolMember is used only when adding members to a pool.
 type poolMember struct {
-	Name string `json:"name"`
+	Name      string `json:"name"`
+	Partition string `json:"partition,omitempty"`
 }
 
 // poolMembers is used only when modifying members on a pool.
@@ -1632,8 +1633,11 @@ func (b *BigIP) Pools() (*Pools, error) {
 }
 
 // PoolMembers returns a list of pool members for the given pool.
-func (b *BigIP) PoolMembers(name string) (*PoolMembers, error) {
+func (b *BigIP) PoolMembers(name string, partition string) (*PoolMembers, error) {
 	var poolMembers PoolMembers
+	if len(partition) > 0 {
+		name = "~" + partition + "~" + name
+	}
 	err, _ := b.getForEntity(&poolMembers, uriLtm, uriPool, name, uriPoolMember)
 	if err != nil {
 		return nil, err
@@ -1644,11 +1648,16 @@ func (b *BigIP) PoolMembers(name string) (*PoolMembers, error) {
 
 // AddPoolMember adds a node/member to the given pool. <member> must be in the form
 // of <node>:<port>, i.e.: "web-server1:443".
-func (b *BigIP) AddPoolMember(pool, member string) error {
+func (b *BigIP) AddPoolMember(pool, member string, partition string) error {
 	config := &poolMember{
 		Name: member,
 	}
-
+	if len(partition) > 0 {
+		// node partition
+		config.Partition = partition
+		// pool partition
+		pool = "~"+partition+"~"+pool
+	}
 	return b.post(config, uriLtm, uriPool, pool, uriPoolMember)
 }
 
@@ -1689,6 +1698,9 @@ func (b *BigIP) ModifyPoolMember(pool string, config *PoolMember) error {
 // PatchPoolMember will update the configuration of a particular pool member.
 // this requires at least PoolMember{FullPath: foo} and additional fields
 func (b *BigIP) PatchPoolMember(pool string, config *PoolMember) error {
+	if len(config.Partition) > 0 {
+		pool = "~" + config.Partition + "~"+pool
+	}
 	return b.patch(config, uriLtm, uriPool, pool, uriPoolMember, config.FullPath)
 }
 
@@ -1708,7 +1720,10 @@ func (b *BigIP) RemovePoolMember(pool string, config *PoolMember) error {
 
 // DeletePoolMember removes a member from the given pool. <member> must be in the form
 // of <node>:<port>, i.e.: "web-server1:443".
-func (b *BigIP) DeletePoolMember(pool string, member string) error {
+func (b *BigIP) DeletePoolMember(pool string, member string, partition string) error {
+	if len(partition) > 0 {
+		pool = "~" + partition + "~" + pool
+	}
 	return b.delete(uriLtm, uriPool, pool, uriPoolMember, member)
 }
 
@@ -1738,11 +1753,14 @@ func (b *BigIP) PoolMemberStatus(pool string, member string, state string, owner
 }
 
 // CreatePool adds a new pool to the BIG-IP system by name.
-func (b *BigIP) CreatePool(name string) error {
+func (b *BigIP) CreatePool(name string, partition string) error {
 	config := &Pool{
 		Name: name,
 	}
 
+	if len(partition) > 0 {
+		config.Partition = partition
+	}
 	return b.post(config, uriLtm, uriPool)
 }
 
@@ -1752,8 +1770,11 @@ func (b *BigIP) AddPool(config *Pool) error {
 }
 
 // Get a Pool by name. Returns nil if the Pool does not exist
-func (b *BigIP) GetPool(name string) (*Pool, error) {
+func (b *BigIP) GetPool(name string, partition string) (*Pool, error) {
 	var pool Pool
+	if len(partition) > 0 {
+		name = "~"+partition+"~"+name
+	}
 	err, ok := b.getForEntity(&pool, uriLtm, uriPool, name)
 	if err != nil {
 		return nil, err
@@ -1766,7 +1787,10 @@ func (b *BigIP) GetPool(name string) (*Pool, error) {
 }
 
 // DeletePool removes a pool.
-func (b *BigIP) DeletePool(name string) error {
+func (b *BigIP) DeletePool(name string, partition string) error {
+	if len(partition) > 0 {
+		name = "~" + partition + "~" + name
+	}
 	return b.delete(uriLtm, uriPool, name)
 }
 
@@ -1942,7 +1966,7 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 
 // CreateMonitor adds a new monitor to the BIG-IP system. <monitorType> must be one of "http", "https",
 // "icmp", "gateway icmp", "inband", "postgresql", "mysql", "udp" or "tcp".
-func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive, monitorType string) error {
+func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, receive, monitorType string, partition string) error {
 	config := &Monitor{
 		Name:          name,
 		ParentMonitor: parent,
@@ -1951,7 +1975,9 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 		SendString:    send,
 		ReceiveString: receive,
 	}
-
+	if len(partition) > 0 {
+		config.Partition = partition
+	}
 	return b.AddMonitor(config, monitorType)
 }
 
@@ -1980,7 +2006,10 @@ func (b *BigIP) GetMonitor(name string, monitorType string) (*Monitor, error) {
 }
 
 // DeleteMonitor removes a monitor.
-func (b *BigIP) DeleteMonitor(name, monitorType string) error {
+func (b *BigIP) DeleteMonitor(name, parent string, partition string) error {
+	if len(partition) > 0 {
+		name = "~" + partition + "~" + name
+	}
 	return b.delete(uriLtm, uriMonitor, monitorType, name)
 }
 
@@ -1997,15 +2026,24 @@ func (b *BigIP) ModifyMonitor(name, monitorType string, config *Monitor) error {
 
 // PatchMonitor allows you to change any attribute of a monitor.
 func (b *BigIP) PatchMonitor(name, monitorType string, config *Monitor) error {
+	if len(config.Partition) > 0 {
+		name = "~" + config.Partition + "~"+name
+	}
 	return b.patch(config, uriLtm, uriMonitor, monitorType, name)
 }
 
 // AddMonitorToPool assigns the monitor, <monitor> to the given <pool>.
-func (b *BigIP) AddMonitorToPool(monitor, pool string) error {
+func (b *BigIP) AddMonitorToPool(monitor, pool string, partition string) error {
 	config := &Pool{
 		Monitor: monitor,
 	}
 
+	if len(partition) > 0 {
+		// node partition
+		config.Partition = partition
+		// pool partition
+		pool = "~"+partition+"~"+pool
+	}
 	return b.patch(config, uriLtm, uriPool, pool)
 }
 
