@@ -2006,7 +2006,7 @@ func (b *BigIP) GetMonitor(name string, monitorType string) (*Monitor, error) {
 }
 
 // DeleteMonitor removes a monitor.
-func (b *BigIP) DeleteMonitor(name, parent string, partition string) error {
+func (b *BigIP) DeleteMonitor(name, monitorType string, partition string) error {
 	if len(partition) > 0 {
 		name = "~" + partition + "~" + name
 	}
