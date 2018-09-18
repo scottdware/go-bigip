@@ -175,24 +175,18 @@ type DataGroup struct {
 	Records    []DataGroupRecord
 }
 
-type DataGroupRecords struct {
-	Items []DataGroupRecord `json:"items,omitempty"`
-}
-
 type DataGroupRecord struct {
 	Name string `json:"name,omitempty"`
 	Data string `json:"data,omitempty"`
 }
 
 type dataGroupDTO struct {
-	Name       string `json:"name,omitempty"`
-	Partition  string `json:"partition,omitempty"`
-	FullPath   string `json:"fullPath,omitempty"`
-	Generation int    `json:"generation,omitempty"`
-	Type       string `json:"type,omitempty"`
-	Records    struct {
-		Items []DataGroupRecord `json:"items,omitempty"`
-	} `json:"recordsReference,omitempty"`
+	Name       string            `json:"name,omitempty"`
+	Partition  string            `json:"partition,omitempty"`
+	FullPath   string            `json:"fullPath,omitempty"`
+	Generation int               `json:"generation,omitempty"`
+	Type       string            `json:"type,omitempty"`
+	Records    []DataGroupRecord `json:"records,omitempty"`
 }
 
 func (p *DataGroup) MarshalJSON() ([]byte, error) {
@@ -202,9 +196,7 @@ func (p *DataGroup) MarshalJSON() ([]byte, error) {
 		FullPath:   p.FullPath,
 		Generation: p.Generation,
 		Type:       p.Type,
-		Records: struct {
-			Items []DataGroupRecord `json:"items,omitempty"`
-		}{Items: p.Records},
+		Records:    p.Records,
 	})
 }
 
@@ -220,7 +212,7 @@ func (p *DataGroup) UnmarshalJSON(b []byte) error {
 	p.Type = dto.Type
 	p.FullPath = dto.FullPath
 	p.Generation = dto.Generation
-	p.Records = dto.Records.Items
+	p.Records = dto.Records
 	return nil
 }
 
