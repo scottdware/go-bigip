@@ -1502,6 +1502,10 @@ func (b *BigIP) Nodes() (*Nodes, error) {
 	return &nodes, nil
 }
 
+func (b *BigIP) AddNode(config *Node) error {
+	return b.post(config, uriLtm, uriNode)
+}
+
 // CreateNode adds a new node to the BIG-IP system.
 func (b *BigIP) CreateNode(name, address string) error {
 	config := &Node{
@@ -1885,6 +1889,16 @@ func (b *BigIP) VirtualAddresses() (*VirtualAddresses, error) {
 		return nil, err
 	}
 	return &va, nil
+}
+
+// GetVirtualAddress retrieves a VirtualAddress by name. Returns nil if the VirtualAddress does not exist
+func (b *BigIP) GetVirtualAddress(vaddr string) (*VirtualAddress, error) {
+	var virtualAddress VirtualAddress
+	err, _ := b.getForEntity(&virtualAddress, uriLtm, uriVirtualAddress, vaddr)
+	if err != nil {
+		return nil, err
+	}
+	return &virtualAddress, nil
 }
 
 func (b *BigIP) CreateVirtualAddress(vaddr string, config *VirtualAddress) error {
