@@ -1515,7 +1515,7 @@ func (b *BigIP) AddNode(config *Node) error {
 }
 
 // CreateNode adds a new node to the BIG-IP system.
-func (b *BigIP) CreateNode(name, address) error {
+func (b *BigIP) CreateNode(name, address string) error {
 	config := &Node{
 		Name:            name,
 		Address:         address,
