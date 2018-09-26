@@ -350,6 +350,13 @@ type Node struct {
 	Ratio           int    `json:"ratio,omitempty"`
 	Session         string `json:"session,omitempty"`
 	State           string `json:"state,omitempty"`
+	FQDN            struct {
+		AddressFamily string `json:"addressFamily,omitempty"`
+		AutoPopulate  string `json:"autopopulate,omitempty"`
+		DownInterval  int    `json:"downInterval,omitempty"`
+		Interval      string `json:"interval,omitempty"`
+		Name          string `json:"tmName,omitempty"`
+	} `json:"fqdn,omitempty"`
 }
 
 // DataGroups contains a list of data groups on the BIG-IP system.
@@ -1510,10 +1517,37 @@ func (b *BigIP) AddNode(config *Node) error {
 // CreateNode adds a new node to the BIG-IP system.
 func (b *BigIP) CreateNode(name, address string) error {
 	config := &Node{
-		Name:    name,
-		Address: address,
+		Name:            name,
+		Address:         address,
 	}
+	return b.post(config, uriLtm, uriNode)
+}
 
+// CreateNode adds a new node to the BIG-IP system.
+func (b *BigIP) CreateNodeAdv(name, address, rateLimit string, connectionLimit, dynamicRatio int, monitor, state string) error {
+	config := &Node{
+		Name:            name,
+		Address:         address,
+		RateLimit:       rateLimit,
+		ConnectionLimit: connectionLimit,
+		DynamicRatio:    dynamicRatio,
+		Monitor:         monitor,
+		State:           state,
+	}
+	return b.post(config, uriLtm, uriNode)
+}
+
+// CreateFQDNNode adds a new FQDN based node to the BIG-IP system.
+func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state string) error {
+	config := &Node{
+		Name:            name,
+		RateLimit:       rate_limit,
+		ConnectionLimit: connection_limit,
+		DynamicRatio:    dynamic_ratio,
+		Monitor:         monitor,
+		State:           state,
+	}
+	config.FQDN.Name = address
 	return b.post(config, uriLtm, uriNode)
 }
 
