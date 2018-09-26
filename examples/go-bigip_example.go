@@ -37,16 +37,16 @@ func main() {
 
 	// Create a pool, and add members to it. When adding a member, you must
 	// specify the port in the format of <node name>:<port>.
-	f5.CreatePool("web_farm_80_pool")
-	f5.AddPoolMember("web_farm_80_pool", "web-server-1:80")
-	f5.AddPoolMember("web_farm_80_pool", "web-server-2:80")
-	f5.CreatePool("ssl_443_pool")
-	f5.AddPoolMember("ssl_443_pool", "ssl-web-server-1:443")
-	f5.AddPoolMember("ssl_443_pool", "ssl-web-server-2:443")
+	f5.CreatePool("web_farm_80_pool", "")
+	f5.AddPoolMember("web_farm_80_pool", "web-server-1:80", "")
+	f5.AddPoolMember("web_farm_80_pool", "web-server-2:80", "")
+	f5.CreatePool("ssl_443_pool", "")
+	f5.AddPoolMember("ssl_443_pool", "ssl-web-server-1:443", "")
+	f5.AddPoolMember("ssl_443_pool", "ssl-web-server-2:443", "")
 
 	// Create a monitor, and assign it to a pool.
-	f5.CreateMonitor("web_http_monitor", "http", 5, 16, "GET /\r\n", "200 OK", "http")
-	f5.AddMonitorToPool("web_http_monitor", "web_farm_80_pool")
+	f5.CreateMonitor("web_http_monitor", "http", 5, 16, "GET /\r\n", "200 OK", "http", "")
+	f5.AddMonitorToPool("web_http_monitor", "web_farm_80_pool", "")
 
 	// Create a virtual server, with the above pool. The third field is the subnet
 	// mask, and that can either be in CIDR notation or decimal. For any/all destinations
@@ -55,7 +55,7 @@ func main() {
 	f5.CreateVirtualServer("ssl_web_farm_VS", "10.1.1.0", "24", "ssl_443_pool", 443)
 
 	// Remove a pool member.
-	f5.DeletePoolMember("web_farm_80_pool", "web-server-2:80")
+	f5.DeletePoolMember("web_farm_80_pool", "web-server-2:80", "")
 
 	// Create a trunk, with LACP enabled.
 	f5.CreateTrunk("Aggregated", "1.2, 1.4, 1.6", true)
