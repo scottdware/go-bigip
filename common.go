@@ -75,14 +75,14 @@ var cidr = map[string]string{
 	"32": "255.255.255.255",
 }
 
-type gtmType string
+type GTMType string
 
 // Record Types
 const (
-	ARecord     gtmType = uriARecord
-	AAAARecord  gtmType = uriAAAARecord
-	CNAMERecord gtmType = uriCNameRecord
-	MXRecord    gtmType = uriMXRecord
-	NAPTRRecord gtmType = uriNaptrRecord
-	SRVRecord   gtmType = uriSrvRecord
+	ARecord     GTMType = uriARecord
+	AAAARecord  GTMType = uriAAAARecord
+	CNAMERecord GTMType = uriCNameRecord
+	MXRecord    GTMType = uriMXRecord
+	NAPTRRecord GTMType = uriNaptrRecord
+	SRVRecord   GTMType = uriSrvRecord
 )
