@@ -77,11 +77,12 @@ var cidr = map[string]string{
 
 type gtmType string
 
+// Record Types
 const (
-	aRecord     gtmType = uriARecord
-	aaaaRecord  gtmType = uriAAAARecord
-	cnameRecord gtmType = uriCNameRecord
-	mxRecord    gtmType = uriMXRecord
-	naptrRecord gtmType = uriNaptrRecord
-	srvRecord   gtmType = uriSrvRecord
+	ARecord     gtmType = uriARecord
+	AAAARecord  gtmType = uriAAAARecord
+	CNAMERecord gtmType = uriCNameRecord
+	MXRecord    gtmType = uriMXRecord
+	NAPTRRecord gtmType = uriNaptrRecord
+	SRVRecord   gtmType = uriSrvRecord
 )
