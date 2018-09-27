@@ -313,7 +313,7 @@ func (b *BigIP) Vlans() (*Vlans, error) {
 }
 
 // Vlan returns a named vlan.
-func (b *BigIP) Vlans(name string) (*Vlan, error) {
+func (b *BigIP) Vlan(name string) (*Vlan, error) {
 	var vlan Vlan
 	err, _ := b.getForEntity(&vlans, uriNet, uriVlan, name)
 
