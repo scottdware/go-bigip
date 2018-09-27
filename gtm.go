@@ -52,8 +52,8 @@ type GTMWideIPPool struct {
 	} `json:"nameReference,omitempty"`
 }
 
-// GetWideIPs returns a list of all WideIps for a provided type
-func (b *BigIP) GetWideIPs(recordType gtmType) (*GTMWideIPs, error) {
+// GTMWideIPs returns a list of all WideIps for a provided type
+func (b *BigIP) GTMWideIPs(recordType GTMType) (*GTMWideIPs, error) {
 	var w GTMWideIPs
 	err, _ := b.getForEntity(&w, uriGtm, uriWideIp, string(recordType))
 	if err != nil {
@@ -63,8 +63,8 @@ func (b *BigIP) GetWideIPs(recordType gtmType) (*GTMWideIPs, error) {
 	return &w, nil
 }
 
-// GetWideIP get's a WideIP by name
-func (b *BigIP) GetWideIP(name string, recordType gtmType) (*GTMWideIP, error) {
+// GetGTMWideIP get's a WideIP by name
+func (b *BigIP) GetGTMWideIP(name string, recordType GTMType) (*GTMWideIP, error) {
 	var w GTMWideIP
 
 	err, ok := b.getForEntity(&w, uriGtm, uriWideIp, string(recordType), name)
