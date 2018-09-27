@@ -1,8 +1,8 @@
 package bigip
 
 import (
-	"strings"
 	"regexp"
+	"strings"
 )
 
 // Interfaces contains a list of every interface on the BIG-IP system.
@@ -117,6 +117,11 @@ type Vlan struct {
 	Tag            int    `json:"tag,omitempty"`
 }
 
+// VlanInterfaces contains a list of Interface(s) attached to a VLAN.
+type VlanInterfaces struct {
+	VlanInterfaces []VlanInterface `json:"items"`
+}
+
 // VlanInterface contains fields to be used when adding an interface to a VLAN.
 type VlanInterface struct {
 	Name     string `json:"name,omitempty"`
@@ -159,13 +164,14 @@ type RouteDomain struct {
 }
 
 const (
-	uriNet         = "net"
-	uriInterface   = "interface"
-	uriSelf        = "self"
-	uriTrunk       = "trunk"
-	uriVlan        = "vlan"
-	uriRoute       = "route"
-	uriRouteDomain = "route-domain"
+	uriNet            = "net"
+	uriInterface      = "interface"
+	uriSelf           = "self"
+	uriTrunk          = "trunk"
+	uriVlan           = "vlan"
+	uriVlanInterfaces = "interfaces"
+	uriRoute          = "route"
+	uriRouteDomain    = "route-domain"
 )
 
 // Interfaces returns a list of interfaces.
@@ -191,7 +197,18 @@ func (b *BigIP) AddInterfaceToVlan(vlan, iface string, tagged bool) error {
 		config.Untagged = true
 	}
 
-	return b.post(config, uriNet, uriVlan, vlan, "interfaces")
+	return b.post(config, uriNet, uriVlan, vlan, uriVlanInterfaces)
+}
+
+// GetVlanInterfaces returns a list of interface associated to the specified VLAN.
+func (b *BigIP) GetVlanInterfaces(vlan string) (*VlanInterfaces, error) {
+	var vlanInterfaces VlanInterfaces
+	err, _ := b.getForEntity(&vlanInterfaces, uriNet, uriVlan, vlan, uriVlanInterfaces)
+	if err != nil {
+		return nil, err
+	}
+
+	return &vlanInterfaces, nil
 }
 
 // SelfIPs returns a list of self IP's.
@@ -317,25 +334,25 @@ func (b *BigIP) Routes() (*Routes, error) {
 }
 
 func (b *BigIP) GetRoute(name string) (*Route, error) {
- var route Route
- values := []string{}
- regex := regexp.MustCompile(`^(\/.+\/)?(.+)`)
- match := regex.FindStringSubmatch(name)
- if match[1] == "" {
-   values = append(values, "~Common~")
- }
- values = append(values, name)
- // Join the strings into one.
- result := strings.Join(values, "")
- err, ok := b.getForEntity(&route, uriNet, uriRoute, result)
- if err != nil {
-	 return nil, err
- }
- if !ok {
-	 return nil, nil
- }
+	var route Route
+	values := []string{}
+	regex := regexp.MustCompile(`^(\/.+\/)?(.+)`)
+	match := regex.FindStringSubmatch(name)
+	if match[1] == "" {
+		values = append(values, "~Common~")
+	}
+	values = append(values, name)
+	// Join the strings into one.
+	result := strings.Join(values, "")
+	err, ok := b.getForEntity(&route, uriNet, uriRoute, result)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
 
- return &route, nil
+	return &route, nil
 }
 
 // CreateRoute adds a new static route to the BIG-IP system. <dest> must include the
