@@ -222,6 +222,17 @@ func (b *BigIP) SelfIPs() (*SelfIPs, error) {
 	return &self, nil
 }
 
+// SelfIP returns a named Self IP.
+func (b *BigIP) SelfIP(selfip string) (*SelfIP, error) {
+	var self SelfIP
+	err, _ := b.getForEntity(&self, uriNet, uriSelf, selfip)
+	if err != nil {
+		return nil, err
+	}
+
+	return &self, nil
+}
+
 // CreateSelfIP adds a new self IP to the BIG-IP system. For <address>, you
 // must include the subnet mask in CIDR notation, i.e.: "10.1.1.1/24".
 func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
@@ -299,6 +310,18 @@ func (b *BigIP) Vlans() (*Vlans, error) {
 	}
 
 	return &vlans, nil
+}
+
+// Vlan returns a named vlan.
+func (b *BigIP) Vlans(name string) (*Vlan, error) {
+	var vlan Vlan
+	err, _ := b.getForEntity(&vlans, uriNet, uriVlan, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &vlan, nil
 }
 
 // CreateVlan adds a new VLAN to the BIG-IP system.
