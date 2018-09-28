@@ -78,6 +78,11 @@ func (b *BigIP) GetGTMWideIP(name string, recordType GTMType) (*GTMWideIP, error
 	return &w, nil
 }
 
+// AddGTMWideIP adds a WideIp by config to the BIG-IP system.
+func (b *BigIP) AddGTMWideIP(config *GTMWideIP, recordType GTMType) error {
+	return b.post(config, uriGtm, uriWideIp, string(recordType))
+}
+
 // **********************************
 // **   GTM Pool A
 // **********************************

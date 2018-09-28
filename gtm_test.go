@@ -1,6 +1,7 @@
 package bigip
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -110,4 +111,44 @@ func (s *GTMTestSuite) TestGetGTMWideIP() {
 	// ensure we can find our partition-based WideIP
 	assert.Equal("test", w2.Partition)
 	assert.Equal("/test/myapp.domain.com", w2.FullPath)
+}
+
+func (s *GTMTestSuite) TestAddGTMWideIP() {
+	config := &GTMWideIP{
+		Name:      "baseapp.domain.com",
+		Partition: "Common",
+	}
+
+	s.Client.AddGTMWideIP(config, ARecord)
+
+	// so we don't have to pass  s.T() as first argument every time in Assert
+	assert := assert.New(s.T())
+	// Test we posted
+	assert.Equal("POST", s.LastRequest.Method)
+	// See that we actually posted to our endpoint
+	assert.Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriGtm, uriWideIp, uriARecord), s.LastRequest.URL.Path)
+	// See if we get back the object we expect
+	assert.Equal(`{"name":"baseapp.domain.com","partition":"Common"}`, s.LastRequestBody)
+
+}
+
+func (s *GTMTestSuite) TestAddGTMWideIPAdvanced() {
+	config := &GTMWideIP{}
+	if err := json.Unmarshal(wideIPSample(false), &config); err != nil {
+		panic(err)
+	}
+
+	// make sure our post works
+	err := s.Client.AddGTMWideIP(config, ARecord)
+	// so we don't have to pass  s.T() as first argument every time in Assert
+	assert := assert.New(s.T())
+	// Test no error on post
+	assert.Nil(err)
+	// Test we posted
+	assert.Equal("POST", s.LastRequest.Method)
+	// See that we actually posted to our endpoint
+	assert.Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriGtm, uriWideIp, uriARecord), s.LastRequest.URL.Path)
+	// See if we get back the object we expect
+	assert.Equal(wideIPReturn(false), s.LastRequestBody)
+
 }

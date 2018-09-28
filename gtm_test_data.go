@@ -134,3 +134,11 @@ func wideIPSample(usePartition bool) []byte {
 		]
 	}`)
 }
+
+func wideIPReturn(usePartiion bool) string {
+	if usePartiion {
+		return `{"name":"myapp.domain.com","partition":"test","fullPath":"/test/baseapp.domain.com","generation":2,"enabled":true,"failureRcode":"noerror","failureRcodeResponse":"disabled","minimalResponse":"enabled","persistCidrIpv4":32,"persistCidrIpv6":128,"persistence":"disabled","poolLbMode":"topology","ttlPersistence":3600,"pools":[{"name":"myapp.domain.com_pool","partition":"test","ratio":1,"nameReference":{"link":"https://localhost/mgmt/tm/gtm/pool/a/~test~myapp.domain.com_pool_int_pool?ver=12.1.1"}}]}`
+	}
+
+	return `{"name":"baseapp.domain.com","partition":"Common","fullPath":"/Common/baseapp.domain.com","generation":2,"enabled":true,"failureRcode":"noerror","failureRcodeResponse":"disabled","minimalResponse":"enabled","persistCidrIpv4":32,"persistCidrIpv6":128,"persistence":"disabled","poolLbMode":"topology","ttlPersistence":3600,"pools":[{"name":"baseapp.domain.com_pool","partition":"Common","ratio":1,"nameReference":{"link":"https://localhost/mgmt/tm/gtm/pool/a/~Common~baseapp.domain.com_pool_int_pool?ver=12.1.1"}}]}`
+}
