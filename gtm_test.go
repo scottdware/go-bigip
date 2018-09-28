@@ -46,85 +46,19 @@ func TestGtmSuite(t *testing.T) {
 	suite.Run(t, new(GTMTestSuite))
 }
 
-func wideIPSample() []byte {
-	return []byte(`{
-		"kind": "tm:gtm:wideip:a:acollectionstate",
-		"selfLink": "https://localhost/mgmt/tm/gtm/wideip/a?ver=12.1.1",
-		"items": [
-			{
-				"kind": "tm:gtm:wideip:a:astate",
-				"name": "baseapp.domain.com",
-				"partition": "Common",
-				"fullPath": "/Common/baseapp.domain.com",
-				"generation": 2,
-				"selfLink": "https://localhost/mgmt/tm/gtm/wideip/a/~Common~baseapp.domain.com?ver=12.1.1",
-				"enabled": true,
-				"failureRcode": "noerror",
-				"failureRcodeResponse": "disabled",
-				"failureRcodeTtl": 0,
-				"lastResortPool": "",
-				"minimalResponse": "enabled",
-				"persistCidrIpv4": 32,
-				"persistCidrIpv6": 128,
-				"persistence": "disabled",
-				"poolLbMode": "topology",
-				"ttlPersistence": 3600,
-				"pools": [
-						{
-								"name": "baseapp.domain.com_pool",
-								"partition": "Common",
-								"order": 0,
-								"ratio": 1,
-								"nameReference": {
-										"link": "https://localhost/mgmt/tm/gtm/pool/a/~Common~baseapp.domain.com_pool_int_pool?ver=12.1.1"
-								}
-						}
-				]
-			},
-			{
-				"kind": "tm:gtm:wideip:a:astate",
-				"name": "myapp.domain.com",
-				"partition": "test",
-				"fullPath": "/test/myapp.domain.com",
-				"generation": 35,
-				"selfLink": "https://localhost/mgmt/tm/gtm/wideip/a/~test~myapp.domain.com?ver=12.1.1",
-				"enabled": true,
-				"failureRcode": "noerror",
-				"failureRcodeResponse": "disabled",
-				"failureRcodeTtl": 0,
-				"lastResortPool": "",
-				"minimalResponse": "enabled",
-				"persistCidrIpv4": 32,
-				"persistCidrIpv6": 128,
-				"persistence": "disabled",
-				"poolLbMode": "round-robin",
-				"ttlPersistence": 3600,
-				"pools": [
-						{
-								"name": "myapp.domain.com.com_pool",
-								"partition": "test",
-								"order": 0,
-								"ratio": 1,
-								"nameReference": {
-										"link": "https://localhost/mgmt/tm/gtm/pool/a/~test~myapp.domain.com_pool?ver=12.1.1"
-								}
-						}
-				]
-			}
-		]
-	}`)
-}
-
 func (s *GTMTestSuite) TestGTMWideIPsARecord() {
 	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
-		w.Write(wideIPSample())
+		w.Write(wideIPsSample())
 	}
 
 	// so we don't have to pass  s.T() as first argument every time in Assert
 	assert := assert.New(s.T())
 	w, err := s.Client.GTMWideIPs(ARecord)
+
 	// make sure we get wideIp's back
 	assert.NotNil(w)
+	assert.Nil(err)
+
 	// see that we talked to the gtm/wideip/a endpoint
 	assert.Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriGtm, uriWideIp, uriARecord), s.LastRequest.URL.Path)
 	// ensure we can find our common WideIp
@@ -133,6 +67,47 @@ func (s *GTMTestSuite) TestGTMWideIPsARecord() {
 	// ensure we can find our partition-based WideIP
 	assert.Equal("test", w.GTMWideIPs[1].Partition)
 	assert.Equal("/test/myapp.domain.com", w.GTMWideIPs[1].FullPath)
+
+}
+
+func (s *GTMTestSuite) TestGetGTMWideIP() {
+	// ** Test Common (partition)
+
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		// get sample WideIP in Common partition
+		w.Write(wideIPSample(false))
+	}
+
+	// so we don't have to pass  s.T() as first argument every time in Assert
+	assert := assert.New(s.T())
+	w, err := s.Client.GetGTMWideIP("baseapp.domain.com", ARecord)
+
+	// make sure we get wideIp's back
+	assert.NotNil(w)
 	assert.Nil(err)
 
+	// see that we talked to the gtm/wideip/a endpoint
+	assert.Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriGtm, uriWideIp, uriARecord, "baseapp.domain.com"), s.LastRequest.URL.Path)
+	// ensure we can find our common WideIp
+	assert.Equal("Common", w.Partition)
+	assert.Equal("/Common/baseapp.domain.com", w.FullPath)
+
+	// ** Test Partition
+
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		// get sample WideIP in test partition
+		w.Write(wideIPSample(true))
+	}
+
+	w2, err := s.Client.GetGTMWideIP("/test/myapp.domain.com", ARecord)
+
+	// make sure we get wideIp's back
+	assert.NotNil(w2)
+	assert.Nil(err)
+
+	// see that we talked to the gtm/wideip/a endpoint
+	assert.Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriGtm, uriWideIp, uriARecord, "~test~myapp.domain.com"), s.LastRequest.URL.Path)
+	// ensure we can find our partition-based WideIP
+	assert.Equal("test", w2.Partition)
+	assert.Equal("/test/myapp.domain.com", w2.FullPath)
 }
