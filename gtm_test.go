@@ -249,7 +249,7 @@ func (s *GTMTestSuite) TestGetGTMPoolARecord() {
 
 	// so we don't have to pass  s.T() as first argument every time in Assert
 	assert := assert.New(s.T())
-	p, err := s.Client.GetGTMAPool("baseapp.domain.com", ARecord)
+	p, err := s.Client.GetGTMAPool("baseapp.domain.com")
 
 	// make sure we get wideIp's back
 	assert.NotNil(p)
@@ -268,7 +268,7 @@ func (s *GTMTestSuite) TestGetGTMPoolARecord() {
 		w.Write(poolASample(true))
 	}
 
-	p2, err := s.Client.GetGTMAPool("/test/myapp.domain.com", ARecord)
+	p2, err := s.Client.GetGTMAPool("/test/myapp.domain.com")
 
 	// make sure we get wideIp's back
 	assert.NotNil(p2)
@@ -381,3 +381,71 @@ func (s *GTMTestSuite) TestModifyGTMPoolARecord() {
 	assert.Equal(`{"name":"baseapp.domain.com_pool","partition":"Common","disabled":true,"MembersReference":{}}`, s.LastRequestBody)
 
 }
+
+// ********************************************************************************************************************
+// *****************************************                        ***************************************************
+// *****************************************   GTM A Pool Members   ***************************************************
+// *****************************************                        ***************************************************
+// ********************************************************************************************************************
+
+func (s *GTMTestSuite) TestGetGTMAPoolMembers() {
+	fullPathAPool := "/Common/baseapp.domain.com_pool"
+	fullPathAPoolAPI := "~Common~baseapp.domain.com_pool"
+
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write(poolAMemberSamples())
+	}
+
+	// so we don't have to pass  s.T() as first argument every time in Assert
+	assert := assert.New(s.T())
+	m, err := s.Client.GetGTMAPoolMembers(fullPathAPool)
+
+	// make sure we get wideIp's back
+	assert.NotNil(m)
+	assert.Nil(err)
+
+	// see that we talked to the gtm/wideip/a endpoint
+	assert.Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/%s", uriGtm, uriPool, uriARecord, fullPathAPoolAPI, uriPoolMembers), s.LastRequest.URL.Path)
+	// ensure we can find our common WideIp
+	assert.Equal("Common", m.GTMAPoolMembers[0].Partition)
+	assert.Equal("someltm:/Common", m.GTMAPoolMembers[0].SubPath)
+	assert.Equal("/Common/someltm:/Common/baseapp_80_vs", m.GTMAPoolMembers[0].FullPath)
+
+}
+
+// TODO: Write Test for GetGTMAPoolMember
+
+func (s *GTMTestSuite) TestAddGTMAPoolMember() {
+	fullPathAPool := "/Common/baseapp.domain.com_pool"
+	//fullPathAPoolAPI := "~Common~baseapp.domain.com_pool"
+
+	config := &GTMAPoolMember{
+		Name: "/Common/someltm:/Common/baseapp_80_vs",
+	}
+
+	s.Client.AddGTMAPoolMember(fullPathAPool, config)
+
+	// so we don't have to pass  s.T() as first argument every time in Assert
+	assert := assert.New(s.T())
+	// Test we posted
+	assert.Equal("POST", s.LastRequest.Method)
+	// See that we actually posted to our endpoint
+	assert.Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriGtm, uriPool, uriARecord), s.LastRequest.URL.Path)
+	// See if we get back the object we expect
+	assert.Equal(`{"name":"/Common/someltm:/Common/baseapp_80_vs"}`, s.LastRequestBody)
+
+}
+
+func (s *GTMTestSuite) TestDeleteGTMAPoolMember() {
+	fullPathAPool := "/Common/baseapp.domain.com_pool"
+	fullPathAPoolAPI := "~Common~baseapp.domain.com_pool"
+	fullPathAPoolMember := "/Common/baseapp_80_vs"
+	fullPathAPoolMemberAPI := "~Common~baseapp_80_vs"
+
+	s.Client.DeleteGTMAPoolMember(fullPathAPool, fullPathAPoolMember)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/%s/%s", uriGtm, uriPool, uriARecord, fullPathAPoolAPI, uriPoolMembers, fullPathAPoolMemberAPI), s.LastRequest.URL.Path)
+}
+
+// TODO: Write Test for ModifyGTMAPoolMember

@@ -34,6 +34,7 @@ const (
 	uriMXRecord        = "mx"
 	uriNaptrRecord     = "naptr"
 	uriSrvRecord       = "srv"
+	uriPoolMembers     = "members"
 	ENABLED            = "enable"
 	DISABLED           = "disable"
 	CONTEXT_SERVER     = "serverside"

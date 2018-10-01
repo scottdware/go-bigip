@@ -151,7 +151,6 @@ type GTMAPool struct {
 	QosVsCapacity             int    `json:"qosVsCapacity,omitempty"`
 	QosVsScore                int    `json:"qosVsScore,omitempty"`
 	TTL                       int    `json:"ttl,omitempty"`
-	Type                      string `json:"type,omitempty"`
 	VerifyMemberAvailability  string `json:"verifyMemberAvailability,omitempty"`
 	MembersReference          struct {
 		Link            string `json:"link,omitempty"`
@@ -171,7 +170,7 @@ func (b *BigIP) GetGTMAPools() (*GTMAPools, error) {
 }
 
 // GetGTMAPool get's a Pool/A by name
-func (b *BigIP) GetGTMAPool(name string, recordType GTMType) (*GTMAPool, error) {
+func (b *BigIP) GetGTMAPool(name string) (*GTMAPool, error) {
 	var w GTMAPool
 
 	err, ok := b.getForEntity(&w, uriGtm, uriPool, string(ARecord), name)
@@ -195,20 +194,22 @@ func (b *BigIP) ModifyGTMAPool(fullPath string, config *GTMAPool) error {
 	return b.put(config, uriGtm, uriPool, string(ARecord), fullPath)
 }
 
-/*
-
-These are here for later use -- so no one has to do this painful work!!!
-
+// ********************************************************************************************************************
+// *****************************************                        ***************************************************
+// *****************************************   GTM A Pool Members   ***************************************************
+// *****************************************                        ***************************************************
+// ********************************************************************************************************************
 
 // GTMAPoolMembers contains a list of every gtm/pool/a/members on the BIG-IP system.
 type GTMAPoolMembers struct {
-	GTMAPoolMembers []GTMAPoolMember `json:"itmes"`
+	GTMAPoolMembers []GTMAPoolMember `json:"items"`
 }
 
 // GTMAPoolMember contains information about each gtm/pool/a
 type GTMAPoolMember struct {
 	Name                      string `json:"name,omitempty"`
 	Partition                 string `json:"partition,omitempty"`
+	SubPath                   string `json:"subPath,omitempty"`
 	FullPath                  string `json:"fullPath,omitempty"`
 	Generation                int    `json:"generation,omitempty"`
 	AppService                string `json:"appService,omitempty"`
@@ -224,8 +225,55 @@ type GTMAPoolMember struct {
 	MemberOrder               int    `json:"memberOrder,omitempty"`
 	Monitor                   string `json:"monitor,omitempty"`
 	Ratio                     int    `json:"ratio,omitempty"`
-	Type                      string `json:"type,omitempty"`
 }
+
+// GetGTMAPoolMembers returns a list of all Pool/A Members records
+func (b *BigIP) GetGTMAPoolMembers(fullPathToAPool string) (*GTMAPoolMembers, error) {
+	var m GTMAPoolMembers
+	err, _ := b.getForEntity(&m, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMembers)
+	if err != nil {
+		return nil, err
+	}
+
+	return &m, nil
+}
+
+// GetGTMAPoolMember get's a Pool/A Member by name
+func (b *BigIP) GetGTMAPoolMember(fullPathToAPool string, fullPathToPoolMember string) (*GTMAPool, error) {
+	var w GTMAPool
+
+	err, ok := b.getForEntity(&w, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember, fullPathToPoolMember)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &w, nil
+}
+
+// AddGTMAPoolMember adds a Pool/A Member by config to the BIG-IP system.
+// NOTE: For whatever reason in the GTM, you cannot specify the multi-part config ( Name, Partition, SubPath )
+//       You have to specify the fullPath as the name.  e.g. Name: '/Common/someltm:/Common/virtualservername'
+// See: https://support.f5.com/csp/article/K16211
+func (b *BigIP) AddGTMAPoolMember(fullPathToAPool string, config *GTMAPoolMember) error {
+	return b.post(config, uriGtm, uriPool, string(ARecord))
+}
+
+// DeleteGTMAPoolMember adds a Pool/A Member by full Path to the BIG-IP system.
+func (b *BigIP) DeleteGTMAPoolMember(fullPathToAPool string, fullPathToPoolMember string) error {
+	return b.delete(uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember, fullPathToPoolMember)
+}
+
+// ModifyGTMAPoolMember adds a Pool/A Member by config to the BIG-IP system.
+func (b *BigIP) ModifyGTMAPoolMember(fullPathToAPool string, fullPathToPoolMember string, config *GTMAPoolMember) error {
+	return b.put(config, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember, fullPathToPoolMember)
+}
+
+/*
+
+These are here for later use -- so no one has to do this painful work!!!
 
 
 
@@ -268,7 +316,6 @@ type GTMAAAAPool struct {
 	QosVsCapacity             int    `json:"qosVsCapacity,omitempty"`
 	QosVsScore                int    `json:"qosVsScore,omitempty"`
 	TTL                       int    `json:"ttl,omitempty"`
-	Type                      string `json:"type,omitempty"`
 	VerifyMemberAvailability  string `json:"verifyMemberAvailability,omitempty"`
 }
 
@@ -302,7 +349,6 @@ type GTMCNamePool struct {
 	QosVsCapacity            int    `json:"qosVsCapacity,omitempty"`
 	QosVsScore               int    `json:"qosVsScore,omitempty"`
 	TTL                      int    `json:"ttl,omitempty"`
-	Type                     string `json:"type,omitempty"`
 	VerifyMemberAvailability string `json:"verifyMemberAvailability,omitempty"`
 }
 
@@ -336,7 +382,6 @@ type GTMMXPool struct {
 	QosVsCapacity            int    `json:"qosVsCapacity,omitempty"`
 	QosVsScore               int    `json:"qosVsScore,omitempty"`
 	TTL                      int    `json:"ttl,omitempty"`
-	Type                     string `json:"type,omitempty"`
 	VerifyMemberAvailability string `json:"verifyMemberAvailability,omitempty"`
 }
 
@@ -370,7 +415,6 @@ type GTMSrvPool struct {
 	QosVsCapacity            int    `json:"qosVsCapacity,omitempty"`
 	QosVsScore               int    `json:"qosVsScore,omitempty"`
 	TTL                      int    `json:"ttl,omitempty"`
-	Type                     string `json:"type,omitempty"`
 	VerifyMemberAvailability string `json:"verifyMemberAvailability,omitempty"`
 }
 

@@ -318,3 +318,89 @@ func poolAReturn(usePartiion bool) string {
 
 	return `{"name":"baseapp.domain.com_pool","partition":"Common","fullPath":"/Common/baseapp.domain.com_pool","generation":2,"dynamicRatio":"disabled","enabled":true,"fallbackIp":"any","fallbackMode":"return-to-dns","limitMaxBpsStatus":"disabled","limitMaxConnectionsStatus":"disabled","limitMaxPpsStatus":"disabled","loadBalancingMode":"round-robin","manualResume":"disabled","maxAnswersReturned":1,"monitor":"default","qosHitRatio":5,"qosKilobytesSecond":3,"qosLcs":30,"qosPacketRate":1,"qosRtt":50,"ttl":30,"verifyMemberAvailability":"enabled","MembersReference":{"link":"https://localhost/mgmt/tm/gtm/pool/a/~Common~baseapp.domain.com_pool/members?ver=12.1.1","isSubcollection":true}}`
 }
+
+func poolAMemberSamples() []byte {
+	return []byte(
+		`{
+			"kind": "tm:gtm:pool:a:members:memberscollectionstate",
+			"selfLink": "https://localhost/mgmt/tm/gtm/pool/a/~Common~baseapp.domain.com_pool/members?ver=12.1.1",
+			"items": [
+				{
+						"kind": "tm:gtm:pool:a:members:membersstate",
+						"name": "baseapp_80_vs",
+						"partition": "Common",
+						"subPath": "someltm:/Common",
+						"fullPath": "/Common/someltm:/Common/baseapp_80_vs",
+						"generation": 197,
+						"selfLink": "https://localhost/mgmt/tm/gtm/pool/a/~Common~baseapp.domain.com_pool/members/~Common~someltm:~Common~baseapp_80_vs?ver=12.1.1",
+						"enabled": true,
+						"limitMaxBps": 0,
+						"limitMaxBpsStatus": "disabled",
+						"limitMaxConnections": 0,
+						"limitMaxConnectionsStatus": "disabled",
+						"limitMaxPps": 0,
+						"limitMaxPpsStatus": "disabled",
+						"memberOrder": 0,
+						"monitor": "default",
+						"ratio": 1
+				},
+				{
+					"kind": "tm:gtm:pool:a:members:membersstate",
+					"name": "baseapp_443_vs",
+					"partition": "Common",
+					"subPath": "someltm:/Common",
+					"fullPath": "/Common/someltm:/Common/baseapp_443_vs",
+					"generation": 197,
+					"selfLink": "https://localhost/mgmt/tm/gtm/pool/a/~Common~baseapp.domain.com_pool/members/~Common~someltm:~Common~baseapp_443_vs?ver=12.1.1",
+					"enabled": true,
+					"limitMaxBps": 0,
+					"limitMaxBpsStatus": "disabled",
+					"limitMaxConnections": 0,
+					"limitMaxConnectionsStatus": "disabled",
+					"limitMaxPps": 0,
+					"limitMaxPpsStatus": "disabled",
+					"memberOrder": 0,
+					"monitor": "default",
+					"ratio": 1
+				},
+				{
+					"kind": "tm:gtm:pool:a:members:membersstate",
+					"name": "myapp_80_vs",
+					"partition": "Common",
+					"subPath": "someltm:/test",
+					"fullPath": "/Common/someltm:/test/myapp_80_vs",
+					"generation": 197,
+					"selfLink": "https://localhost/mgmt/tm/gtm/pool/a/~test~myapp.domain.com_pool/members/~Common~someltm:~test~myapp_80_vs?ver=12.1.1",
+					"enabled": true,
+					"limitMaxBps": 0,
+					"limitMaxBpsStatus": "disabled",
+					"limitMaxConnections": 0,
+					"limitMaxConnectionsStatus": "disabled",
+					"limitMaxPps": 0,
+					"limitMaxPpsStatus": "disabled",
+					"memberOrder": 0,
+					"monitor": "default",
+					"ratio": 1
+				},
+				{
+					"kind": "tm:gtm:pool:a:members:membersstate",
+					"name": "myapp_443_vs",
+					"partition": "Common",
+					"subPath": "someltm:/test",
+					"fullPath": "/Common/someltm:/test/myapp_443_vs",
+					"generation": 197,
+					"selfLink": "https://localhost/mgmt/tm/gtm/pool/a/~test~myapp.domain.com_pool/members/~Common~someltm:~test~myapp_443_vs?ver=12.1.1",
+					"enabled": true,
+					"limitMaxBps": 0,
+					"limitMaxBpsStatus": "disabled",
+					"limitMaxConnections": 0,
+					"limitMaxConnectionsStatus": "disabled",
+					"limitMaxPps": 0,
+					"limitMaxPpsStatus": "disabled",
+					"memberOrder": 0,
+					"monitor": "default",
+					"ratio": 1
+				}
+			]
+		}`)
+}
