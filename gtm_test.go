@@ -415,6 +415,8 @@ func (s *GTMTestSuite) TestGetGTMAPoolMembers() {
 
 // TODO: Write Test for GetGTMAPoolMember
 
+// TOTO: Write Test for CreateGTMAPoolMember
+
 func (s *GTMTestSuite) TestAddGTMAPoolMember() {
 	fullPathAPool := "/Common/baseapp.domain.com_pool"
 	//fullPathAPoolAPI := "~Common~baseapp.domain.com_pool"
