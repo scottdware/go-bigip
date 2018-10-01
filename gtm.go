@@ -3,9 +3,11 @@ package bigip
 // GTM Documentation
 // https://devcentral.f5.com/wiki/iControlREST.APIRef_tm_gtm.ashx
 
-// **********************************
-// **   GTM WideIp
-// **********************************
+// ********************************************************************************************************************
+// *************************************************                  *************************************************
+// *************************************************   GTM WideIP A   *************************************************
+// *************************************************                  *************************************************
+// ********************************************************************************************************************
 
 // GTMWideIPs contains a list of every WideIP on the BIG-IP system.
 type GTMWideIPs struct {
@@ -88,14 +90,27 @@ func (b *BigIP) DeleteGTMWideIP(fullPath string, recordType GTMType) error {
 	return b.delete(uriGtm, uriWideIp, string(recordType), fullPath)
 }
 
-// **********************************
-// **   GTM Pool A
-// **********************************
+// ModifyGTMWideIP adds a WideIp by config to the BIG-IP system.
+func (b *BigIP) ModifyGTMWideIP(fullPath string, config *GTMWideIP, recordType GTMType) error {
+	return b.put(config, uriGtm, uriWideIp, string(recordType), fullPath)
+}
 
-/*
+// ********************************************************************************************************************
+// ********************************************                     ***************************************************
+// ********************************************   GTM Pool Common   ***************************************************
+// ********************************************                     ***************************************************
+// ********************************************************************************************************************
 
-These are here for later use -- so no one has to do this painful work!!!
+// DeleteGTMPool removes a Pool by config and Pool Type from the BIG-IP system.
+func (b *BigIP) DeleteGTMPool(fullPath string, recordType GTMType) error {
+	return b.delete(uriGtm, uriPool, string(recordType), fullPath)
+}
 
+// ********************************************************************************************************************
+// **********************************************                ******************************************************
+// **********************************************   GTM Pool A   ******************************************************
+// **********************************************                ******************************************************
+// ********************************************************************************************************************
 
 // GTMAPools contains a list of every gtm/pool/a on the BIG-IP system.
 type GTMAPools struct {
@@ -144,6 +159,47 @@ type GTMAPool struct {
 	}
 }
 
+// GetGTMAPools returns a list of all Pool/A records
+func (b *BigIP) GetGTMAPools() (*GTMAPools, error) {
+	var p GTMAPools
+	err, _ := b.getForEntity(&p, uriGtm, uriPool, string(ARecord))
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+// GetGTMAPool get's a Pool/A by name
+func (b *BigIP) GetGTMAPool(name string, recordType GTMType) (*GTMAPool, error) {
+	var w GTMAPool
+
+	err, ok := b.getForEntity(&w, uriGtm, uriPool, string(ARecord), name)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &w, nil
+}
+
+// AddGTMAPool adds a Pool/A by config to the BIG-IP system.
+func (b *BigIP) AddGTMAPool(config *GTMAPool) error {
+	return b.post(config, uriGtm, uriPool, string(ARecord))
+}
+
+// ModifyGTMAPool adds a Pool/A by config to the BIG-IP system.
+func (b *BigIP) ModifyGTMAPool(fullPath string, config *GTMAPool) error {
+	return b.put(config, uriGtm, uriPool, string(ARecord), fullPath)
+}
+
+/*
+
+These are here for later use -- so no one has to do this painful work!!!
+
+
 // GTMAPoolMembers contains a list of every gtm/pool/a/members on the BIG-IP system.
 type GTMAPoolMembers struct {
 	GTMAPoolMembers []GTMAPoolMember `json:"itmes"`
@@ -170,6 +226,8 @@ type GTMAPoolMember struct {
 	Ratio                     int    `json:"ratio,omitempty"`
 	Type                      string `json:"type,omitempty"`
 }
+
+
 
 // GTMAAAAPools contains a list of every gtm/pool/aaaa on the BIG-IP system.
 type GTMAAAAPools struct {
