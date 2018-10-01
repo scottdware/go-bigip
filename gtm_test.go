@@ -342,7 +342,7 @@ func (s *GTMTestSuite) TestDeleteGTMPoolARecord() {
 	s.Client.DeleteGTMPool(fullPath, ARecord)
 
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriGtm, uriWideIp, uriARecord, "~Common~baseapp.domain.com"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriGtm, uriPool, uriARecord, "~Common~baseapp.domain.com"), s.LastRequest.URL.Path)
 }
 
 func (s *GTMTestSuite) TestModifyGTMPoolARecord() {
