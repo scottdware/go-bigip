@@ -54,7 +54,7 @@ func (s *GTMTestSuite) TestGTMWideIPsARecord() {
 
 	// so we don't have to pass  s.T() as first argument every time in Assert
 	assert := assert.New(s.T())
-	w, err := s.Client.GTMWideIPs(ARecord)
+	w, err := s.Client.GetGTMWideIPs(ARecord)
 
 	// make sure we get wideIp's back
 	assert.NotNil(w)
@@ -151,4 +151,13 @@ func (s *GTMTestSuite) TestAddGTMWideIPAdvanced() {
 	// See if we get back the object we expect
 	assert.Equal(wideIPReturn(false), s.LastRequestBody)
 
+}
+
+func (s *GTMTestSuite) TestDeleteGTMWideIP() {
+	fullPath := "/Common/baseapp.domain.com"
+
+	s.Client.DeleteGTMWideIP(fullPath, ARecord)
+
+	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriGtm, uriWideIp, uriARecord, "~Common~baseapp.domain.com"), s.LastRequest.URL.Path)
 }

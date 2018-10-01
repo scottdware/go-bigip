@@ -52,8 +52,8 @@ type GTMWideIPPool struct {
 	} `json:"nameReference,omitempty"`
 }
 
-// GTMWideIPs returns a list of all WideIps for a provided type
-func (b *BigIP) GTMWideIPs(recordType GTMType) (*GTMWideIPs, error) {
+// GetGTMWideIPs returns a list of all WideIps for a provided type
+func (b *BigIP) GetGTMWideIPs(recordType GTMType) (*GTMWideIPs, error) {
 	var w GTMWideIPs
 	err, _ := b.getForEntity(&w, uriGtm, uriWideIp, string(recordType))
 	if err != nil {
@@ -81,6 +81,11 @@ func (b *BigIP) GetGTMWideIP(name string, recordType GTMType) (*GTMWideIP, error
 // AddGTMWideIP adds a WideIp by config to the BIG-IP system.
 func (b *BigIP) AddGTMWideIP(config *GTMWideIP, recordType GTMType) error {
 	return b.post(config, uriGtm, uriWideIp, string(recordType))
+}
+
+// DeleteGTMWideIP removes a WideIp by config to the BIG-IP system.
+func (b *BigIP) DeleteGTMWideIP(fullPath string, recordType GTMType) error {
+	return b.delete(uriGtm, uriWideIp, string(recordType), fullPath)
 }
 
 // **********************************
