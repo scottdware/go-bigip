@@ -267,14 +267,14 @@ func (b *BigIP) GetGTMAPoolMember(fullPathToAPool string, fullPathToPoolMember s
 //       You have to specify the fullPath as the name.  e.g. Name: '/Common/someltm:/Common/virtualservername'
 // See: https://support.f5.com/csp/article/K16211
 func (b *BigIP) AddGTMAPoolMember(fullPathToAPool string, config *GTMAPoolMember) error {
-	return b.post(config, uriGtm, uriPool, string(ARecord))
+	return b.post(config, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember)
 }
 
 // CreateGTMAPoolMember adds a Pool/A Member by using Paths, helpfull if Virtual Server Discovery is turned on
 func (b *BigIP) CreateGTMAPoolMember(fullPathToAPool string, paths *GTMAPoolMemberPath) error {
 	config := &GTMAPoolMember{}
 	config.Name = fmt.Sprintf("%s:%s", paths.ServerFullPath, paths.VirtualServerFullPath)
-	return b.post(config, uriGtm, uriPool, string(ARecord))
+	return b.post(config, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember)
 }
 
 // DeleteGTMAPoolMember adds a Pool/A Member by full Path to the BIG-IP system.
