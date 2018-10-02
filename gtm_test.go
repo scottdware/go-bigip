@@ -415,4 +415,6 @@ func (s *GTMTestSuite) TestGetGTMAPoolMembers() {
 
 // TODO: Write Test for GetGTMAPoolMember
 
-// TOTO: Write Test for CreateGTMAPoolMember
+// TODO: Write Test for CreateGTMAPoolMember
+
+// TODO: Write Test for DeleteGTMAPoolMember

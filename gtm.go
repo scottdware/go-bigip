@@ -270,6 +270,12 @@ func (b *BigIP) CreateGTMAPoolMember(fullPathToAPool, serverFullPath, poolMember
 	return b.post(config, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember)
 }
 
+// DeleteGTMAPoolMember remvoes a Pool/A Member
+func (b *BigIP) DeleteGTMAPoolMember(fullPathToAPool, serverFullPath, poolMemberFullPath string) error {
+	fullPathToPoolMember := buildPoolMemberFullPath(serverFullPath, poolMemberFullPath)
+	return b.delete(uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember, fullPathToPoolMember)
+}
+
 /*
 
 These are here for later use -- so no one has to do this painful work!!!
