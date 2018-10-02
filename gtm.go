@@ -231,6 +231,10 @@ type GTMAPoolMember struct {
 	Ratio                     int    `json:"ratio,omitempty"`
 }
 
+func buildPoolMemberFullPath(serverFullPath, poolMemberFullPath string) string {
+	return fmt.Sprintf("%s:%s", serverFullPath, poolMemberFullPath)
+}
+
 // GetGTMAPoolMembers returns a list of all Pool/A Members records
 func (b *BigIP) GetGTMAPoolMembers(fullPathToAPool string) (*GTMAPoolMembers, error) {
 	var m GTMAPoolMembers
@@ -243,8 +247,10 @@ func (b *BigIP) GetGTMAPoolMembers(fullPathToAPool string) (*GTMAPoolMembers, er
 }
 
 // GetGTMAPoolMember get's a Pool/A Member by name
-func (b *BigIP) GetGTMAPoolMember(fullPathToAPool string, fullPathToPoolMember string) (*GTMAPool, error) {
+func (b *BigIP) GetGTMAPoolMember(fullPathToAPool, serverFullPath, poolMemberFullPath string) (*GTMAPool, error) {
 	var w GTMAPool
+
+	fullPathToPoolMember := buildPoolMemberFullPath(serverFullPath, poolMemberFullPath)
 
 	err, ok := b.getForEntity(&w, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember, fullPathToPoolMember)
 	if err != nil {
@@ -257,29 +263,11 @@ func (b *BigIP) GetGTMAPoolMember(fullPathToAPool string, fullPathToPoolMember s
 	return &w, nil
 }
 
-// AddGTMAPoolMember adds a Pool/A Member by config to the BIG-IP system.
-// NOTE: For whatever reason in the GTM, you cannot specify the multi-part config ( Name, Partition, SubPath )
-//       You have to specify the fullPath as the name.  e.g. Name: '/Common/someltm:/Common/virtualservername'
-// See: https://support.f5.com/csp/article/K16211
-func (b *BigIP) AddGTMAPoolMember(fullPathToAPool string, config *GTMAPoolMember) error {
-	return b.post(config, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember)
-}
-
 // CreateGTMAPoolMember adds a Pool/A Member by using Paths, helpfull if Virtual Server Discovery is turned on
-func (b *BigIP) CreateGTMAPoolMember(fullPathToAPool, serverFullPath, virtualServerFullPath string) error {
+func (b *BigIP) CreateGTMAPoolMember(fullPathToAPool, serverFullPath, poolMemberFullPath string) error {
 	config := &GTMAPoolMember{}
-	config.Name = fmt.Sprintf("%s:%s", serverFullPath, virtualServerFullPath)
+	config.Name = buildPoolMemberFullPath(serverFullPath, poolMemberFullPath)
 	return b.post(config, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember)
-}
-
-// DeleteGTMAPoolMember adds a Pool/A Member by full Path to the BIG-IP system.
-func (b *BigIP) DeleteGTMAPoolMember(fullPathToAPool string, fullPathToPoolMember string) error {
-	return b.delete(uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember, fullPathToPoolMember)
-}
-
-// ModifyGTMAPoolMember adds a Pool/A Member by config to the BIG-IP system.
-func (b *BigIP) ModifyGTMAPoolMember(fullPathToAPool string, fullPathToPoolMember string, config *GTMAPoolMember) error {
-	return b.put(config, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember, fullPathToPoolMember)
 }
 
 /*

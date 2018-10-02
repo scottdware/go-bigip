@@ -416,38 +416,3 @@ func (s *GTMTestSuite) TestGetGTMAPoolMembers() {
 // TODO: Write Test for GetGTMAPoolMember
 
 // TOTO: Write Test for CreateGTMAPoolMember
-
-func (s *GTMTestSuite) TestAddGTMAPoolMember() {
-	fullPathAPool := "/Common/baseapp.domain.com_pool"
-	//fullPathAPoolAPI := "~Common~baseapp.domain.com_pool"
-
-	config := &GTMAPoolMember{
-		Name: "/Common/someltm:/Common/baseapp_80_vs",
-	}
-
-	s.Client.AddGTMAPoolMember(fullPathAPool, config)
-
-	// so we don't have to pass  s.T() as first argument every time in Assert
-	assert := assert.New(s.T())
-	// Test we posted
-	assert.Equal("POST", s.LastRequest.Method)
-	// See that we actually posted to our endpoint
-	assert.Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriGtm, uriPool, uriARecord), s.LastRequest.URL.Path)
-	// See if we get back the object we expect
-	assert.Equal(`{"name":"/Common/someltm:/Common/baseapp_80_vs"}`, s.LastRequestBody)
-
-}
-
-func (s *GTMTestSuite) TestDeleteGTMAPoolMember() {
-	fullPathAPool := "/Common/baseapp.domain.com_pool"
-	fullPathAPoolAPI := "~Common~baseapp.domain.com_pool"
-	fullPathAPoolMember := "/Common/baseapp_80_vs"
-	fullPathAPoolMemberAPI := "~Common~baseapp_80_vs"
-
-	s.Client.DeleteGTMAPoolMember(fullPathAPool, fullPathAPoolMember)
-
-	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
-	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s/%s/%s", uriGtm, uriPool, uriARecord, fullPathAPoolAPI, uriPoolMembers, fullPathAPoolMemberAPI), s.LastRequest.URL.Path)
-}
-
-// TODO: Write Test for ModifyGTMAPoolMember
