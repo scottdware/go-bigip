@@ -231,11 +231,6 @@ type GTMAPoolMember struct {
 	Ratio                     int    `json:"ratio,omitempty"`
 }
 
-type GTMAPoolMemberPath struct {
-	ServerFullPath        string `json:"serverFullPath,omitempty"`
-	VirtualServerFullPath string `json:"virtualServerFullPath,omitempty"`
-}
-
 // GetGTMAPoolMembers returns a list of all Pool/A Members records
 func (b *BigIP) GetGTMAPoolMembers(fullPathToAPool string) (*GTMAPoolMembers, error) {
 	var m GTMAPoolMembers
@@ -271,9 +266,9 @@ func (b *BigIP) AddGTMAPoolMember(fullPathToAPool string, config *GTMAPoolMember
 }
 
 // CreateGTMAPoolMember adds a Pool/A Member by using Paths, helpfull if Virtual Server Discovery is turned on
-func (b *BigIP) CreateGTMAPoolMember(fullPathToAPool string, paths *GTMAPoolMemberPath) error {
+func (b *BigIP) CreateGTMAPoolMember(fullPathToAPool, serverFullPath, virtualServerFullPath string) error {
 	config := &GTMAPoolMember{}
-	config.Name = fmt.Sprintf("%s:%s", paths.ServerFullPath, paths.VirtualServerFullPath)
+	config.Name = fmt.Sprintf("%s:%s", serverFullPath, virtualServerFullPath)
 	return b.post(config, uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember)
 }
 
