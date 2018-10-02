@@ -247,8 +247,8 @@ func (b *BigIP) GetGTMAPoolMembers(fullPathToAPool string) (*GTMAPoolMembers, er
 }
 
 // GetGTMAPoolMember get's a Pool/A Member by name
-func (b *BigIP) GetGTMAPoolMember(fullPathToAPool, serverFullPath, poolMemberFullPath string) (*GTMAPool, error) {
-	var w GTMAPool
+func (b *BigIP) GetGTMAPoolMember(fullPathToAPool, serverFullPath, poolMemberFullPath string) (*GTMAPoolMember, error) {
+	var w GTMAPoolMember
 
 	fullPathToPoolMember := buildPoolMemberFullPath(serverFullPath, poolMemberFullPath)
 
