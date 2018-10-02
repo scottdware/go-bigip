@@ -44,7 +44,7 @@ type GTMWideIP struct {
 
 	// Not in the spec, but returned by the API
 	// Setting this field atomically updates all members.
-	Pools []GTMWideIPPool `json:"pools,omitempty"`
+	Pools *[]GTMWideIPPool `json:"pools,omitempty"`
 }
 
 // GTMWideIPPool Pool Structure
