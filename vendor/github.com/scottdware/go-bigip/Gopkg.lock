@@ -18,14 +18,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:e65d90d60e7353c956a9bd4ffe47c066a12221c3421551d5aa1e1b82cf9ec53b"
-  name = "github.com/scottdware/go-bigip"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "cc89474e0b6606162f3d95798628f99d3825c9c1"
-
-[[projects]]
   digest = "1:5110e3d4f130772fd39e6ce8208ad1955b242ccfcc8ad9d158857250579c82f4"
   name = "github.com/stretchr/testify"
   packages = [
@@ -41,7 +33,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/scottdware/go-bigip",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",
     "github.com/stretchr/testify/suite",
