@@ -22,6 +22,7 @@ Here's a [blog post][blog] that goes a little more in-depth.
 ### Contributors
 A very special thanks to the following who have helped contribute to this software, especially:
 
+* [Kenneth Maglio](https://github.com/kenmaglio)
 * [Adam Burnett](https://github.com/aburnett)
 * [Michael D. Ivey](https://github.com/ivey)
 
