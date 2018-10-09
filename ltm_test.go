@@ -636,13 +636,14 @@ func (s *LTMTestSuite) TestModifyPool() {
 		LoadBalancingMode: "round-robin",
 		AllowSNAT:         "yes",
 		AllowNAT:          "yes",
+		SlowRampTime:      s.Client.IntToPointer(0),
 	}
 
 	s.Client.ModifyPool("/Common/test-pool", config)
 
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
-	assert.JSONEq(s.T(), `{"name":"test-pool","partition":"Common","allowNat":"yes","allowSnat":"yes","loadBalancingMode":"round-robin","monitor":"/Common/http"}`, s.LastRequestBody)
+	assert.JSONEq(s.T(), `{"name":"test-pool","partition":"Common","allowNat":"yes","allowSnat":"yes","loadBalancingMode":"round-robin","monitor":"/Common/http","slowRampTime":0}`, s.LastRequestBody)
 }
 
 func (s *LTMTestSuite) TestModifyPoolWithMembers() {

@@ -191,6 +191,13 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	return data, nil
 }
 
+// modifies int to *int, needed if we want use 0 values in int and encode to json
+func (b *BigIP) IntToPointer(integer int) *int {
+	var i int
+	i = integer
+	return &i
+}
+
 func (b *BigIP) iControlPath(parts []string) string {
 	var buffer bytes.Buffer
 	var lastPath int
