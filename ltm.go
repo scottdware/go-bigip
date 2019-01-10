@@ -539,6 +539,14 @@ type VirtualServer struct {
 	Rules            []string  `json:"rules,omitempty"`
 	Profiles         []Profile `json:"profiles,omitempty"`
 	Policies         []string  `json:"policies,omitempty"`
+	Metadata         []Metadata `json:"metadata,omitempty"`
+}
+
+// Metadata are key/value pairs of arbitrary metadata
+type Metadata struct {
+	Name string `json:"name"`
+	Persist bool `json:"persist,string"`
+	Value string `json:"value"`
 }
 
 // VirtualAddresses contains a list of all virtual addresses on the BIG-IP system.

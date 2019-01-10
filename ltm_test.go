@@ -543,6 +543,205 @@ func (s *LTMTestSuite) TestGetPool() {
 	assert.Equal(s.T(), "/Common/http ", p.Monitor)
 }
 
+func (s *LTMTestSuite) TestVirtuals() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+  "kind": "tm:ltm:virtual:virtualcollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/ltm/virtual?ver=12.1.3.7",
+  "items": [
+    {
+      "kind": "tm:ltm:virtual:virtualstate",
+      "name": "test-virtual",
+      "partition": "Common",
+      "fullPath": "/Common/test-virtual",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~test-virtual?ver=12.1.3.7",
+      "addressStatus": "yes",
+      "autoLasthop": "enabled",
+      "cmpEnabled": "yes",
+      "connectionLimit": 0,
+      "destination": "/Common/10.1.1.1:8080",
+      "enabled": true,
+      "gtmScore": 0,
+      "ipProtocol": "tcp",
+      "mask": "255.255.255.255",
+      "mirror": "disabled",
+      "mobileAppTunnel": "disabled",
+      "nat64": "disabled",
+      "pool": "/Common/test-pool",
+      "poolReference": {
+        "link": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool?ver=12.1.3.7"
+      },
+      "rateLimit": "disabled",
+      "rateLimitDstMask": 0,
+      "rateLimitMode": "object",
+      "rateLimitSrcMask": 0,
+      "securityNatPolicy": {
+        "useDevicePolicy": "no",
+        "useRouteDomainPolicy": "no"
+      },
+      "serviceDownImmediateAction": "none",
+      "source": "0.0.0.0/0",
+      "sourceAddressTranslation": {
+        "pool": "/Common/test-snat-pool",
+        "poolReference": {
+          "link": "https://localhost/mgmt/tm/ltm/snatpool/~Common~test-snat-pool?ver=12.1.3.7"
+        },
+        "type": "snat"
+      },
+      "sourcePort": "preserve",
+      "synCookieStatus": "not-activated",
+      "translateAddress": "enabled",
+      "translatePort": "enabled",
+      "vlansDisabled": true,
+      "vsIndex": 1442,
+      "rules": [
+        "/Common/test-irule1",
+        "/Common/test-irule2"
+      ],
+      "rulesReference": [
+        {
+          "link": "https://localhost/mgmt/tm/ltm/rule/~Common~test-irule1?ver=12.1.3.7"
+        },
+        {
+          "link": "https://localhost/mgmt/tm/ltm/rule/~Common~test-irule2?ver=12.1.3.7"
+        }
+      ],
+      "metadata": [
+        {
+          "name": "test-virtual-meta",
+          "persist": "true",
+          "value": "meta"
+        },
+        {
+          "name": "test-virtual-meta2",
+          "persist": "true",
+          "value": "meta2"
+        }
+      ],
+      "persist": [
+        {
+          "name": "source_addr",
+          "partition": "Common",
+          "tmDefault": "yes",
+          "nameReference": {
+            "link": "https://localhost/mgmt/tm/ltm/persistence/source-addr/~Common~source_addr?ver=12.1.3.7"
+          }
+        }
+      ],
+      "policiesReference": {
+        "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~test-virtual/policies?ver=12.1.3.7",
+        "isSubcollection": true
+      },
+      "profilesReference": {
+        "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~test-virtual/profiles?ver=12.1.3.7",
+        "isSubcollection": true
+      }
+    },
+    {
+      "kind": "tm:ltm:virtual:virtualstate",
+      "name": "test-virtual",
+      "partition": "Common",
+      "fullPath": "/Common/test-virtual2",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/ltm/virtual2/~Common~test-virtual?ver=12.1.3.7",
+      "addressStatus": "yes",
+      "autoLasthop": "enabled",
+      "cmpEnabled": "yes",
+      "connectionLimit": 0,
+      "destination": "/Common/10.1.1.2:8080",
+      "enabled": true,
+      "gtmScore": 0,
+      "ipProtocol": "tcp",
+      "mask": "255.255.255.255",
+      "mirror": "disabled",
+      "mobileAppTunnel": "disabled",
+      "nat64": "disabled",
+      "pool": "/Common/test-pool2",
+      "poolReference": {
+        "link": "https://localhost/mgmt/tm/ltm/pool/~Common~test-pool2?ver=12.1.3.7"
+      },
+      "rateLimit": "disabled",
+      "rateLimitDstMask": 0,
+      "rateLimitMode": "object",
+      "rateLimitSrcMask": 0,
+      "securityNatPolicy": {
+        "useDevicePolicy": "no",
+        "useRouteDomainPolicy": "no"
+      },
+      "serviceDownImmediateAction": "none",
+      "source": "0.0.0.0/0",
+      "sourceAddressTranslation": {
+        "pool": "/Common/test-snat-pool",
+        "poolReference": {
+          "link": "https://localhost/mgmt/tm/ltm/snatpool/~Common~test-snat-pool?ver=12.1.3.7"
+        },
+        "type": "snat"
+      },
+      "sourcePort": "preserve",
+      "synCookieStatus": "not-activated",
+      "translateAddress": "enabled",
+      "translatePort": "enabled",
+      "vlansDisabled": true,
+      "vsIndex": 1442,
+      "rules": [
+        "/Common/test-irule1",
+        "/Common/test-irule2"
+      ],
+      "rulesReference": [
+        {
+          "link": "https://localhost/mgmt/tm/ltm/rule/~Common~test-irule1?ver=12.1.3.7"
+        },
+        {
+          "link": "https://localhost/mgmt/tm/ltm/rule/~Common~test-irule2?ver=12.1.3.7"
+        }
+      ],
+      "metadata": [
+        {
+          "name": "test-virtual2-meta",
+          "persist": "true",
+          "value": "meta"
+        },
+        {
+          "name": "test-virtual2-meta2",
+          "persist": "true",
+          "value": "meta2"
+        }
+      ],
+      "persist": [
+        {
+          "name": "source_addr",
+          "partition": "Common",
+          "tmDefault": "yes",
+          "nameReference": {
+            "link": "https://localhost/mgmt/tm/ltm/persistence/source-addr/~Common~source_addr?ver=12.1.3.7"
+          }
+        }
+      ],
+      "policiesReference": {
+        "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~test-virtual2/policies?ver=12.1.3.7",
+        "isSubcollection": true
+      },
+      "profilesReference": {
+        "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~test-virtual2/profiles?ver=12.1.3.7",
+        "isSubcollection": true
+      }
+    }
+  ]
+}`))
+	}
+
+	p, err := s.Client.VirtualServers()
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriVirtual), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "/Common/test-virtual", p.VirtualServers[0].FullPath)
+	assert.Equal(s.T(), "/Common/test-virtual2", p.VirtualServers[1].FullPath)
+
+	assert.Equal(s.T(), "test-virtual-meta", p.VirtualServers[0].Metadata[0].Name)
+	assert.Equal(s.T(), "meta2", p.VirtualServers[1].Metadata[1].Value)
+}
+
 func (s *LTMTestSuite) TestPools() {
 	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{
