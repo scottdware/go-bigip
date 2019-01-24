@@ -162,6 +162,35 @@ type RouteDomain struct {
 	Vlans      []string `json:"vlans,omitempty"`
 }
 
+// BGPInstances contains a list of every BGP instance on the BIG-IP system.
+type BGPInstances struct {
+	BGPInstances []BGPInstance `json:"items"`
+}
+
+// BGPInstance contains information about each individual BGP instance. You can use all
+// of these fields when modifying a BGP instance.
+type BGPInstance struct {
+	Name       string `json:"name,omitempty"`
+	Partition  string `json:"partition,omitempty"`
+	FullPath   string `json:"fullPath,omitempty"`
+	Generation int    `json:"generation,omitempty"`
+	LocalAS    int    `json:"localAs,omitempty"`
+}
+
+// BGPNeighbors contains a list of BGP neighbors of a BGP instance on the BIG-IP system.
+type BGPNeighbors struct {
+	BGPNeighbors []BGPNeighbor `json:"items"`
+}
+
+// BGPNeighbor contains information about each individual BGP neighbor. You can use all
+// of these fields when modifying a BGP neighbor.
+type BGPNeighbor struct {
+	Name       string `json:"name,omitempty"`
+	FullPath   string `json:"fullPath,omitempty"`
+	Generation int    `json:"generation,omitempty"`
+	RemoteAS   int    `json:"remoteAs,omitempty"`
+}
+
 const (
 	uriNet         = "net"
 	uriInterface   = "interface"
@@ -170,6 +199,9 @@ const (
 	uriVlan        = "vlan"
 	uriRoute       = "route"
 	uriRouteDomain = "route-domain"
+	uriRouting     = "routing"
+	uriBGP         = "bgp"
+	uriNeighbor    = "neighbor"
 )
 
 // Interfaces returns a list of interfaces.
@@ -407,4 +439,104 @@ func (b *BigIP) DeleteRouteDomain(name string) error {
 // can be modified are referenced in the RouteDomain struct.
 func (b *BigIP) ModifyRouteDomain(name string, config *RouteDomain) error {
 	return b.put(config, uriNet, uriRouteDomain, name)
+}
+
+// BGPInstances returns a list of BGP instances.
+func (b *BigIP) BGPInstances() (*BGPInstances, error) {
+	var bgpInstances BGPInstances
+	err, _ := b.getForEntity(&bgpInstances, uriNet, uriRouting, uriBGP)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &bgpInstances, nil
+}
+
+// CreateBGPInstance adds a new BGP instance to the BIG-IP system.
+func (b *BigIP) CreateBGPInstance(name string, localAS int) error {
+	config := &BGPInstance{
+		Name:    name,
+		LocalAS: localAS,
+	}
+
+	return b.post(config, uriNet, uriRouting, uriBGP)
+}
+
+// AddBGPInstance adds a new BGP instance to the BIG-IP system.
+func (b *BigIP) AddBGPInstance(config *BGPInstance) error {
+	return b.post(config, uriNet, uriRouting, uriBGP)
+}
+
+// GetBGPInstance gets a BGP instance.
+func (b *BigIP) GetBGPInstance(name string) (*BGPInstance, error) {
+	var bgpInstance BGPInstance
+	err, _ := b.getForEntity(&bgpInstance, uriNet, uriRouting, uriBGP, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &bgpInstance, nil
+}
+
+// DeleteBGPInstance removes a BGP instance.
+func (b *BigIP) DeleteBGPInstance(name string) error {
+	return b.delete(uriNet, uriRouting, uriBGP, name)
+}
+
+// ModifyBGPInstance allows you to change any attribute of a BGP instance. Fields that
+// can be modified are referenced in the BGPInstance struct.
+func (b *BigIP) ModifyBGPInstance(name string, config *BGPInstance) error {
+	return b.put(config, uriNet, uriRouting, uriBGP, name)
+}
+
+// BGPNeighbors returns a list of BGP neighbors of a BGP instance.
+func (b *BigIP) BGPNeighbors(instance string) (*BGPNeighbors, error) {
+	var bgpNeighbors BGPNeighbors
+	err, _ := b.getForEntity(&bgpNeighbors, uriNet, uriRouting, uriBGP, instance, uriNeighbor)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &bgpNeighbors, nil
+}
+
+// CreateBGPNeighbor adds a new BGP neigbhor to a BGP instance in the BIG-IP system.
+func (b *BigIP) CreateBGPNeighbor(instance, name string, remoteAS int) error {
+	config := &BGPNeighbor{
+		Name:     name,
+		RemoteAS: remoteAS,
+	}
+
+	return b.post(config, uriNet, uriRouting, uriBGP, instance, uriNeighbor)
+}
+
+// AddBGPNeighbor adds a new BGP neighbor to a BGP instance in the BIG-IP system.
+func (b *BigIP) AddBGPNeighbor(instance string, config *BGPNeighbor) error {
+	return b.post(config, uriNet, uriRouting, uriBGP, instance, uriNeighbor)
+}
+
+// GetBGPNeighbor gets a BGP neighbor of a BGP instance.
+func (b *BigIP) GetBGPNeighbor(instance, name string) (*BGPNeighbor, error) {
+	var bgpNeighbor BGPNeighbor
+	err, _ := b.getForEntity(&bgpNeighbor, uriNet, uriRouting, uriBGP, instance, uriNeighbor, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &bgpNeighbor, nil
+}
+
+// DeleteBGPNeighbor removes a BGP neighbor from a BGP instance.
+func (b *BigIP) DeleteBGPNeighbor(instance, name string) error {
+	return b.delete(uriNet, uriRouting, uriBGP, instance, uriNeighbor, name)
+}
+
+// ModifyBGPNeighbor allows you to change any attribute of a BGP neighbor of a BGP instance.
+// Fields that can be modified are referenced in the BGPNeighbor struct.
+func (b *BigIP) ModifyBGPNeighbor(instance, name string, config *BGPNeighbor) error {
+	return b.put(config, uriNet, uriRouting, uriBGP, instance, uriNeighbor, name)
 }
