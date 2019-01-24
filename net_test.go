@@ -446,6 +446,164 @@ func (s *NetTestSuite) TestModifyRouteDomain() {
 	assertRestCall(s, "PUT", "/mgmt/tm/net/route-domain/name", `{"name":"name", "id": 1, "strict" : "enabled"}`)
 }
 
+func (s *NetTestSuite) TestBGPInstances() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+  "kind": "tm:net:routing:bgp:bgpcollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/net/routing/bgp?ver=13.1.1.2",
+  "items": [
+    {
+      "kind": "tm:net:routing:bgp:bgpstate",
+      "name": "test",
+      "partition": "Common",
+      "fullPath": "/Common/test",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/net/routing/bgp/~Common~test?ver=13.1.1.2",
+      "localAs": 65001
+    }
+  ]
+}`))
+	}
+
+	bgpInstances, err := s.Client.BGPInstances()
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/routing/bgp", "")
+	assert.Equal(s.T(), 1, len(bgpInstances.BGPInstances))
+	assert.Equal(s.T(), "test", bgpInstances.BGPInstances[0].Name)
+	assert.Equal(s.T(), 65001, bgpInstances.BGPInstances[0].LocalAS)
+}
+
+func (s *NetTestSuite) TestCreateBGPInstance() {
+	err := s.Client.CreateBGPInstance("name", 65001)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/routing/bgp", `{"name":"name", "localAs":65001}`)
+}
+
+func (s *NetTestSuite) TestAddBGPInstance() {
+	err := s.Client.AddBGPInstance(&BGPInstance{
+		Name:    "test",
+		LocalAS: 65001,
+	})
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/routing/bgp", `{"name":"test", "localAs":65001}`)
+}
+
+func (s *NetTestSuite) TestGetBGPInstance() {
+	resp := `{
+      "name": "test",
+      "partition": "Common",
+      "fullPath": "/Common/test",
+      "localAs": 65001
+	}`
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(resp))
+	}
+
+	bgpInstance, err := s.Client.GetBGPInstance("/Common/test")
+
+	s.Require().NoError(err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/routing/bgp/~Common~test", "")
+	assert.Equal(s.T(), "test", bgpInstance.Name)
+	s.requireReserializesTo(resp, bgpInstance, "BGPInstance should reserialize to itself")
+}
+
+func (s *NetTestSuite) TestDeleteBGPInstance() {
+	err := s.Client.DeleteBGPInstance("/Common/test")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "DELETE", "/mgmt/tm/net/routing/bgp/~Common~test", "")
+}
+
+func (s *NetTestSuite) TestModifyBGPInstance() {
+	bgpInstance := &BGPInstance{Name: "test", LocalAS: 65001}
+
+	err := s.Client.ModifyBGPInstance("/Common/test", bgpInstance)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "PUT", "/mgmt/tm/net/routing/bgp/~Common~test", `{"name":"test", "localAs":65001}`)
+}
+
+func (s *NetTestSuite) TestBGPNeighbors() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+  "kind": "tm:net:routing:bgp:neighbor:neighborcollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/net/routing/bgp/~Common~test/neighbor?ver=13.1.1.2",
+  "items": [
+    {
+      "kind": "tm:net:routing:bgp:neighbor:neighborstate",
+      "name": "1.1.1.1",
+      "fullPath": "1.1.1.1",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/net/routing/bgp/~Common~test/neighbor/1.1.1.1?ver=13.1.1.2",
+      "remoteAs": 65001
+    }
+  ]
+}`))
+	}
+
+	bgpNeighbors, err := s.Client.BGPNeighbors("/Common/test")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/routing/bgp/~Common~test/neighbor", "")
+	assert.Equal(s.T(), 1, len(bgpNeighbors.BGPNeighbors))
+	assert.Equal(s.T(), "1.1.1.1", bgpNeighbors.BGPNeighbors[0].Name)
+	assert.Equal(s.T(), 65001, bgpNeighbors.BGPNeighbors[0].RemoteAS)
+}
+
+func (s *NetTestSuite) TestCreateBGPNeighbor() {
+	err := s.Client.CreateBGPNeighbor("/Common/test", "1.1.1.1", 65001)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/routing/bgp/~Common~test/neighbor", `{"name":"1.1.1.1", "remoteAs":65001}`)
+}
+
+func (s *NetTestSuite) TestAddBGPNeighbor() {
+	err := s.Client.AddBGPNeighbor("/Common/test", &BGPNeighbor{
+		Name:     "1.1.1.1",
+		RemoteAS: 65001,
+	})
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/routing/bgp/~Common~test/neighbor", `{"name":"1.1.1.1", "remoteAs":65001}`)
+}
+
+func (s *NetTestSuite) TestGetBGPNeighbor() {
+	resp := `{
+      "name": "1.1.1.1",
+      "fullPath": "1.1.1.1",
+      "remoteAs": 65001
+	}`
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(resp))
+	}
+
+	bgpNeighbor, err := s.Client.GetBGPNeighbor("/Common/test", "1.1.1.1")
+
+	s.Require().NoError(err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/routing/bgp/~Common~test/neighbor/1.1.1.1", "")
+	assert.Equal(s.T(), "1.1.1.1", bgpNeighbor.Name)
+	s.requireReserializesTo(resp, bgpNeighbor, "BGPNeighbor should reserialize to itself")
+}
+
+func (s *NetTestSuite) TestDeleteBGPNeighbor() {
+	err := s.Client.DeleteBGPNeighbor("/Common/test", "1.1.1.1")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "DELETE", "/mgmt/tm/net/routing/bgp/~Common~test/neighbor/1.1.1.1", "")
+}
+
+func (s *NetTestSuite) TestModifyBGPNeighbor() {
+	bgpNeighbor := &BGPNeighbor{Name: "1.1.1.1", RemoteAS: 65001}
+
+	err := s.Client.ModifyBGPNeighbor("/Common/test", "1.1.1.1", bgpNeighbor)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "PUT", "/mgmt/tm/net/routing/bgp/~Common~test/neighbor/1.1.1.1", `{"name":"1.1.1.1", "remoteAs":65001}`)
+}
+
 func assertRestCall(s *NetTestSuite, method, path, body string) {
 	assert.Equal(s.T(), method, s.LastRequest.Method)
 	assert.Equal(s.T(), path, s.LastRequest.URL.Path)
