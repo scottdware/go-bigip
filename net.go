@@ -445,7 +445,6 @@ func (b *BigIP) ModifyRouteDomain(name string, config *RouteDomain) error {
 func (b *BigIP) BGPInstances() (*BGPInstances, error) {
 	var bgpInstances BGPInstances
 	err, _ := b.getForEntity(&bgpInstances, uriNet, uriRouting, uriBGP)
-
 	if err != nil {
 		return nil, err
 	}
@@ -471,10 +470,12 @@ func (b *BigIP) AddBGPInstance(config *BGPInstance) error {
 // GetBGPInstance gets a BGP instance.
 func (b *BigIP) GetBGPInstance(name string) (*BGPInstance, error) {
 	var bgpInstance BGPInstance
-	err, _ := b.getForEntity(&bgpInstance, uriNet, uriRouting, uriBGP, name)
-
+	err, ok := b.getForEntity(&bgpInstance, uriNet, uriRouting, uriBGP, name)
 	if err != nil {
 		return nil, err
+	}
+	if !ok {
+		return nil, nil
 	}
 
 	return &bgpInstance, nil
@@ -495,7 +496,6 @@ func (b *BigIP) ModifyBGPInstance(name string, config *BGPInstance) error {
 func (b *BigIP) BGPNeighbors(instance string) (*BGPNeighbors, error) {
 	var bgpNeighbors BGPNeighbors
 	err, _ := b.getForEntity(&bgpNeighbors, uriNet, uriRouting, uriBGP, instance, uriNeighbor)
-
 	if err != nil {
 		return nil, err
 	}
@@ -521,10 +521,12 @@ func (b *BigIP) AddBGPNeighbor(instance string, config *BGPNeighbor) error {
 // GetBGPNeighbor gets a BGP neighbor of a BGP instance.
 func (b *BigIP) GetBGPNeighbor(instance, name string) (*BGPNeighbor, error) {
 	var bgpNeighbor BGPNeighbor
-	err, _ := b.getForEntity(&bgpNeighbor, uriNet, uriRouting, uriBGP, instance, uriNeighbor, name)
-
+	err, ok := b.getForEntity(&bgpNeighbor, uriNet, uriRouting, uriBGP, instance, uriNeighbor, name)
 	if err != nil {
 		return nil, err
+	}
+	if !ok {
+		return nil, nil
 	}
 
 	return &bgpNeighbor, nil
