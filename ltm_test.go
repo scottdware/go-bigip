@@ -1068,11 +1068,13 @@ func (s *LTMTestSuite) TestUpdatePoolMembers() {
 			Name:      "test-pool-member:80",
 			Partition: "Common",
 			FullPath:  "/Common/test-pool-member:80",
+			Monitor:   "/Common/icmp",
 		},
 		{
 			Name:      "test-pool-member2:80",
 			Partition: "Common",
 			FullPath:  "/Common/test-pool-member2:80",
+			Monitor:   "/Common/icmp",
 		},
 	}
 
