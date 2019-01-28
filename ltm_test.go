@@ -1061,6 +1061,29 @@ func (s *LTMTestSuite) TestModifyPoolMember() {
 	assert.Equal(s.T(), `{"monitor":"/Common/icmp"}`, s.LastRequestBody)
 }
 
+func (s *LTMTestSuite) TestUpdatePoolMembers() {
+	pool := "/Common/test-pool"
+	config := &[]PoolMember{
+		{
+			Name:      "test-pool-member:80",
+			Partition: "Common",
+			FullPath:  "/Common/test-pool-member:80",
+		},
+		{
+			Name:      "test-pool-member2:80",
+			Partition: "Common",
+			FullPath:  "/Common/test-pool-member2:80",
+		},
+	}
+
+	s.Client.UpdatePoolMembers(pool, config)
+
+	fmt.Println(s.LastRequest.URL)
+	assert.Equal(s.T(), "PATCH", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriPool, "~Common~test-pool"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), `{"members":[{"name":"test-pool-member:80","partition":"Common","fullPath":"/Common/test-pool-member:80","monitor":"/Common/icmp"},{"name":"test-pool-member2:80","partition":"Common","fullPath":"/Common/test-pool-member2:80","monitor":"/Common/icmp"}]}`, s.LastRequestBody)
+}
+
 func (s *LTMTestSuite) TestCreateMonitor() {
 	config := &Monitor{
 		Name:          "test-web-monitor",

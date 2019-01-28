@@ -1677,7 +1677,7 @@ func (b *BigIP) UpdatePoolMembers(pool string, pm *[]PoolMember) error {
 	config := &poolMembers{
 		Members: *pm,
 	}
-	return b.put(config, uriLtm, uriPool, pool)
+	return b.patch(config, uriLtm, uriPool, pool)
 }
 
 // RemovePoolMember removes a pool member from the specified pool.
