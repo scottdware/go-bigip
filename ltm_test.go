@@ -100,6 +100,14 @@ func (s *LTMTestSuite) TestModifyVirtualAddress() {
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
 }
 
+func (s *LTMTestSuite) TestPatchVirtualAddress() {
+	d := &VirtualAddress{}
+	s.Client.PatchVirtualAddress("address1", d)
+
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriLtm, uriVirtualAddress, "address1"), s.LastRequest.URL.Path)
+	assert.Equal(s.T(), "PATCH", s.LastRequest.Method)
+}
+
 func (s *LTMTestSuite) TestGetPolicies() {
 	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{
@@ -456,6 +464,30 @@ func (s *LTMTestSuite) TestModifyVirtualServer() {
 	s.Client.ModifyVirtualServer("test", vs)
 
 	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/test", uriLtm, uriVirtual), s.LastRequest.URL.Path)
+	assert.JSONEq(s.T(), `
+	{"name":"test",
+	"sourceAddressTranslation":{},
+	"profiles":[
+		{"name":"/Common/tcp","context":"clientside"},
+		{"name":"/Common/tcp","context":"serverside"}
+	]
+	}`, s.LastRequestBody)
+
+}
+
+func (s *LTMTestSuite) TestPatchVirtualServer() {
+	vs := &VirtualServer{
+		Name: "test",
+		Profiles: []Profile{
+			Profile{Name: "/Common/tcp", Context: CONTEXT_CLIENT},
+			Profile{Name: "/Common/tcp", Context: CONTEXT_SERVER}},
+		//TODO: test more
+	}
+
+	s.Client.PatchVirtualServer("test", vs)
+
+	assert.Equal(s.T(), "PATCH", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/test", uriLtm, uriVirtual), s.LastRequest.URL.Path)
 	assert.JSONEq(s.T(), `
 	{"name":"test",

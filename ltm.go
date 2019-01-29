@@ -1824,9 +1824,15 @@ func (b *BigIP) DeleteVirtualServer(name string) error {
 }
 
 // ModifyVirtualServer allows you to change any attribute of a virtual server. Fields that
-// can be modified are referenced in the VirtualServer struct.
+// can be modified are referenced in the VirtualServer struct. Set all the attributes.
 func (b *BigIP) ModifyVirtualServer(name string, config *VirtualServer) error {
 	return b.put(config, uriLtm, uriVirtual, name)
+}
+
+// PatchVirtualServer allows you to change any attribute of a virtual server. Fields that
+// can be modified are referenced in the VirtualServer struct. Sets only the attributes specified.
+func (b *BigIP) PatchVirtualServer(name string, config *VirtualServer) error {
+	return b.patch(config, uriLtm, uriVirtual, name)
 }
 
 // VirtualServerProfiles gets the profiles currently associated with a virtual server.
@@ -1891,9 +1897,15 @@ func (b *BigIP) VirtualAddressStatus(vaddr, state string) error {
 }
 
 // ModifyVirtualAddress allows you to change any attribute of a virtual address. Fields that
-// can be modified are referenced in the VirtualAddress struct.
+// can be modified are referenced in the VirtualAddress struct. Sets all the attributes.
 func (b *BigIP) ModifyVirtualAddress(vaddr string, config *VirtualAddress) error {
 	return b.put(config, uriLtm, uriVirtualAddress, vaddr)
+}
+
+// PatchVirtualAddress allows you to change any attribute of a virtual address. Fields that
+// can be modified are referenced in the VirtualAddress struct. Sets only the attributes specified.
+func (b *BigIP) PatchVirtualAddress(vaddr string, config *VirtualAddress) error {
+	return b.patch(config, uriLtm, uriVirtualAddress, vaddr)
 }
 
 func (b *BigIP) DeleteVirtualAddress(vaddr string) error {
