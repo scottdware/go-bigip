@@ -425,11 +425,3 @@ func (s *SharedTestSuite) TestUploadBytes() {
 	s.Require().Equal(fmt.Sprintf("0-%d/%d", size-1, size), s.LastRequest.Header.Get("Content-Range"), "Wrong Content-Range header")
 	s.Require().Equal(fmt.Sprintf("/mgmt/shared/file-transfer/uploads/%s", filename), s.LastRequest.URL.Path, "Wrong uri to upload file")
 }
-
-func (s *SharedTestSuite) TestUploadIso() {
-	tmp, err := ioutil.TempFile("", "test*.iso")
-	defer os.Remove(tmp.Name())
-	_, err = s.Client.UploadFile(tmp)
-	s.Require().Error(err)
-	s.Require().Equal("File must not have .iso extension", err.Error(), "Should not allow .iso files")
-}
