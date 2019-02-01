@@ -11,6 +11,9 @@ const (
 	uriHardware       = "hardware"
 	uriGlobalSettings = "global-settings"
 	uriManagementIp   = "management-ip"
+	uriCrypto         = "crypto"
+	uriCert           = "cert"
+	uriKey            = "key"
 	//uriPlatform = "?$select=platform"
 )
 
@@ -211,4 +214,143 @@ func (b *BigIP) ModifyFolder(name string, config *Folder) error {
 // configuration.
 func (b *BigIP) PatchFolder(name string, config *Folder) error {
 	return b.patch(config, uriSys, uriFolder, name)
+}
+
+// Certificates represents a list of installed SSL certificates.
+type Certificates struct {
+	Certificates []Certificate `json:"items,omitempty"`
+}
+
+// Certificate represents an SSL Certificate.
+type Certificate struct {
+	APIRawValues *struct {
+		CertificateKeySize string `json:"certificateKeySize,omitempty"`
+		Expiration         string `json:"expiration,omitempty"`
+		PublicKeyType      string `json:"publicKeyType,omitempty"`
+	} `json:"apiRawValues,omitempty"`
+	AppService             string `json:"appService,omitempty"`
+	CertValidationOptions  string `json:"certValidationOptions,omitempty"`
+	City                   string `json:"city,omitempty"`
+	CommonName             string `json:"commonName,omitempty"`
+	Command                string `json:"command,omitempty"`
+	Consumer               string `json:"consumer,omitempty"`
+	Country                string `json:"country,omitempty"`
+	EmailAddress           string `json:"emailAddress,omitempty"`
+	FromLocalFile          string `json:"from-local-file,omitempty"`
+	FromURL                string `json:"from-url,omitempty"`
+	FullPath               string `json:"fullPath,omitempty"`
+	Generation             int    `json:"generation,omitempty"`
+	IssuerCert             string `json:"issuerCert,omitempty"`
+	Key                    string `json:"key,omitempty"`
+	Lifetime               string `json:"lifetime,omitempty"`
+	Name                   string `json:"name,omitempty"`
+	Organization           string `json:"organization,omitempty"`
+	Ou                     string `json:"ou,omitempty"`
+	Partition              string `json:"partition,omitempty"`
+	State                  string `json:"state,omitempty"`
+	SubjectAlternativeName string `json:"subjectAlternativeName,omitempty"`
+}
+
+// Certificates returns a list of certificates.
+func (b *BigIP) Certificates() (*Certificates, error) {
+	var certs Certificates
+	err, _ := b.getForEntity(&certs, uriSys, uriCrypto, uriCert)
+	if err != nil {
+		return nil, err
+	}
+
+	return &certs, nil
+}
+
+// AddCertificate installs a certificate.
+func (b *BigIP) AddCertificate(cert *Certificate) error {
+	return b.post(cert, uriSys, uriCrypto, uriCert)
+}
+
+// GetCertificate retrieves a Certificate by name. Returns nil if the certificate does not exist
+func (b *BigIP) GetCertificate(name string) (*Certificate, error) {
+	var cert Certificate
+	err, ok := b.getForEntity(&cert, uriSys, uriCrypto, uriCert, name)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &cert, nil
+}
+
+// DeleteCertificate removes a certificate.
+func (b *BigIP) DeleteCertificate(name string) error {
+	return b.delete(uriSys, uriCrypto, uriCert, name)
+}
+
+// Keys represents a list of installed keys.
+type Keys struct {
+	Keys []Key `json:"items,omitempty"`
+}
+
+// Key represents a private key associated with a certificate.
+type Key struct {
+	AdminEmailAddress      string `json:"adminEmailAddress,omitempty"`
+	AppService             string `json:"appService,omitempty"`
+	ChallengePassword      string `json:"challengePassword,omitempty"`
+	City                   string `json:"city,omitempty"`
+	Command                string `json:"command,omitempty"`
+	CommonName             string `json:"commonName,omitempty"`
+	Consumer               string `json:"consumer,omitempty"`
+	Country                string `json:"country,omitempty"`
+	CurveName              string `json:"curveName,omitempty"`
+	EmailAddress           string `json:"emailAddress,omitempty"`
+	FromLocalFile          string `json:"from-local-file,omitempty"`
+	FromURL                string `json:"from-url,omitempty"`
+	FullPath               string `json:"fullPath,omitempty"`
+	Generation             int    `json:"generation,omitempty"`
+	KeySize                string `json:"keySize,omitempty"`
+	KeyType                string `json:"keyType,omitempty"`
+	Lifetime               string `json:"lifetime,omitempty"`
+	Name                   string `json:"name,omitempty"`
+	Organization           string `json:"organization,omitempty"`
+	Ou                     string `json:"ou,omitempty"`
+	Partition              string `json:"partition,omitempty"`
+	Passphrase             string `json:"passphrase,omitempty"`
+	SecurityType           string `json:"securityType,omitempty"`
+	State                  string `json:"state,omitempty"`
+	SubjectAlternativeName string `json:"subjectAlternativeName,omitempty"`
+}
+
+// Keys returns a list of keys.
+func (b *BigIP) Keys() (*Keys, error) {
+	var keys Keys
+	err, _ := b.getForEntity(&keys, uriSys, uriCrypto, uriKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &keys, nil
+}
+
+// AddKey installs a key.
+func (b *BigIP) AddKey(config *Key) error {
+	return b.post(config, uriSys, uriCrypto, uriKey)
+}
+
+// GetKey retrieves a key by name. Returns nil if the key does not exist.
+func (b *BigIP) GetKey(name string) (*Key, error) {
+	var key Key
+	err, ok := b.getForEntity(&key, uriSys, uriCrypto, uriKey, name)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &key, nil
+}
+
+// DeleteKey removes a key.
+func (b *BigIP) DeleteKey(name string) error {
+	return b.delete(uriSys, uriCrypto, uriKey, name)
 }
