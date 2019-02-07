@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path"
 	"testing"
 	"time"
 
@@ -383,4 +385,43 @@ func (s *SharedTestSuite) TestActivateEula() {
 	s.Require().Equal(fmt.Sprintf("/mgmt/tm/%s/%s/%s", uriShared, uriLicensing, uriRegistration), s.LastRequest.URL.Path, "Wrong uri to install license")
 	s.Require().Equal("PUT", s.LastRequest.Method, "Wrong method to install license")
 	s.Require().JSONEq(`{"licenseText": "this is a new license\nline 2"}`, s.LastRequestBody)
+}
+
+func (s *SharedTestSuite) TestUploadFile() {
+	tmp, err := ioutil.TempFile("", "test")
+	defer os.Remove(tmp.Name())
+	content := []byte("test file content")
+	size := len(content)
+	tmp.Write(content)
+	tmp.Close()
+	f, _ := os.Open(tmp.Name())
+	filename := path.Base(tmp.Name())
+
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{}`))
+	}
+
+	upload, err := s.Client.UploadFile(f)
+	s.Require().Nil(err, "Error uploading file")
+	s.Require().NotNil(upload, "Upload response should not be nil")
+	s.Require().Equal("application/octet-stream", s.LastRequest.Header.Get("Content-Type"), "Wrong Content-Type header")
+	s.Require().Equal(fmt.Sprintf("0-%d/%d", size-1, size), s.LastRequest.Header.Get("Content-Range"), "Wrong Content-Range header")
+	s.Require().Equal(fmt.Sprintf("/mgmt/shared/file-transfer/uploads/%s", filename), s.LastRequest.URL.Path, "Wrong uri to upload file")
+}
+
+func (s *SharedTestSuite) TestUploadBytes() {
+	b := []byte("test byte content")
+	size := len(b)
+	filename := "test.txt"
+
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{}`))
+	}
+
+	upload, err := s.Client.UploadBytes(b, filename)
+	s.Require().Nil(err, "Error uploading file")
+	s.Require().NotNil(upload, "Upload response should not be nil")
+	s.Require().Equal("application/octet-stream", s.LastRequest.Header.Get("Content-Type"), "Wrong Content-Type header")
+	s.Require().Equal(fmt.Sprintf("0-%d/%d", size-1, size), s.LastRequest.Header.Get("Content-Range"), "Wrong Content-Range header")
+	s.Require().Equal(fmt.Sprintf("/mgmt/shared/file-transfer/uploads/%s", filename), s.LastRequest.URL.Path, "Wrong uri to upload file")
 }

@@ -2,6 +2,9 @@ package bigip
 
 import (
 	"errors"
+	"fmt"
+	"os"
+	"strings"
 )
 
 // Devices contains a list of every device on the BIG-IP system.
@@ -28,8 +31,10 @@ type ConfigSync struct {
 }
 
 const (
-	uriCm     = "cm"
-	uriDevice = "device"
+	uriCm                   = "cm"
+	uriDevice               = "device"
+	uriAutodeploy           = "autodeploy"
+	uriSoftwareImageUploads = "software-image-uploads"
 )
 
 // Devices returns a list of devices.
@@ -67,4 +72,17 @@ func (b *BigIP) ConfigSyncToGroup(name string) error {
 		UtilCmdArgs: args,
 	}
 	return b.post(config, uriCm)
+}
+
+// Upload a software image
+func (b *BigIP) UploadSoftwareImage(f *os.File) (*Upload, error) {
+	if !strings.HasSuffix(f.Name(), ".iso") {
+		err := fmt.Errorf("File must have .iso extension")
+		return nil, err
+	}
+	info, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	return b.Upload(f, info.Size(), uriCm, uriAutodeploy, uriSoftwareImageUploads, info.Name())
 }
