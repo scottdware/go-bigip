@@ -385,7 +385,10 @@ type dataGroupDTO struct {
 	FullPath   string            `json:"fullPath,omitempty"`
 	Generation int               `json:"generation,omitempty"`
 	Type       string            `json:"type,omitempty"`
-	Records    []DataGroupRecord `json:"records,omitempty"`
+
+	// Records contains a list of DataGroupRecord objects.
+	// `omitempty` tag is removed on purpose. See issue https://github.com/scottdware/go-bigip/issues/90
+	Records    []DataGroupRecord `json:"records"`
 }
 
 func (p *DataGroup) MarshalJSON() ([]byte, error) {
