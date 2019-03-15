@@ -11,9 +11,9 @@ const (
 	uriHardware       = "hardware"
 	uriGlobalSettings = "global-settings"
 	uriManagementIp   = "management-ip"
-	uriCrypto         = "crypto"
-	uriCert           = "cert"
-	uriKey            = "key"
+	uriFile           = "file"
+	uriSslCert        = "ssl-cert"
+	uriSslKey         = "ssl-key"
 	//uriPlatform = "?$select=platform"
 )
 
@@ -223,38 +223,44 @@ type Certificates struct {
 
 // Certificate represents an SSL Certificate.
 type Certificate struct {
-	APIRawValues *struct {
-		CertificateKeySize string `json:"certificateKeySize,omitempty"`
-		Expiration         string `json:"expiration,omitempty"`
-		PublicKeyType      string `json:"publicKeyType,omitempty"`
-	} `json:"apiRawValues,omitempty"`
-	AppService             string `json:"appService,omitempty"`
-	CertValidationOptions  string `json:"certValidationOptions,omitempty"`
-	City                   string `json:"city,omitempty"`
-	CommonName             string `json:"commonName,omitempty"`
-	Command                string `json:"command,omitempty"`
-	Consumer               string `json:"consumer,omitempty"`
-	Country                string `json:"country,omitempty"`
-	EmailAddress           string `json:"emailAddress,omitempty"`
-	FromLocalFile          string `json:"from-local-file,omitempty"`
-	FromURL                string `json:"from-url,omitempty"`
-	FullPath               string `json:"fullPath,omitempty"`
-	Generation             int    `json:"generation,omitempty"`
-	IssuerCert             string `json:"issuerCert,omitempty"`
-	Key                    string `json:"key,omitempty"`
-	Lifetime               string `json:"lifetime,omitempty"`
-	Name                   string `json:"name,omitempty"`
-	Organization           string `json:"organization,omitempty"`
-	Ou                     string `json:"ou,omitempty"`
-	Partition              string `json:"partition,omitempty"`
-	State                  string `json:"state,omitempty"`
-	SubjectAlternativeName string `json:"subjectAlternativeName,omitempty"`
+	AppService              string `json:"appService,omitempty"`
+	CachePath               string `json:"cachePath,omitempty"`
+	CertificateKeyCurveName string `json:"certificateKeyCurveName,omitempty"`
+	CertificateKeySize      int    `json:"certificateKeySize,omitempty"`
+	CertValidationOptions   string `json:"certValidationOptions,omitempty"`
+	Checksum                string `json:"checksum,omitempty"`
+	CreatedBy               string `json:"createdBy,omitempty"`
+	CreateTime              string `json:"createTime,omitempty"`
+	Email                   string `json:"email,omitempty"`
+	ExpirationDate          int    `json:"expirationDate,omitempty"`
+	ExpirationString        string `json:"expirationString,omitempty"`
+	Fingerprint             string `json:"fingerprint,omitempty"`
+	FullPath                string `json:"fullPath,omitempty"`
+	Generation              int    `json:"generation,omitempty"`
+	IsBundle                string `json:"isBundle,omitempty"`
+	IsDynamic               string `json:"isDynamic,omitempty"`
+	Issuer                  string `json:"issuer,omitempty"`
+	IssuerCert              string `json:"issuerCert,omitempty"`
+	KeyType                 string `json:"keyType,omitempty"`
+	LastUpdateTime          string `json:"lastUpdateTime,omitempty"`
+	Mode                    int    `json:"mode,omitempty"`
+	Name                    string `json:"name,omitempty"`
+	Partition               string `json:"partition,omitempty"`
+	Revision                int    `json:"revision,omitempty"`
+	SerialNumber            string `json:"serialNumber,omitempty"`
+	Size                    uint64 `json:"size,omitempty"`
+	SourcePath              string `json:"sourcePath,omitempty"`
+	Subject                 string `json:"subject,omitempty"`
+	SubjectAlternativeName  string `json:"subjectAlternativeName,omitempty"`
+	SystemPath              string `json:"systemPath,omitempty"`
+	UpdatedBy               string `json:"updatedBy,omitempty"`
+	Version                 int    `json:"version,omitempty"`
 }
 
 // Certificates returns a list of certificates.
 func (b *BigIP) Certificates() (*Certificates, error) {
 	var certs Certificates
-	err, _ := b.getForEntity(&certs, uriSys, uriCrypto, uriCert)
+	err, _ := b.getForEntity(&certs, uriSys, uriFile, uriSslCert)
 	if err != nil {
 		return nil, err
 	}
@@ -264,13 +270,13 @@ func (b *BigIP) Certificates() (*Certificates, error) {
 
 // AddCertificate installs a certificate.
 func (b *BigIP) AddCertificate(cert *Certificate) error {
-	return b.post(cert, uriSys, uriCrypto, uriCert)
+	return b.post(cert, uriSys, uriFile, uriSslCert)
 }
 
 // GetCertificate retrieves a Certificate by name. Returns nil if the certificate does not exist
 func (b *BigIP) GetCertificate(name string) (*Certificate, error) {
 	var cert Certificate
-	err, ok := b.getForEntity(&cert, uriSys, uriCrypto, uriCert, name)
+	err, ok := b.getForEntity(&cert, uriSys, uriFile, uriSslCert, name)
 	if err != nil {
 		return nil, err
 	}
@@ -283,7 +289,7 @@ func (b *BigIP) GetCertificate(name string) (*Certificate, error) {
 
 // DeleteCertificate removes a certificate.
 func (b *BigIP) DeleteCertificate(name string) error {
-	return b.delete(uriSys, uriCrypto, uriCert, name)
+	return b.delete(uriSys, uriFile, uriSslCert, name)
 }
 
 // Keys represents a list of installed keys.
@@ -293,37 +299,34 @@ type Keys struct {
 
 // Key represents a private key associated with a certificate.
 type Key struct {
-	AdminEmailAddress      string `json:"adminEmailAddress,omitempty"`
-	AppService             string `json:"appService,omitempty"`
-	ChallengePassword      string `json:"challengePassword,omitempty"`
-	City                   string `json:"city,omitempty"`
-	Command                string `json:"command,omitempty"`
-	CommonName             string `json:"commonName,omitempty"`
-	Consumer               string `json:"consumer,omitempty"`
-	Country                string `json:"country,omitempty"`
-	CurveName              string `json:"curveName,omitempty"`
-	EmailAddress           string `json:"emailAddress,omitempty"`
-	FromLocalFile          string `json:"from-local-file,omitempty"`
-	FromURL                string `json:"from-url,omitempty"`
-	FullPath               string `json:"fullPath,omitempty"`
-	Generation             int    `json:"generation,omitempty"`
-	KeySize                string `json:"keySize,omitempty"`
-	KeyType                string `json:"keyType,omitempty"`
-	Lifetime               string `json:"lifetime,omitempty"`
-	Name                   string `json:"name,omitempty"`
-	Organization           string `json:"organization,omitempty"`
-	Ou                     string `json:"ou,omitempty"`
-	Partition              string `json:"partition,omitempty"`
-	Passphrase             string `json:"passphrase,omitempty"`
-	SecurityType           string `json:"securityType,omitempty"`
-	State                  string `json:"state,omitempty"`
-	SubjectAlternativeName string `json:"subjectAlternativeName,omitempty"`
+	AppService     string `json:"appService,omitempty"`
+	CachePath      string `json:"cachePath,omitempty"`
+	Checksum       string `json:"checksum,omitempty"`
+	CreatedBy      string `json:"createdBy,omitempty"`
+	CreateTime     string `json:"createTime,omitempty"`
+	CurveName      string `json:"curveName,omitempty"`
+	FullPath       string `json:"fullPath,omitempty"`
+	Generation     int    `json:"generation,omitempty"`
+	IsDynamic      string `json:"isDynamic,omitempty"`
+	KeySize        int    `json:"keySize,omitempty"`
+	KeyType        string `json:"keyType,omitempty"`
+	LastUpdateTime string `json:"lastUpdateTime,omitempty"`
+	Mode           int    `json:"mode,omitempty"`
+	Name           string `json:"name,omitempty"`
+	Partition      string `json:"partition,omitempty"`
+	Passphrase     string `json:"passphrase,omitempty"`
+	Revision       int    `json:"revision,omitempty"`
+	SecurityType   string `json:"securityType,omitempty"`
+	Size           uint64 `json:"size,omitempty"`
+	SourcePath     string `json:"sourcePath,omitempty"`
+	SystemPath     string `json:"systemPath,omitempty"`
+	UpdatedBy      string `json:"updatedBy,omitempty"`
 }
 
 // Keys returns a list of keys.
 func (b *BigIP) Keys() (*Keys, error) {
 	var keys Keys
-	err, _ := b.getForEntity(&keys, uriSys, uriCrypto, uriKey)
+	err, _ := b.getForEntity(&keys, uriSys, uriFile, uriSslKey)
 	if err != nil {
 		return nil, err
 	}
@@ -333,13 +336,13 @@ func (b *BigIP) Keys() (*Keys, error) {
 
 // AddKey installs a key.
 func (b *BigIP) AddKey(config *Key) error {
-	return b.post(config, uriSys, uriCrypto, uriKey)
+	return b.post(config, uriSys, uriFile, uriSslKey)
 }
 
 // GetKey retrieves a key by name. Returns nil if the key does not exist.
 func (b *BigIP) GetKey(name string) (*Key, error) {
 	var key Key
-	err, ok := b.getForEntity(&key, uriSys, uriCrypto, uriKey, name)
+	err, ok := b.getForEntity(&key, uriSys, uriFile, uriSslKey, name)
 	if err != nil {
 		return nil, err
 	}
@@ -352,5 +355,5 @@ func (b *BigIP) GetKey(name string) (*Key, error) {
 
 // DeleteKey removes a key.
 func (b *BigIP) DeleteKey(name string) error {
-	return b.delete(uriSys, uriCrypto, uriKey, name)
+	return b.delete(uriSys, uriFile, uriSslKey, name)
 }
