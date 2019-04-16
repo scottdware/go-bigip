@@ -380,3 +380,132 @@ func assertRestCall(s *NetTestSuite, method, path, body string) {
 		assert.JSONEq(s.T(), body, s.LastRequestBody)
 	}
 }
+
+func (s *NetTestSuite) TestTunnels() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+  "kind": "tm:net:tunnels:tunnel:tunnelcollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/net/tunnels/tunnel?ver=13.1.1.2",
+  "items": [
+    {
+      "kind": "tm:net:tunnels:tunnel:tunnelstate",
+      "name": "http-tunnel",
+      "partition": "Common",
+      "fullPath": "/Common/http-tunnel",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/net/tunnels/tunnel/~Common~http-tunnel?ver=13.1.1.2",
+      "autoLasthop": "default",
+      "description": "Tunnel for http-explicit profile",
+      "idleTimeout": 300,
+      "ifIndex": 912,
+      "key": 0,
+      "localAddress": "any6",
+      "mode": "bidirectional",
+      "mtu": 0,
+      "profile": "/Common/tcp-forward",
+      "profileReference": {
+        "link": "https://localhost/mgmt/tm/net/tunnels/tcp-forward/~Common~tcp-forward?ver=13.1.1.2"
+      },
+      "remoteAddress": "any6",
+      "secondaryAddress": "any6",
+      "tos": "preserve",
+      "transparent": "disabled",
+      "usePmtu": "enabled"
+    },
+    {
+      "kind": "tm:net:tunnels:tunnel:tunnelstate",
+      "name": "socks-tunnel",
+      "partition": "Common",
+      "fullPath": "/Common/socks-tunnel",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/net/tunnels/tunnel/~Common~socks-tunnel?ver=13.1.1.2",
+      "autoLasthop": "default",
+      "description": "Tunnel for socks profile",
+      "idleTimeout": 300,
+      "ifIndex": 928,
+      "key": 0,
+      "localAddress": "any6",
+      "mode": "bidirectional",
+      "mtu": 0,
+      "profile": "/Common/tcp-forward",
+      "profileReference": {
+        "link": "https://localhost/mgmt/tm/net/tunnels/tcp-forward/~Common~tcp-forward?ver=13.1.1.2"
+      },
+      "remoteAddress": "any6",
+      "secondaryAddress": "any6",
+      "tos": "preserve",
+      "transparent": "disabled",
+      "usePmtu": "enabled"
+    }
+  ]
+}`))
+	}
+
+	tunnels, err := s.Client.Tunnels()
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/tunnels/tunnel", "")
+	assert.Equal(s.T(), 2, len(tunnels.Tunnels))
+	assert.Equal(s.T(), "http-tunnel", tunnels.Tunnels[0].Name)
+	assert.Equal(s.T(), "socks-tunnel", tunnels.Tunnels[1].Name)
+}
+
+func (s *NetTestSuite) TestGetTunnel() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{
+    "autoLasthop": "default",
+    "description": "Tunnel for http-explicit profile",
+    "fullPath": "/Common/http-tunnel",
+    "generation": 1,
+    "idleTimeout": 300,
+    "ifIndex": 112,
+    "key": 0,
+    "kind": "tm:net:tunnels:tunnel:tunnelstate",
+    "localAddress": "any6",
+    "mode": "bidirectional",
+    "mtu": 0,
+    "name": "http-tunnel",
+    "partition": "Common",
+    "profile": "/Common/tcp-forward",
+    "profileReference": {
+        "link": "https://localhost/mgmt/tm/net/tunnels/tcp-forward/~Common~tcp-forward?ver=14.1.0.3"
+    },
+    "remoteAddress": "any6",
+    "secondaryAddress": "any6",
+    "selfLink": "https://localhost/mgmt/tm/net/tunnels/tunnel/~Common~http-tunnel?ver=14.1.0.3",
+    "tos": "preserve",
+    "transparent": "disabled",
+    "usePmtu": "enabled"
+}`))
+	}
+
+	tunnel, err := s.Client.GetTunnel("http-tunnel")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/tunnels/tunnel/~Common~http-tunnel", "")
+	assert.Equal(s.T(), "http-tunnel", tunnel.Name)
+	assert.Equal(s.T(), "/Common/tcp-forward", tunnel.Profile)
+}
+
+func (s *NetTestSuite) TestCreateTunnel() {
+	err := s.Client.CreateTunnel("some-foo-tunnel", "/Common/some-foo-profile")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/tunnels/tunnel", `{"name":"some-foo-tunnel", "profile":"/Common/some-foo-profile"}`)
+}
+
+func (s *NetTestSuite) TestDeleteTunnel() {
+	err := s.Client.DeleteTunnel("some-foo-tunnel")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "DELETE", "/mgmt/tm/net/tunnels/tunnel/some-foo-tunnel", "")
+}
+
+func (s *NetTestSuite) TestModifyTunnel() {
+	tunnel := &Tunnel{Transparent: "enabled"}
+
+	err := s.Client.ModifyTunnel("some-foo-tunnel", tunnel)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "PUT", "/mgmt/tm/net/tunnels/tunnel/some-foo-tunnel", `{"transparent":"enabled"}`)
+}
