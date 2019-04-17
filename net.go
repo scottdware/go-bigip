@@ -226,15 +226,16 @@ const (
 // formatResourceID takes the resource name to
 // ensure theres a partition for the Resource ID
 func formatResourceID(name string) string {
-	values := []string{}
-	regex := regexp.MustCompile(`^(\/.+\/)?(.+)`)
-	match := regex.FindStringSubmatch(name)
-	if match[1] == "" {
-		values = append(values, "~Common~")
+	// If the name specifies the partition already, then
+	// just hand it back.
+	regex := regexp.MustCompile(`^~([a-zA-Z0-9-.]+)~`)
+	if regex.MatchString(name) {
+		return name
 	}
-	values = append(values, name)
-	// Join the strings into one.
-	return strings.Join(values, "")
+
+	// Otherwise, tack on the Common partition
+	// for best practices with the resource_id.
+	return "~Common~" + name
 }
 
 // Interfaces returns a list of interfaces.
