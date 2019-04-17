@@ -494,6 +494,33 @@ func (s *NetTestSuite) TestCreateTunnel() {
 	assertRestCall(s, "POST", "/mgmt/tm/net/tunnels/tunnel", `{"name":"some-foo-tunnel", "profile":"/Common/some-foo-profile"}`)
 }
 
+func (s *NetTestSuite) TestAddTunnel() {
+	someTunnel := Tunnel{
+		Name:             "foo-tunnel",
+		AppService:       "foo-appservice",
+		AutoLasthop:      "foo-lasthop",
+		Description:      "foo-desc",
+		IdleTimeout:      123,
+		IfIndex:          456,
+		Key:              789,
+		LocalAddress:     "foo-local-address",
+		Mode:             "foo-mode",
+		Mtu:              1440,
+		Partition:        "foo-partition",
+		Profile:          "foo-profile",
+		RemoteAddress:    "foo-remoteaddr",
+		SecondaryAddress: "foo-secondaddr",
+		Tos:              "foo-tos",
+		TrafficGroup:     "foo-tg",
+		Transparent:      "foo-transparent",
+		UsePmtu:          "foo-pmtu",
+	}
+	err := s.Client.AddTunnel(&someTunnel)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/tunnels/tunnel", `{"appService":"foo-appservice", "autoLasthop":"foo-lasthop", "description":"foo-desc", "idleTimeout":123, "ifIndex":456, "key":789, "localAddress":"foo-local-address", "mode":"foo-mode", "mtu":1440, "name":"foo-tunnel", "partition":"foo-partition", "profile":"foo-profile", "remoteAddress":"foo-remoteaddr", "secondaryAddress":"foo-secondaddr", "tos":"foo-tos", "trafficGroup":"foo-tg", "transparent":"foo-transparent", "usePmtu":"foo-pmtu"}`)
+}
+
 func (s *NetTestSuite) TestDeleteTunnel() {
 	err := s.Client.DeleteTunnel("some-foo-tunnel")
 
