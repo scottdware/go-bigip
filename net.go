@@ -538,6 +538,11 @@ func (b *BigIP) GetTunnel(name string) (*Tunnel, error) {
 	return &tunnel, nil
 }
 
+// AddTunnel adds a new tunnel to the BIG-IP system from a config.
+func (b *BigIP) AddTunnel(config *Tunnel) error {
+	return b.post(config, uriNet, uriTunnels, uriTunnel)
+}
+
 // CreateTunnel adds a new tunnel to the BIG-IP system.
 func (b *BigIP) CreateTunnel(name, profile string) error {
 	config := &Tunnel{
