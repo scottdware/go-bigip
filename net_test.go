@@ -494,6 +494,33 @@ func (s *NetTestSuite) TestCreateTunnel() {
 	assertRestCall(s, "POST", "/mgmt/tm/net/tunnels/tunnel", `{"name":"some-foo-tunnel", "profile":"/Common/some-foo-profile"}`)
 }
 
+func (s *NetTestSuite) TestAddTunnel() {
+	someTunnel := Tunnel{
+		Name:             "foo-tunnel",
+		AppService:       "foo-appservice",
+		AutoLasthop:      "foo-lasthop",
+		Description:      "foo-desc",
+		IdleTimeout:      123,
+		IfIndex:          456,
+		Key:              789,
+		LocalAddress:     "foo-local-address",
+		Mode:             "foo-mode",
+		Mtu:              1440,
+		Partition:        "foo-partition",
+		Profile:          "foo-profile",
+		RemoteAddress:    "foo-remoteaddr",
+		SecondaryAddress: "foo-secondaddr",
+		Tos:              "foo-tos",
+		TrafficGroup:     "foo-tg",
+		Transparent:      "foo-transparent",
+		UsePmtu:          "foo-pmtu",
+	}
+	err := s.Client.AddTunnel(&someTunnel)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/tunnels/tunnel", `{"appService":"foo-appservice", "autoLasthop":"foo-lasthop", "description":"foo-desc", "idleTimeout":123, "ifIndex":456, "key":789, "localAddress":"foo-local-address", "mode":"foo-mode", "mtu":1440, "name":"foo-tunnel", "partition":"foo-partition", "profile":"foo-profile", "remoteAddress":"foo-remoteaddr", "secondaryAddress":"foo-secondaddr", "tos":"foo-tos", "trafficGroup":"foo-tg", "transparent":"foo-transparent", "usePmtu":"foo-pmtu"}`)
+}
+
 func (s *NetTestSuite) TestDeleteTunnel() {
 	err := s.Client.DeleteTunnel("some-foo-tunnel")
 
@@ -508,4 +535,124 @@ func (s *NetTestSuite) TestModifyTunnel() {
 
 	assert.Nil(s.T(), err)
 	assertRestCall(s, "PUT", "/mgmt/tm/net/tunnels/tunnel/some-foo-tunnel", `{"transparent":"enabled"}`)
+}
+
+var goodVxlansRespnse = `{
+    "items": [
+	{
+            "defaultsFrom": "/Common/vxlan",
+            "defaultsFromReference": {
+                "link": "https://localhost/mgmt/tm/net/tunnels/vxlan/~Common~vxlan?ver=13.1.1.2"
+            },
+            "encapsulationType": "vxlan",
+            "floodingType": "multipoint",
+            "fullPath": "/Common/vxlan-foo",
+            "generation": 1,
+            "kind": "tm:net:tunnels:vxlan:vxlanstate",
+            "name": "vxlan-foo",
+            "partition": "foo",
+            "port": 4789,
+            "selfLink": "https://localhost/mgmt/tm/net/tunnels/vxlan/~foo~vxlan-foo?ver=13.1.1.2"
+        },
+        {
+            "defaultsFrom": "/Common/vxlan",
+            "defaultsFromReference": {
+                "link": "https://localhost/mgmt/tm/net/tunnels/vxlan/~Common~vxlan?ver=13.1.1.2"
+            },
+            "encapsulationType": "vxlan",
+            "floodingType": "none",
+            "fullPath": "/Common/vxlan-bar",
+            "generation": 1,
+            "kind": "tm:net:tunnels:vxlan:vxlanstate",
+            "name": "vxlan-bar",
+            "partition": "bar",
+            "port": 4789,
+            "selfLink": "https://localhost/mgmt/tm/net/tunnels/vxlan/~bar~vxlan-bar?ver=13.1.1.2"
+        }
+    ],
+    "kind": "tm:net:tunnels:vxlan:vxlancollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/net/tunnels/vxlan?ver=13.1.1.2"
+}`
+
+var goodVxlanRespnse = `{
+            "defaultsFrom": "/Common/vxlan",
+            "defaultsFromReference": {
+                "link": "https://localhost/mgmt/tm/net/tunnels/vxlan/~Common~vxlan?ver=13.1.1.2"
+            },
+            "encapsulationType": "vxlan",
+            "floodingType": "multipoint",
+            "fullPath": "/Common/vxlan-foo",
+            "generation": 1,
+            "kind": "tm:net:tunnels:vxlan:vxlanstate",
+            "name": "vxlan-foo",
+            "partition": "foo",
+            "port": 4789,
+            "selfLink": "https://localhost/mgmt/tm/net/tunnels/vxlan/~foo~vxlan-foo?ver=13.1.1.2"
+}`
+
+func (s *NetTestSuite) TestVxlans() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(goodVxlansRespnse))
+	}
+
+	vxlans, err := s.Client.Vxlans()
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/tunnels/vxlan", "")
+	assert.Equal(s.T(), 2, len(vxlans))
+	assert.Equal(s.T(), "vxlan-foo", vxlans[0].Name)
+	assert.Equal(s.T(), "vxlan-bar", vxlans[1].Name)
+}
+
+func (s *NetTestSuite) TestGetVxlan() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(goodVxlanRespnse))
+	}
+
+	vxlan, err := s.Client.GetVxlan("~foo~vxlan-foo")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "GET", "/mgmt/tm/net/tunnels/vxlan/~foo~vxlan-foo", "")
+	assert.Equal(s.T(), "vxlan-foo", vxlan.Name)
+	assert.Equal(s.T(), 4789, vxlan.Port)
+}
+
+func (s *NetTestSuite) TestCreateVxlan() {
+	err := s.Client.CreateVxlan("some-foo-vxlan")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/tunnels/vxlan", `{"name":"some-foo-vxlan"}`)
+}
+
+func (s *NetTestSuite) TestAddVxlan() {
+	someVxlan := Vxlan{
+		Name:              "foo-vxlan",
+		AppService:        "foo-appservice",
+		Description:       "foo-desc",
+		DefaultsFrom:      "foo-base-profile",
+		EncapsulationType: "foo-encap",
+		FloodingType:      "foo-ft",
+		Partition:         "foo-partition",
+		Port:              123,
+	}
+	err := s.Client.AddVxlan(&someVxlan)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "POST", "/mgmt/tm/net/tunnels/vxlan", `{"appService":"foo-appservice", "defaultsFrom":"foo-base-profile", "description":"foo-desc", "encapsulationType":"foo-encap", "floodingType":"foo-ft", "name":"foo-vxlan", "partition":"foo-partition", "port":123}`)
+}
+
+func (s *NetTestSuite) TestDeleteVxlan() {
+	err := s.Client.DeleteVxlan("some-foo-vxlan")
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "DELETE", "/mgmt/tm/net/tunnels/vxlan/some-foo-vxlan", "")
+}
+
+func (s *NetTestSuite) TestModifyVxlan() {
+	vxlan := &Vxlan{Port: 456}
+
+	err := s.Client.ModifyVxlan("some-foo-vxlan", vxlan)
+
+	assert.Nil(s.T(), err)
+	assertRestCall(s, "PUT", "/mgmt/tm/net/tunnels/vxlan/some-foo-vxlan", `{"port":456}`)
 }
