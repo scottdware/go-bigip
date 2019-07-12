@@ -218,6 +218,8 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 		return err
 	}
 
+	log.Printf("POST body: ", body)
+
 	req := &APIRequest{
 		Method:      "post",
 		URL:         b.iControlPath(path),
@@ -235,6 +237,8 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 		return err
 	}
 
+	log.Printf("PUT body: ", body)
+
 	req := &APIRequest{
 		Method:      "put",
 		URL:         b.iControlPath(path),
@@ -251,6 +255,8 @@ func (b *BigIP) patch(body interface{}, path ...string) error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("PATCH body: ", body)
 
 	req := &APIRequest{
 		Method:      "patch",
