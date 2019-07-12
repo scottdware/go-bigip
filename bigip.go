@@ -218,7 +218,7 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 		return err
 	}
 
-	log.Printf("POST body: ", body)
+
 
 	req := &APIRequest{
 		Method:      "post",
@@ -226,7 +226,7 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
 	}
-
+	log.Println("POST body: ", req)
 	_, callErr := b.APICall(req)
 	return callErr
 }
@@ -237,7 +237,7 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 		return err
 	}
 
-	log.Printf("PUT body: ", body)
+
 
 	req := &APIRequest{
 		Method:      "put",
@@ -245,7 +245,7 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
 	}
-
+	log.Println("PUT body: ", req)
 	_, callErr := b.APICall(req)
 	return callErr
 }
@@ -256,7 +256,7 @@ func (b *BigIP) patch(body interface{}, path ...string) error {
 		return err
 	}
 
-	log.Printf("PATCH body: ", body)
+
 
 	req := &APIRequest{
 		Method:      "patch",
@@ -264,7 +264,7 @@ func (b *BigIP) patch(body interface{}, path ...string) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
-
+	log.Println("LOGGING REQUEST: ", req)
 	_, callErr := b.APICall(req)
 	return callErr
 }
