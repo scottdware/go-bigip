@@ -164,7 +164,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 		req.SetBasicAuth(b.User, b.Password)
 	}
 
-	//fmt.Println("REQ -- ", options.Method, " ", url," -- ",options.Body)
+	fmt.Println("REQ -- ", options.Method, " ", url," -- ",options.Body)
 
 	if len(options.ContentType) > 0 {
 		req.Header.Set("Content-Type", options.ContentType)
@@ -226,7 +226,7 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
 	}
-	log.Println("POST body: ", req)
+
 	_, callErr := b.APICall(req)
 	return callErr
 }
@@ -245,7 +245,7 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
 	}
-	log.Println("PUT body: ", req)
+	
 	_, callErr := b.APICall(req)
 	return callErr
 }
@@ -264,7 +264,7 @@ func (b *BigIP) patch(body interface{}, path ...string) error {
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
-	log.Println("LOGGING REQUEST: ", req)
+
 	_, callErr := b.APICall(req)
 	return callErr
 }
