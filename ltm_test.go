@@ -1336,8 +1336,8 @@ func (s *LTMTestSuite) TestAddInternalDataGroup() {
 
 func (s *LTMTestSuite) TestAddInternalDataGroup_emptyRecords() {
 	config := &DataGroup{
-		Name: "test-datagroup",
-		Type: "string",
+		Name:    "test-datagroup",
+		Type:    "string",
 		Records: []DataGroupRecord{},
 	}
 
@@ -1625,7 +1625,7 @@ func (s *LTMTestSuite) TestModifyServerSSLProfile() {
 
 	s.Client.ModifyServerSSLProfile(serverSSLProfile, myModifedServerSSLProfile)
 
-	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), "PATCH", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriProfile, uriServerSSL, serverSSLProfile), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), `{"cert":"/Common/default.crt","key":"/Common/default.key","mode":"enabled","serverName":"myserver.contoso.com"}`, s.LastRequestBody)
 }
@@ -1881,7 +1881,7 @@ func (s *LTMTestSuite) TestModifyClientSSLProfile() {
 
 	s.Client.ModifyClientSSLProfile(clientSSLProfile, myModifedClientSSLProfile)
 
-	assert.Equal(s.T(), "PUT", s.LastRequest.Method)
+	assert.Equal(s.T(), "PATCH", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriLtm, uriProfile, uriClientSSL, clientSSLProfile), s.LastRequest.URL.Path)
 	assert.Equal(s.T(), `{"cert":"/Common/default.crt","key":"/Common/default.key","mode":"enabled","serverName":"myserver.contoso.com"}`, s.LastRequestBody)
 }
