@@ -12,7 +12,6 @@ import (
 	"reflect"
 	"strings"
 	"time"
-	"log"
 )
 
 var defaultConfigOptions = &ConfigOptions{
@@ -165,7 +164,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 		req.SetBasicAuth(b.User, b.Password)
 	}
 
-	log.Println("REQ -- ", options.Method, " ", url," -- ",options.Body)
+	//fmt.Println("REQ -- ", options.Method, " ", url," -- ",options.Body)
 
 	if len(options.ContentType) > 0 {
 		req.Header.Set("Content-Type", options.ContentType)
@@ -219,15 +218,13 @@ func (b *BigIP) post(body interface{}, path ...string) error {
 		return err
 	}
 
-
-
 	req := &APIRequest{
 		Method:      "post",
 		URL:         b.iControlPath(path),
 		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
 	}
-	log.Println("POST REQUEST", req)
+
 	_, callErr := b.APICall(req)
 	return callErr
 }
@@ -238,15 +235,13 @@ func (b *BigIP) put(body interface{}, path ...string) error {
 		return err
 	}
 
-
-
 	req := &APIRequest{
 		Method:      "put",
 		URL:         b.iControlPath(path),
 		Body:        strings.TrimRight(string(marshalJSON), "\n"),
 		ContentType: "application/json",
 	}
-	log.Println("PUT REQUEST", req)
+
 	_, callErr := b.APICall(req)
 	return callErr
 }
@@ -257,15 +252,13 @@ func (b *BigIP) patch(body interface{}, path ...string) error {
 		return err
 	}
 
-	
-
 	req := &APIRequest{
 		Method:      "patch",
 		URL:         b.iControlPath(path),
 		Body:        string(marshalJSON),
 		ContentType: "application/json",
 	}
-	log.Println("PATCH REQUEST", req)
+
 	_, callErr := b.APICall(req)
 	return callErr
 }
