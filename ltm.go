@@ -380,15 +380,15 @@ type DataGroupRecord struct {
 }
 
 type dataGroupDTO struct {
-	Name       string            `json:"name,omitempty"`
-	Partition  string            `json:"partition,omitempty"`
-	FullPath   string            `json:"fullPath,omitempty"`
-	Generation int               `json:"generation,omitempty"`
-	Type       string            `json:"type,omitempty"`
+	Name       string `json:"name,omitempty"`
+	Partition  string `json:"partition,omitempty"`
+	FullPath   string `json:"fullPath,omitempty"`
+	Generation int    `json:"generation,omitempty"`
+	Type       string `json:"type,omitempty"`
 
 	// Records contains a list of DataGroupRecord objects.
 	// `omitempty` tag is removed on purpose. See issue https://github.com/scottdware/go-bigip/issues/90
-	Records    []DataGroupRecord `json:"records"`
+	Records []DataGroupRecord `json:"records"`
 }
 
 func (p *DataGroup) MarshalJSON() ([]byte, error) {
@@ -531,25 +531,25 @@ type VirtualServer struct {
 		Type string `json:"type,omitempty"`
 		Pool string `json:"pool,omitempty"`
 	} `json:"sourceAddressTranslation,omitempty"`
-	SourcePort       string    `json:"sourcePort,omitempty"`
-	SYNCookieStatus  string    `json:"synCookieStatus,omitempty"`
-	TranslateAddress string    `json:"translateAddress,omitempty"`
-	TranslatePort    string    `json:"translatePort,omitempty"`
-	VlansEnabled     bool      `json:"vlansEnabled,omitempty"`
-	VlansDisabled    bool      `json:"vlansDisabled,omitempty"`
-	VSIndex          int       `json:"vsIndex,omitempty"`
-	Vlans            []string  `json:"vlans,omitempty"`
-	Rules            []string  `json:"rules,omitempty"`
-	Profiles         []Profile `json:"profiles,omitempty"`
-	Policies         []string  `json:"policies,omitempty"`
+	SourcePort       string     `json:"sourcePort,omitempty"`
+	SYNCookieStatus  string     `json:"synCookieStatus,omitempty"`
+	TranslateAddress string     `json:"translateAddress,omitempty"`
+	TranslatePort    string     `json:"translatePort,omitempty"`
+	VlansEnabled     bool       `json:"vlansEnabled,omitempty"`
+	VlansDisabled    bool       `json:"vlansDisabled,omitempty"`
+	VSIndex          int        `json:"vsIndex,omitempty"`
+	Vlans            []string   `json:"vlans,omitempty"`
+	Rules            []string   `json:"rules,omitempty"`
+	Profiles         []Profile  `json:"profiles,omitempty"`
+	Policies         []string   `json:"policies,omitempty"`
 	Metadata         []Metadata `json:"metadata,omitempty"`
 }
 
 // Metadata are key/value pairs of arbitrary metadata
 type Metadata struct {
-	Name string `json:"name"`
-	Persist bool `json:"persist,string"`
-	Value string `json:"value"`
+	Name    string `json:"name"`
+	Persist bool   `json:"persist,string"`
+	Value   string `json:"value"`
 }
 
 // VirtualAddresses contains a list of all virtual addresses on the BIG-IP system.
@@ -1713,7 +1713,7 @@ func (b *BigIP) PoolMemberStatus(pool string, member string, state string, owner
 		// 	config.Session = "user-disabled"
 	}
 
-	if owner[0] != "" {
+	if len(owner) > 0 && owner[0] != "" {
 		config.AppService = owner[0]
 	}
 
