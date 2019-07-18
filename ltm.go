@@ -94,7 +94,7 @@ type ClientSSLProfile struct {
 	CertLifespan                    int      `json:"certLifespan,omitempty"`
 	CertLookupByIpaddrPort          string   `json:"certLookupByIpaddrPort,omitempty"`
 	Chain                           string   `json:"chain,omitempty"`
-	Ciphers                         string   `json:"Ciphers,omitempty"`
+	Ciphers                         string   `json:"ciphers,omitempty"`
 	ClientCertCa                    string   `json:"clientCertCa,omitempty"`
 	CrlFile                         string   `json:"crlFile,omitempty"`
 	DefaultsFrom                    string   `json:"defaultsFrom,omitempty"`
