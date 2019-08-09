@@ -141,6 +141,7 @@ type Node struct {
 	Name            string `json:"name,omitempty"`
 	Partition       string `json:"partition,omitempty"`
 	FullPath        string `json:"fullPath,omitempty"`
+	Description     string `json:"description,omitempty"`
 	Generation      int    `json:"generation,omitempty"`
 	Address         string `json:"address,omitempty"`
 	ConnectionLimit int    `json:"connectionLimit,omitempty"`
@@ -242,6 +243,7 @@ type Pool struct {
 	Name                   string `json:"name,omitempty"`
 	Partition              string `json:"partition,omitempty"`
 	FullPath               string `json:"fullPath,omitempty"`
+	Description            string `json:"description,omitempty"`
 	Generation             int    `json:"generation,omitempty"`
 	AllowNAT               string `json:"allowNat,omitempty"`
 	AllowSNAT              string `json:"allowSnat,omitempty"`
@@ -304,6 +306,7 @@ type poolDTO struct {
 	Name                   string `json:"name,omitempty"`
 	Partition              string `json:"partition,omitempty"`
 	FullPath               string `json:"fullPath,omitempty"`
+	Description            string `json:"description,omitempty"`
 	Generation             int    `json:"generation,omitempty"`
 	AllowNAT               string `json:"allowNat,omitempty"`
 	AllowSNAT              string `json:"allowSnat,omitempty"`
@@ -491,6 +494,7 @@ type VirtualServer struct {
 	Partition                  string `json:"partition,omitempty"`
 	FullPath                   string `json:"fullPath,omitempty"`
 	Generation                 int    `json:"generation,omitempty"`
+	Description                string `json:"description,omitempty"`
 	AddressStatus              string `json:"addressStatus,omitempty"`
 	AutoLastHop                string `json:"autoLastHop,omitempty"`
 	CMPEnabled                 string `json:"cmpEnabled,omitempty"`
@@ -578,12 +582,32 @@ type Policies struct {
 }
 
 type VirtualServerPolicies struct {
-	PolicyRef Policies `json:"policiesReference"`
+	PolicyRef []VirtualServerPolicy `json:"items"`
 }
 
 type PolicyPublish struct {
+	Name        string
+	Command     string
+}
+type PolicyPublishDTO struct {
 	Name        string `json:"name"`
-	PublishCopy string `json:"publishedCopy"`
+	Command     string `json:"command"`
+}
+func (p *PolicyPublish) MarshalJSON() ([]byte, error) {
+	return json.Marshal(PolicyPublishDTO{
+		Name:        p.Name,
+		Command:     p.Command,
+	})
+}
+func (p *PolicyPublish) UnmarshalJSON(b []byte) error {
+	var dto PolicyPublishDTO
+	err := json.Unmarshal(b, &dto)
+	if err != nil {
+		return err
+	}
+	p.Name = dto.Name
+	p.Command = dto.Command
+	return nil
 }
 type Policy struct {
 	Name        string
@@ -595,7 +619,6 @@ type Policy struct {
 	Strategy    string
 	Rules       []PolicyRule
 }
-
 type policyDTO struct {
 	Name        string   `json:"name"`
 	PublishCopy string   `json:"publishedCopy"`
@@ -641,6 +664,17 @@ func (p *Policy) UnmarshalJSON(b []byte) error {
 	p.FullPath = dto.FullPath
 
 	return nil
+}
+
+type VirtualServerPolicy struct {
+	Name        string
+	Partition   string
+	FullPath    string
+}
+type VirtualServerPolicyDTO struct {
+	Name        string   `json:"name"`
+	Partition   string   `json:"partition,omitempty"`
+	FullPath    string   `json:"fullPath,omitempty"`
 }
 
 type PolicyRules struct {
@@ -1903,7 +1937,7 @@ func (b *BigIP) AddNode(config *Node) error {
 }
 
 // CreateNode adds a new IP based node to the BIG-IP system.
-func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state string) error {
+func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state ,description string) error {
 	config := &Node{
 		Name:            name,
 		Address:         address,
@@ -1912,13 +1946,14 @@ func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, d
 		DynamicRatio:    dynamic_ratio,
 		Monitor:         monitor,
 		State:           state,
+		Description:     description,
 	}
 
 	return b.post(config, uriLtm, uriNode)
 }
 
 // CreateFQDNNode adds a new FQDN based node to the BIG-IP system.
-func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state, interval, address_family, autopopulate string, downinterval int) error {
+func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state, description, interval, address_family, autopopulate string, downinterval int) error {
 	config := &Node{
 		Name:            name,
 		RateLimit:       rate_limit,
@@ -1926,6 +1961,7 @@ func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limi
 		DynamicRatio:    dynamic_ratio,
 		Monitor:         monitor,
 		State:           state,
+		Description:     description,
 	}
 	config.FQDN.Name = address
 	config.FQDN.Interval = interval
@@ -2275,9 +2311,9 @@ func (b *BigIP) VirtualServerPolicyNames(vs string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	retval := make([]string, 0, len(policies.PolicyRef.Policies))
-	for _, p := range policies.PolicyRef.Policies {
-		retval = append(retval, p.FullPath)
+	retval := make([]string, 0, len(policies.PolicyRef))
+	for _, p := range policies.PolicyRef {
+		retval = append(retval, p.Name)
 	}
 	return retval, nil
 }
@@ -2483,8 +2519,8 @@ func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 	values = append(values, "Drafts/")
 	values = append(values, name)
 	// Join three strings into one.
-	result := strings.Join(values, "")
-	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, result)
+	//result := strings.Join(values, "")
+	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, name)
 	if err != nil {
 		return nil, err
 	}
@@ -2538,8 +2574,9 @@ func (b *BigIP) CreatePolicy(p *Policy) error {
 }
 
 func (b *BigIP) PublishPolicy(name, publish string) error {
-	config := &Policy{
-		PublishCopy: publish,
+	config := &PolicyPublish{
+		Name: publish,
+		Command: "publish",
 	}
 	values := []string{}
 	values = append(values, "~Common~Drafts~")
@@ -2549,7 +2586,7 @@ func (b *BigIP) PublishPolicy(name, publish string) error {
 
 	log.Println("  ================== here in publish ", result, publish)
 
-	return b.patch(config, uriLtm, uriPolicy, result)
+	return b.post(config, uriLtm, uriPolicy)
 }
 
 //Update an existing policy.
@@ -2569,8 +2606,8 @@ func (b *BigIP) DeletePolicy(name string) error {
 	values = append(values, "Drafts/")
 	values = append(values, name)
 	// Join three strings into one.
-	result := strings.Join(values, "")
-	return b.delete(uriLtm, uriPolicy, result)
+	//result := strings.Join(values, "")
+	return b.delete(uriLtm, uriPolicy, name)
 }
 
 // Oneconnect profile creation
