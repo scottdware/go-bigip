@@ -7,7 +7,7 @@ import (
 
 func main() {
 	// Connect to the BIG-IP system.
-	f5 := bigip.NewSession("ltm.company.com", "admin", "secret", nil)
+	f5 := bigip.NewSession("ltm.company.com", "admin", "secret", nil, false)
 
 	// Get a list of all VLAN's, and print their names to the console.
 	vlans, err := f5.Vlans()

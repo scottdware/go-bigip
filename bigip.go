@@ -13,6 +13,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/ernesto-jimenez/httplogger"
 )
 
 var defaultConfigOptions = &ConfigOptions{
@@ -31,6 +33,7 @@ type BigIP struct {
 	Token         string // if set, will be used instead of User/Password
 	Transport     *http.Transport
 	ConfigOptions *ConfigOptions
+	Debug         bool
 }
 
 // APIRequest builds our request before sending it to the server.
@@ -69,7 +72,7 @@ func (r *RequestError) Error() error {
 }
 
 // NewSession sets up our connection to the BIG-IP system.
-func NewSession(host, user, passwd string, configOptions *ConfigOptions) *BigIP {
+func NewSession(host, user, passwd string, configOptions *ConfigOptions, debug bool) *BigIP {
 	var url string
 	if !strings.HasPrefix(host, "http") {
 		url = fmt.Sprintf("https://%s", host)
@@ -89,6 +92,7 @@ func NewSession(host, user, passwd string, configOptions *ConfigOptions) *BigIP 
 			},
 		},
 		ConfigOptions: configOptions,
+		Debug:         debug,
 	}
 }
 
@@ -97,7 +101,7 @@ func NewSession(host, user, passwd string, configOptions *ConfigOptions) *BigIP 
 // Auth. This is required when using an external authentication
 // provider, such as Radius or Active Directory. loginProviderName is
 // probably "tmos" but your environment may vary.
-func NewTokenSession(host, user, passwd, loginProviderName string, configOptions *ConfigOptions) (b *BigIP, err error) {
+func NewTokenSession(host, user, passwd, loginProviderName string, configOptions *ConfigOptions, debug bool) (b *BigIP, err error) {
 	type authReq struct {
 		Username          string `json:"username"`
 		Password          string `json:"password"`
@@ -127,7 +131,7 @@ func NewTokenSession(host, user, passwd, loginProviderName string, configOptions
 		ContentType: "application/json",
 	}
 
-	b = NewSession(host, user, passwd, configOptions)
+	b = NewSession(host, user, passwd, configOptions, debug)
 	resp, err := b.APICall(req)
 	if err != nil {
 		return
@@ -161,6 +165,11 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 		Transport: b.Transport,
 		Timeout:   b.ConfigOptions.APICallTimeout,
 	}
+
+	if b.Debug {
+		client.Transport = httplogger.NewLoggedTransport(b.Transport, newLogger())
+	}
+
 	var format string
 	if strings.Contains(options.URL, "mgmt/") {
 		format = "%s/%s"
