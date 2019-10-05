@@ -2136,7 +2136,8 @@ func (b *BigIP) DeletePolicy(name string) error {
 	return b.delete(uriLtm, uriPolicy, name, policyVersionSuffix)
 }
 
-// CreateDraftFromPolicy called name. The draft will be created with same name in
+// CreateDraftFromPolicy called name. Name must be full name (ie ~partition~policyName.
+// The draft will be created with same name in same partition:
 // /partition/Drafts/PublishedPolicyName
 func (b *BigIP) CreateDraftFromPolicy(name string) error {
 	p := struct {
@@ -2144,7 +2145,7 @@ func (b *BigIP) CreateDraftFromPolicy(name string) error {
 	return b.patch(p, uriLtm, uriPolicy, name+"?options=create-draft")
 }
 
-// PublishDraftPolicy
+// PublishDraftPolicy. Name must be full path (ie /Partition/Drafts/name.
 func (b *BigIP) PublishDraftPolicy(name string) error {
 	p := struct {
 		Command string `json:"command"`
@@ -2155,12 +2156,17 @@ func (b *BigIP) PublishDraftPolicy(name string) error {
 	return b.post(p, uriLtm, uriPolicy)
 }
 
-// AddRuleToPolicy. Policy must be a draft
+// AddRuleToPolicy. Policy must be a draft and pName must be the full path (ie /Partition/Drafts/policyName
 func (b *BigIP) AddRuleToPolicy(pName string, rule PolicyRule) error {
 	return b.post(rule, uriLtm, uriPolicy, pName, uriRules)
 }
 
-// ModifyPolicyRule. Policy must be a draft
+// ModifyPolicyRule. Policy must be a draft and pName must be the full path (ie /Partition/Drafts/policyName
 func (b *BigIP) ModifyPolicyRule(pName, rName string, rule PolicyRule) error {
 	return b.patch(rule, uriLtm, uriPolicy, pName, uriRules, rName)
+}
+
+// RemoveRuleFromPolicy. Policy must be a draft and pName must be the full name (ie ~Partition~Draft~policyName
+func (b *BigIP) RemoveRuleFromPolicy(rName, pName string) error {
+	return b.delete(uriLtm, uriPolicy, pName, uriRules, rName)
 }
