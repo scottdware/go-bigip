@@ -661,11 +661,12 @@ type PolicyRules struct {
 }
 
 type PolicyRule struct {
-	Name       string
-	FullPath   string
-	Ordinal    int
-	Conditions []PolicyRuleCondition
-	Actions    []PolicyRuleAction
+	Name        string                `json:"name,omitempty"`
+	FullPath    string                `json:"fullPath,omitempty"`
+	Ordinal     int                   `json:"ordinal,omitempty"`
+	Description string                `json:"description,omitempty"`
+	Conditions  []PolicyRuleCondition `json:"conditions,omitempty"`
+	Actions     []PolicyRuleAction    `json:"actions,omitempty"`
 }
 
 type policyRuleDTO struct {
@@ -2133,4 +2134,39 @@ func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
 //Delete a policy by name.
 func (b *BigIP) DeletePolicy(name string) error {
 	return b.delete(uriLtm, uriPolicy, name, policyVersionSuffix)
+}
+
+// CreateDraftFromPolicy called name. Name must be full name (ie ~partition~policyName).
+// The draft will be created with same name in same partition:
+// /partition/Drafts/PublishedPolicyName
+func (b *BigIP) CreateDraftFromPolicy(name string) error {
+	p := struct {
+	}{}
+	return b.patch(p, uriLtm, uriPolicy, name+"?options=create-draft")
+}
+
+// PublishDraftPolicy. Name must be full path (ie /Partition/Drafts/name)
+func (b *BigIP) PublishDraftPolicy(name string) error {
+	p := struct {
+		Command string `json:"command"`
+		Name    string `json:"name"`
+	}{Command: "publish",
+		Name: name}
+
+	return b.post(p, uriLtm, uriPolicy)
+}
+
+// AddRuleToPolicy. Policy must be a draft and policyName must be the full name (ie ~Partition~Drafts~policyName)
+func (b *BigIP) AddRuleToPolicy(policyName string, rule PolicyRule) error {
+	return b.post(rule, uriLtm, uriPolicy, policyName, uriRules)
+}
+
+// ModifyPolicyRule. Policy must be a draft and policyName must be the full name (ie ~Partition~Drafts~policyName)
+func (b *BigIP) ModifyPolicyRule(policyName, ruleName string, rule PolicyRule) error {
+	return b.patch(rule, uriLtm, uriPolicy, policyName, uriRules, ruleName)
+}
+
+// RemoveRuleFromPolicy. Policy must be a draft and policyName must be the full name (ie ~Partition~Draft~policyName)
+func (b *BigIP) RemoveRuleFromPolicy(ruleName, policyName string) error {
+	return b.delete(uriLtm, uriPolicy, policyName, uriRules, ruleName)
 }

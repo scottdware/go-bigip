@@ -23,6 +23,7 @@ const (
 	uriPool            = "pool"
 	uriPoolMember      = "members"
 	uriProfile         = "profile"
+	uriRules           = "rules"
 	uriServerSSL       = "server-ssl"
 	uriSnatPool        = "snatpool"
 	uriTcp             = "tcp"
