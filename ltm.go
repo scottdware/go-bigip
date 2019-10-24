@@ -1722,9 +1722,12 @@ func (b *BigIP) PoolMemberStatus(pool string, member string, state string, owner
 }
 
 // CreatePool adds a new pool to the BIG-IP system by name.
-func (b *BigIP) CreatePool(name string) error {
+// name: F5 BIG-IP pool name
+// ptName: F5 BIG-IP partition name
+func (b *BigIP) CreatePool(name, ptName string) error {
 	config := &Pool{
-		Name: name,
+		Name:      name,
+		Partition: ptName,
 	}
 
 	return b.post(config, uriLtm, uriPool)
