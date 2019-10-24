@@ -509,7 +509,7 @@ func (s *LTMTestSuite) TestDeleteVirtualServer() {
 
 func (s *LTMTestSuite) TestCreatePool() {
 	name := "/Common/test-pool"
-	partition := "Common"
+	partition := "/Common"
 
 	s.Client.CreatePool(name, partition)
 
