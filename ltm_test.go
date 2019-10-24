@@ -509,8 +509,9 @@ func (s *LTMTestSuite) TestDeleteVirtualServer() {
 
 func (s *LTMTestSuite) TestCreatePool() {
 	name := "/Common/test-pool"
+	partition := "Common"
 
-	s.Client.CreatePool(name)
+	s.Client.CreatePool(name, partition)
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriPool), s.LastRequest.URL.Path)
