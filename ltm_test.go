@@ -515,7 +515,7 @@ func (s *LTMTestSuite) TestCreatePool() {
 
 	assert.Equal(s.T(), "POST", s.LastRequest.Method)
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s", uriLtm, uriPool), s.LastRequest.URL.Path)
-	assert.Equal(s.T(), `{"name":"/Common/test-pool"}`, s.LastRequestBody)
+	assert.Equal(s.T(), `{"name":"/Common/test-pool","partition":"/Common"}`, s.LastRequestBody)
 }
 
 func (s *LTMTestSuite) TestAddPool() {
