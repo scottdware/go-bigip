@@ -15,6 +15,11 @@ import (
 	"time"
 )
 
+const (
+	microToSeconds  = 1000000 // conversion factor
+	maxTokenTimeout = 36000   // maximum token timeout in seconds
+)
+
 var defaultConfigOptions = &ConfigOptions{
 	APICallTimeout: 60 * time.Second,
 }
@@ -28,9 +33,12 @@ type BigIP struct {
 	Host          string
 	User          string
 	Password      string
-	Token         string // if set, will be used instead of User/Password
+	Token         string    // if set, will be used instead of User/Password
+	TokenExpiry   time.Time // the token expiration time
 	Transport     *http.Transport
 	ConfigOptions *ConfigOptions
+	loginProvider string
+	startTime     time.Time // token start time
 }
 
 // APIRequest builds our request before sending it to the server.
@@ -98,58 +106,10 @@ func NewSession(host, user, passwd string, configOptions *ConfigOptions) *BigIP 
 // provider, such as Radius or Active Directory. loginProviderName is
 // probably "tmos" but your environment may vary.
 func NewTokenSession(host, user, passwd, loginProviderName string, configOptions *ConfigOptions) (b *BigIP, err error) {
-	type authReq struct {
-		Username          string `json:"username"`
-		Password          string `json:"password"`
-		LoginProviderName string `json:"loginProviderName"`
-	}
-	type authResp struct {
-		Token struct {
-			Token string
-		}
-	}
-
-	auth := authReq{
-		user,
-		passwd,
-		loginProviderName,
-	}
-
-	marshalJSON, err := json.Marshal(auth)
-	if err != nil {
-		return
-	}
-
-	req := &APIRequest{
-		Method:      "post",
-		URL:         "mgmt/shared/authn/login",
-		Body:        string(marshalJSON),
-		ContentType: "application/json",
-	}
 
 	b = NewSession(host, user, passwd, configOptions)
-	resp, err := b.APICall(req)
-	if err != nil {
-		return
-	}
-
-	if resp == nil {
-		err = fmt.Errorf("unable to acquire authentication token")
-		return
-	}
-
-	var aresp authResp
-	err = json.Unmarshal(resp, &aresp)
-	if err != nil {
-		return
-	}
-
-	if aresp.Token.Token == "" {
-		err = fmt.Errorf("unable to acquire authentication token")
-		return
-	}
-
-	b.Token = aresp.Token.Token
+	b.loginProvider = loginProviderName
+	err = b.login()
 
 	return
 }
@@ -201,6 +161,22 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 
 	// fmt.Println("Resp --", res.StatusCode, " -- ", string(data))
 	return data, nil
+}
+
+// RefreshTokenSession refreshes the token expiration time by increasing
+// token timeout by interal.
+//
+// If the token is already expired or if the above refresh fails, a new
+// token is generated with a new login.
+func (b *BigIP) RefreshTokenSession(interval time.Duration) error {
+	if b.TokenExpiry.Sub(time.Now()) <= 0 {
+		return b.login()
+	}
+	if err := b.increaseTokenTimout(interval); err != nil {
+		fmt.Println(err)
+		return b.login()
+	}
+	return nil
 }
 
 func (b *BigIP) iControlPath(parts []string) string {
@@ -470,4 +446,117 @@ func (b *BigIP) Upload(r io.Reader, size int64, path ...string) (*Upload, error)
 			return &upload, err
 		}
 	}
+}
+
+// login requests a token.
+func (b *BigIP) login() error {
+	b.Token = ""
+	b.startTime = time.Now()
+	type authReq struct {
+		Username          string `json:"username"`
+		Password          string `json:"password"`
+		LoginProviderName string `json:"loginProviderName"`
+	}
+	type authResp struct {
+		Token struct {
+			Token      string
+			Expiration int `json:"expirationMicros"`
+		}
+	}
+
+	auth := authReq{
+		b.User,
+		b.Password,
+		b.loginProvider,
+	}
+
+	marshalJSON, err := json.Marshal(auth)
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "post",
+		URL:         "mgmt/shared/authn/login",
+		Body:        string(marshalJSON),
+		ContentType: "application/json",
+	}
+
+	resp, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	if resp == nil {
+		return fmt.Errorf("unable to acquire authentication token")
+	}
+
+	var aresp authResp
+	err = json.Unmarshal(resp, &aresp)
+	if err != nil {
+		return err
+	}
+
+	if aresp.Token.Token == "" {
+		return fmt.Errorf("unable to acquire authentication token")
+	}
+
+	b.Token = aresp.Token.Token
+	b.TokenExpiry = time.Unix(int64(aresp.Token.Expiration/microToSeconds), 0)
+
+	return nil
+}
+
+// increaseTokenTimeout increases token timeout by interval.
+//
+// if it exceeds maxTokenTimeout an error is returned.
+func (b *BigIP) increaseTokenTimout(interval time.Duration) error {
+	if b.Token == "" {
+		return errors.New("token refresh not possible - no token available")
+	}
+	newExpiry := time.Now().Add(interval)
+	newTimeout := int(newExpiry.Sub(b.startTime)) / int(time.Second) // big ip token timeout is always relative to start time
+	if newTimeout > maxTokenTimeout {
+		return errors.New("maximum timeout exceeded")
+	}
+
+	type refreshReq struct {
+		Timeout int `json:"timeout"`
+	}
+	type refreshResp struct {
+		Token      string
+		Expiration int `json:"expirationMicros"`
+	}
+	refreshJSON, err := json.Marshal(refreshReq{
+		Timeout: newTimeout,
+	})
+	if err != nil {
+		return err
+	}
+
+	req := &APIRequest{
+		Method:      "patch",
+		URL:         fmt.Sprintf("mgmt/shared/authz/tokens/%s", b.Token),
+		Body:        string(refreshJSON),
+		ContentType: "application/json",
+	}
+	resp, err := b.APICall(req)
+	if err != nil {
+		return err
+	}
+
+	if resp == nil {
+		return fmt.Errorf("unable to refresh authentication token")
+	}
+
+	var rresp refreshResp
+	err = json.Unmarshal(resp, &rresp)
+	if err != nil {
+		return err
+	}
+	if rresp.Expiration == 0 {
+		return fmt.Errorf("unable to refresh authentication token")
+	}
+	b.TokenExpiry = time.Unix(int64(rresp.Expiration/microToSeconds), 0)
+	return nil
 }
