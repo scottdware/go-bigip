@@ -15,6 +15,10 @@ const (
 	uriSslCert        = "ssl-cert"
 	uriSslKey         = "ssl-key"
 	//uriPlatform = "?$select=platform"
+
+	uriCrypto = "crypto"
+	uriKey    = "key"
+	uriCsr    = "csr"
 )
 
 type Volumes struct {
@@ -356,4 +360,54 @@ func (b *BigIP) GetKey(name string) (*Key, error) {
 // DeleteKey removes a key.
 func (b *BigIP) DeleteKey(name string) error {
 	return b.delete(uriSys, uriFile, uriSslKey, name)
+}
+
+// Key2 create private key
+type Key2 struct {
+	AdminEmailAddress      string `json:"adminEmailAddress,omitempty"`
+	AppService             string `json:"appService,omitempty"`
+	ChallengePassword      string `json:"challengePassword"`
+	City                   string `json:"city"`
+	CommonName             string `json:"commonName"`
+	Consumer               string `json:"consumer"`
+	Country                string `json:"country"`
+	CurveName              string `json:"curveName"`
+	EmailAddress           string `json:"emailAddress"`
+	FromLocalFile          string `json:"fromLocalFile"`
+	FromUrl                string `json:"fromUrl"`
+	KeySize                string `json:"keySize"`
+	KeyType                string `json:"keyType"`
+	Lifetime               string `json:"lifetime"`
+	Organization           string `json:"organization"`
+	OU                     string `json:"ou"`
+	Passphrase             string `json:"passphrase"`
+	SecurityType           string `json:"securityType"`
+	State                  string `json:"state"`
+	SubjectAlternativeName string `json:"subjectAlternativeName"`
+}
+
+// CreateKey create key
+func (b *BigIP) CreateKey(config *Key2) error {
+	return b.post(config, uriSys, uriCrypto, uriKey)
+}
+
+// Csr create csr
+type Csr struct {
+	AdminEmailAddress      string `json:"adminEmailAddress"`
+	AppService             string `json:"appService"`
+	ChallengePassword      string `json:"challengePassword"`
+	CommonName             string `json:"commonName"`
+	Consumer               string `json:"consumer"`
+	Country                string `json:"country"`
+	EmailAddress           string `json:"emailAddress"`
+	Key                    string `json:"key"`
+	Organization           string `json:"organization"`
+	OU                     string `json:"ou"`
+	State                  string `json:"state"`
+	SubjectAlternativeName string `json:"subjectAlternativeName"`
+}
+
+// CreateCsr create csr
+func (b *BigIP) CreateCsr(config *Csr) error {
+	return b.post(config, uriSys, uriCrypto, uriCsr)
 }
