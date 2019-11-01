@@ -15,10 +15,6 @@ const (
 	uriSslCert        = "ssl-cert"
 	uriSslKey         = "ssl-key"
 	//uriPlatform = "?$select=platform"
-
-	uriCrypto = "crypto"
-	uriKey    = "key"
-	uriCsr    = "csr"
 )
 
 type Volumes struct {
