@@ -2056,9 +2056,10 @@ func (b *BigIP) DeleteInternalDataGroup(name string) error {
 }
 
 // Modify a named internal data group, REPLACING all the records
-func (b *BigIP) ModifyInternalDataGroupRecords(name string, records []DataGroupRecord) error {
+func (b *BigIP) ModifyInternalDataGroupRecords(name, dgtype string, records []DataGroupRecord) error {
 	config := &DataGroup{
 		Records: records,
+		Type:    dgtype,
 	}
 	return b.put(config, uriLtm, uriDatagroup, uriInternal, name)
 }
