@@ -537,7 +537,7 @@ type VirtualServer struct {
 	VSIndex             int       `json:"vsIndex,omitempty"`
 	Vlans               []string  `json:"vlans,omitempty"`
 	Rules               []string  `json:"rules,omitempty"`
-	PersistenceProfiles []Profile `json:"persist,omitempty"`
+	PersistenceProfiles []Profile `json:"persist"`
 	Profiles            []Profile `json:"profiles,omitempty"`
 	Policies            []string  `json:"policies,omitempty"`
 }
@@ -597,19 +597,19 @@ type VirtualServerPolicies struct {
 }
 
 type PolicyPublish struct {
-	Name    string
-	Command string
+	Name        string
+	Command	    string
 }
 
 type PolicyPublishDTO struct {
-	Name    string `json:"name"`
-	Command string `json:"command"`
+	Name       string `json:"name"`
+	Command    string `json:"command"`
 }
 
 func (p *PolicyPublish) MarshalJSON() ([]byte, error) {
 	return json.Marshal(PolicyPublishDTO{
-		Name:    p.Name,
-		Command: p.Command,
+		Name:      p.Name,
+		Command:   p.Command,
 	})
 }
 
@@ -1043,6 +1043,7 @@ type Profile struct {
 	FullPath  string `json:"fullPath,omitempty"`
 	Partition string `json:"partition,omitempty"`
 	Context   string `json:"context,omitempty"`
+	TmDefault string `json:"tmDefault,omitempty"`
 }
 
 type IRules struct {
@@ -1953,7 +1954,7 @@ func (b *BigIP) AddNode(config *Node) error {
 }
 
 // CreateNode adds a new IP based node to the BIG-IP system.
-func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state, description string) error {
+func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state, description string, ratio int) error {
 	config := &Node{
 		Name:            name,
 		Address:         address,
@@ -1963,13 +1964,14 @@ func (b *BigIP) CreateNode(name, address, rate_limit string, connection_limit, d
 		Monitor:         monitor,
 		State:           state,
 		Description:     description,
+		Ratio:           ratio,
 	}
 
 	return b.post(config, uriLtm, uriNode)
 }
 
 // CreateFQDNNode adds a new FQDN based node to the BIG-IP system.
-func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state, description, interval, address_family, autopopulate string, downinterval int) error {
+func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limit, dynamic_ratio int, monitor, state, description string, ratio int, interval, address_family, autopopulate string, downinterval int) error {
 	config := &Node{
 		Name:            name,
 		RateLimit:       rate_limit,
@@ -1978,6 +1980,7 @@ func (b *BigIP) CreateFQDNNode(name, address, rate_limit string, connection_limi
 		Monitor:         monitor,
 		State:           state,
 		Description:     description,
+		Ratio:           ratio,
 	}
 	config.FQDN.Name = address
 	config.FQDN.Interval = interval
@@ -2053,9 +2056,10 @@ func (b *BigIP) DeleteInternalDataGroup(name string) error {
 }
 
 // Modify a named internal data group, REPLACING all the records
-func (b *BigIP) ModifyInternalDataGroupRecords(name string, records []DataGroupRecord) error {
+func (b *BigIP) ModifyInternalDataGroupRecords(name, dgtype string, records []DataGroupRecord) error {
 	config := &DataGroup{
 		Records: records,
+		Type:    dgtype,
 	}
 	return b.put(config, uriLtm, uriDatagroup, uriInternal, name)
 }
