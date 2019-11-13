@@ -1704,14 +1704,13 @@ func (b *BigIP) PoolMemberStatus(pool string, member string, state string, owner
 
 	switch state {
 	case "enable":
-		// config.State = "unchecked"
+		config.State = "user-up"
 		config.Session = "user-enabled"
-	case "disable":
-		// config.State = "unchecked"
+	case "disable": // accept new connections only if the connections belong to an existing persistence session
 		config.Session = "user-disabled"
-		// case "offline":
-		// 	config.State = "user-down"
-		// 	config.Session = "user-disabled"
+	case "offline": // no new connections are allowed
+		config.State = "user-down"
+		config.Session = "user-disabled"
 	}
 
 	if len(owner) > 0 && owner[0] != "" {
