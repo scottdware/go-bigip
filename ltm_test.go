@@ -1502,9 +1502,7 @@ func (s *LTMTestSuite) TestServerSSLProfiles() {
 				"key": "/Common/default.key",
 				"modSslMethods": "disabled",
 				"mode": "enabled",
-				"tmOptions": [
-					"dont-insert-empty-fragments"
-				],
+				"tmOptions": "{ dont-insert-empty-fragments }",
 				"peerCertMode": "ignore",
 				"proxySsl": "disabled",
 				"renegotiatePeriod": "indefinite",
@@ -1540,9 +1538,7 @@ func (s *LTMTestSuite) TestServerSSLProfiles() {
 				"handshakeTimeout": "10",
 				"modSslMethods": "disabled",
 				"mode": "enabled",
-				"tmOptions": [
-					"dont-insert-empty-fragments"
-				],
+				"tmOptions": "{ dont-insert-empty-fragments }",
 				"peerCertMode": "ignore",
 				"proxySsl": "disabled",
 				"renegotiatePeriod": "indefinite",
@@ -1578,9 +1574,7 @@ func (s *LTMTestSuite) TestServerSSLProfiles() {
 				"handshakeTimeout": "10",
 				"modSslMethods": "disabled",
 				"mode": "enabled",
-				"tmOptions": [
-					"dont-insert-empty-fragments"
-				],
+				"tmOptions": "{ dont-insert-empty-fragments }",
 				"peerCertMode": "ignore",
 				"proxySsl": "disabled",
 				"renegotiatePeriod": "indefinite",
@@ -1671,9 +1665,7 @@ func (s *LTMTestSuite) TestClientSSLProfiles() {
 				"key": "/Common/default.key",
 				"modSslMethods": "disabled",
 				"mode": "enabled",
-				"tmOptions": [
-					"dont-insert-empty-fragments"
-				],
+				"tmOptions": "{ dont-insert-empty-fragments }",
 				"peerCertMode": "ignore",
 				"proxySsl": "disabled",
 				"renegotiateMaxRecordDelay": "indefinite",
@@ -1724,9 +1716,7 @@ func (s *LTMTestSuite) TestClientSSLProfiles() {
 				"key": "/Common/default.key",
 				"modSslMethods": "disabled",
 				"mode": "enabled",
-				"tmOptions": [
-					"dont-insert-empty-fragments"
-				],
+				"tmOptions": "{ dont-insert-empty-fragments }",
 				"peerCertMode": "ignore",
 				"proxySsl": "disabled",
 				"renegotiateMaxRecordDelay": "indefinite",
@@ -1775,9 +1765,7 @@ func (s *LTMTestSuite) TestClientSSLProfiles() {
 				"inheritCertkeychain": "false",
 				"modSslMethods": "disabled",
 				"mode": "enabled",
-				"tmOptions": [
-					"dont-insert-empty-fragments"
-				],
+				"tmOptions": "{ dont-insert-empty-fragments }",
 				"peerCertMode": "ignore",
 				"proxySsl": "disabled",
 				"renegotiateMaxRecordDelay": "indefinite",
@@ -1826,9 +1814,7 @@ func (s *LTMTestSuite) TestClientSSLProfiles() {
 				"key": "/Common/default.key",
 				"modSslMethods": "disabled",
 				"mode": "enabled",
-				"tmOptions": [
-					"dont-insert-empty-fragments"
-				],
+				"tmOptions": "{ dont-insert-empty-fragments }",
 				"peerCertMode": "ignore",
 				"proxySsl": "disabled",
 				"renegotiateMaxRecordDelay": "indefinite",
