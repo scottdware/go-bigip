@@ -15,6 +15,11 @@ import (
 	"time"
 )
 
+type BashArgs struct {
+	Command     string `json:"command,omitempty"`
+	UtilCmdArgs string `json:"UtilCmdArgs,omitempty"`
+}
+
 var defaultConfigOptions = &ConfigOptions{
 	APICallTimeout: 60 * time.Second,
 }
@@ -232,21 +237,32 @@ func (b *BigIP) delete(path ...string) error {
 }
 
 func (b *BigIP) post(body interface{}, path ...string) error {
-	return b.reqWithBody("post", body, path...)
+	_, err := b.reqWithBody("post", body, path...)
+	return err
+}
+
+func (b *BigIP) postReturn(body, e interface{}, path ...string) error {
+	data, err := b.reqWithBody("post", body, path...)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, e)
 }
 
 func (b *BigIP) put(body interface{}, path ...string) error {
-	return b.reqWithBody("put", body, path...)
+	_, err := b.reqWithBody("put", body, path...)
+	return err
 }
 
 func (b *BigIP) patch(body interface{}, path ...string) error {
-	return b.reqWithBody("patch", body, path...)
+	_, err := b.reqWithBody("patch", body, path...)
+	return err
 }
 
-func (b *BigIP) reqWithBody(method string, body interface{}, path ...string) error {
+func (b *BigIP) reqWithBody(method string, body interface{}, path ...string) ([]byte, error) {
 	marshalJSON, err := jsonMarshal(body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req := &APIRequest{
@@ -256,8 +272,7 @@ func (b *BigIP) reqWithBody(method string, body interface{}, path ...string) err
 		ContentType: "application/json",
 	}
 
-	_, callErr := b.APICall(req)
-	return callErr
+	return b.APICall(req)
 }
 
 //Get a url and populate an entity. If the entity does not exist (404) then the
@@ -470,4 +485,14 @@ func (b *BigIP) Upload(r io.Reader, size int64, path ...string) (*Upload, error)
 			return &upload, err
 		}
 	}
+}
+
+// Exec call tmsh exec command
+func (b *BigIP) Exec(args *BashArgs) (*BashArgs, error) {
+	e := &BashArgs{}
+	err := b.postReturn(args, e, "util", "bash")
+	if err != nil {
+		return nil, err
+	}
+	return e, nil
 }
