@@ -16,8 +16,9 @@ import (
 )
 
 type BashArgs struct {
-	Command     string `json:"command,omitempty"`
-	UtilCmdArgs string `json:"utilCmdArgs,omitempty"`
+	Command       string `json:"command,omitempty"`
+	UtilCmdArgs   string `json:"utilCmdArgs,omitempty"`
+	CommandResult string `json:"commandResult,omitempty"`
 }
 
 var defaultConfigOptions = &ConfigOptions{
