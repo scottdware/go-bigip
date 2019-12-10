@@ -154,7 +154,7 @@ func (s *DeviceTestSuite) SetupSuite() {
 		}
 	}))
 
-	s.Client = NewSession(s.Server.URL, "", "", nil)
+	s.Client = NewSession(s.Server.URL, "", "", "", nil)
 }
 
 func (s *DeviceTestSuite) TearDownSuite() {
