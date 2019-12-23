@@ -157,7 +157,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 			return data, b.checkError(data)
 		}
 
-		return data, errors.New(fmt.Sprintf("HTTP %d :: %s", res.StatusCode, string(data[:])))
+		return data, fmt.Errorf("HTTP %d :: %s", res.StatusCode, string(data[:]))
 	}
 
 	// fmt.Println("Resp --", res.StatusCode, " -- ", string(data))
@@ -276,7 +276,7 @@ func (b *BigIP) checkError(resp []byte) error {
 
 	err := json.Unmarshal(resp, &reqError)
 	if err != nil {
-		return errors.New(fmt.Sprintf("%s\n%s", err.Error(), string(resp[:])))
+		return fmt.Errorf("%s\n%s", err.Error(), string(resp[:]))
 	}
 
 	err = reqError.Error()
