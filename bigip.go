@@ -95,6 +95,7 @@ func NewSession(host, user, passwd string, configOptions *ConfigOptions) *BigIP 
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
+			Proxy: http.ProxyFromEnvironment,
 		},
 		ConfigOptions: configOptions,
 	}
