@@ -22,25 +22,25 @@ type GTMWideIPs struct {
 // Type is what determine the type of record the WideIp is for in the docs, however that is NOT returned by the API
 // Instead you have to query the Type by the uri   wideip/a  wideip/cname  that = type
 type GTMWideIP struct {
-	Name                              string `json:"name,omitempty"`
-	Partition                         string `json:"partition,omitempty"`
-	FullPath                          string `json:"fullPath,omitempty"`
-	Generation                        int    `json:"generation,omitempty"`
-	AppService                        string `json:"appService,omitempty"`
-	Description                       string `json:"description,omitempty"`
-	Disabled                          bool   `json:"disabled,omitempty"`
-	Enabled                           bool   `json:"enabled,omitempty"`
-	FailureRcode                      string `json:"failureRcode,omitempty"`
-	FailureRcodeResponse              string `json:"failureRcodeResponse,omitempty"`
-	FailureRcodeTTL                   int    `json:"failureRcodeTtl,omitempty"`
-	LastResortPool                    string `json:"lastResortPool,omitempty"`
-	LoadBalancingDecisionLogVerbosity string `json:"loadBalancingDecisionLogVerbosity,omitempty"`
-	MinimalResponse                   string `json:"minimalResponse,omitempty"`
-	PersistCidrIpv4                   int    `json:"persistCidrIpv4,omitempty"`
-	PersistCidrIpv6                   int    `json:"persistCidrIpv6,omitempty"`
-	Persistence                       string `json:"persistence,omitempty"`
-	PoolLbMode                        string `json:"poolLbMode,omitempty"`
-	TTLPersistence                    int    `json:"ttlPersistence,omitempty"`
+	Name                              string   `json:"name,omitempty"`
+	Partition                         string   `json:"partition,omitempty"`
+	FullPath                          string   `json:"fullPath,omitempty"`
+	Generation                        int      `json:"generation,omitempty"`
+	AppService                        string   `json:"appService,omitempty"`
+	Description                       string   `json:"description,omitempty"`
+	Disabled                          bool     `json:"disabled,omitempty"`
+	Enabled                           bool     `json:"enabled,omitempty"`
+	FailureRcode                      string   `json:"failureRcode,omitempty"`
+	FailureRcodeResponse              string   `json:"failureRcodeResponse,omitempty"`
+	FailureRcodeTTL                   int      `json:"failureRcodeTtl,omitempty"`
+	LastResortPool                    string   `json:"lastResortPool,omitempty"`
+	LoadBalancingDecisionLogVerbosity []string `json:"loadBalancingDecisionLogVerbosity,omitempty"`
+	MinimalResponse                   string   `json:"minimalResponse,omitempty"`
+	PersistCidrIpv4                   int      `json:"persistCidrIpv4,omitempty"`
+	PersistCidrIpv6                   int      `json:"persistCidrIpv6,omitempty"`
+	Persistence                       string   `json:"persistence,omitempty"`
+	PoolLbMode                        string   `json:"poolLbMode,omitempty"`
+	TTLPersistence                    int      `json:"ttlPersistence,omitempty"`
 
 	// Not in the spec, but returned by the API
 	// Setting this field atomically updates all members.
