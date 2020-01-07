@@ -22,25 +22,25 @@ type GTMWideIPs struct {
 // Type is what determine the type of record the WideIp is for in the docs, however that is NOT returned by the API
 // Instead you have to query the Type by the uri   wideip/a  wideip/cname  that = type
 type GTMWideIP struct {
-	Name                              string `json:"name,omitempty"`
-	Partition                         string `json:"partition,omitempty"`
-	FullPath                          string `json:"fullPath,omitempty"`
-	Generation                        int    `json:"generation,omitempty"`
-	AppService                        string `json:"appService,omitempty"`
-	Description                       string `json:"description,omitempty"`
-	Disabled                          bool   `json:"disabled,omitempty"`
-	Enabled                           bool   `json:"enabled,omitempty"`
-	FailureRcode                      string `json:"failureRcode,omitempty"`
-	FailureRcodeResponse              string `json:"failureRcodeResponse,omitempty"`
-	FailureRcodeTTL                   int    `json:"failureRcodeTtl,omitempty"`
-	LastResortPool                    string `json:"lastResortPool,omitempty"`
-	LoadBalancingDecisionLogVerbosity string `json:"loadBalancingDecisionLogVerbosity,omitempty"`
-	MinimalResponse                   string `json:"minimalResponse,omitempty"`
-	PersistCidrIpv4                   int    `json:"persistCidrIpv4,omitempty"`
-	PersistCidrIpv6                   int    `json:"persistCidrIpv6,omitempty"`
-	Persistence                       string `json:"persistence,omitempty"`
-	PoolLbMode                        string `json:"poolLbMode,omitempty"`
-	TTLPersistence                    int    `json:"ttlPersistence,omitempty"`
+	Name                              string   `json:"name,omitempty"`
+	Partition                         string   `json:"partition,omitempty"`
+	FullPath                          string   `json:"fullPath,omitempty"`
+	Generation                        int      `json:"generation,omitempty"`
+	AppService                        string   `json:"appService,omitempty"`
+	Description                       string   `json:"description,omitempty"`
+	Disabled                          bool     `json:"disabled,omitempty"`
+	Enabled                           bool     `json:"enabled,omitempty"`
+	FailureRcode                      string   `json:"failureRcode,omitempty"`
+	FailureRcodeResponse              string   `json:"failureRcodeResponse,omitempty"`
+	FailureRcodeTTL                   int      `json:"failureRcodeTtl,omitempty"`
+	LastResortPool                    string   `json:"lastResortPool,omitempty"`
+	LoadBalancingDecisionLogVerbosity []string `json:"loadBalancingDecisionLogVerbosity,omitempty"`
+	MinimalResponse                   string   `json:"minimalResponse,omitempty"`
+	PersistCidrIpv4                   int      `json:"persistCidrIpv4,omitempty"`
+	PersistCidrIpv6                   int      `json:"persistCidrIpv6,omitempty"`
+	Persistence                       string   `json:"persistence,omitempty"`
+	PoolLbMode                        string   `json:"poolLbMode,omitempty"`
+	TTLPersistence                    int      `json:"ttlPersistence,omitempty"`
 
 	// Not in the spec, but returned by the API
 	// Setting this field atomically updates all members.
@@ -276,6 +276,112 @@ func (b *BigIP) DeleteGTMAPoolMember(fullPathToAPool, serverFullPath, poolMember
 	return b.delete(uriGtm, uriPool, string(ARecord), fullPathToAPool, uriPoolMember, fullPathToPoolMember)
 }
 
+// GTMCNamePools contains a list of every gtm/pool/cname on the BIG-IP system.
+type GTMCNamePools struct {
+	GTMCNamePools []GTMCNamePool `json:"items"`
+}
+
+// GTMCNamePool contains information about each gtm/pool/cname.
+type GTMCNamePool struct {
+	Name                     string `json:"name,omitempty"`
+	Partition                string `json:"partition,omitempty"`
+	FullPath                 string `json:"fullPath,omitempty"`
+	Generation               int    `json:"generation,omitempty"`
+	AppService               string `json:"appService,omitempty"`
+	Description              string `json:"description,omitempty"`
+	Disabled                 bool   `json:"disabled,omitempty"`
+	DynamicRatio             string `json:"dynamicRatio,omitempty"`
+	Enabled                  bool   `json:"enabled,omitempty"`
+	FallbackMode             string `json:"fallbackMode,omitempty"`
+	LoadBalancingMode        string `json:"loadBalancingMode,omitempty"`
+	ManualResume             string `json:"manualResume,omitempty"`
+	TmPartition              string `json:"tmPartition,omitempty"`
+	QosHitRatio              int    `json:"qosHitRatio,omitempty"`
+	QosHops                  int    `json:"qosHops,omitempty"`
+	QosKilobytesSecond       int    `json:"qosKilobytesSecond,omitempty"`
+	QosLcs                   int    `json:"qosLcs,omitempty"`
+	QosPacketRate            int    `json:"qosPacketRate,omitempty"`
+	QosRtt                   int    `json:"qosRtt,omitempty"`
+	QosTopology              int    `json:"qosTopology,omitempty"`
+	QosVsCapacity            int    `json:"qosVsCapacity,omitempty"`
+	QosVsScore               int    `json:"qosVsScore,omitempty"`
+	TTL                      int    `json:"ttl,omitempty"`
+	VerifyMemberAvailability string `json:"verifyMemberAvailability,omitempty"`
+	MembersReference         struct {
+		Link            string `json:"link,omitempty"`
+		IsSubcollection bool   `json:"isSubcollection,omitempty"`
+	}
+}
+
+// GetGTMCNamePools returns a list of all Pool/CNAME records.
+func (b *BigIP) GetGTMCNamePools() (*GTMCNamePools, error) {
+	var p GTMCNamePools
+	err, _ := b.getForEntity(&p, uriGtm, uriPool, string(CNAMERecord))
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+// GetGTMCNamePool gets a Pool/CNAME by name.
+func (b *BigIP) GetGTMCNamePool(name string) (*GTMCNamePool, error) {
+	var w GTMCNamePool
+
+	err, ok := b.getForEntity(&w, uriGtm, uriPool, string(CNAMERecord), name)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &w, nil
+}
+
+// GTMCNamePoolMembers contains a list of every gtm/pool/cname/members on the BIG-IP system.
+type GTMCNamePoolMembers struct {
+	GTMCNamePoolMembers []GTMCNamePoolMember `json:"items"`
+}
+
+// GTMCNamePoolMember contains information about each gtm/pool/cname member.
+type GTMCNamePoolMember struct {
+	Name         string `json:"name,omitempty"`
+	FullPath     string `json:"fullPath,omitempty"`
+	Generation   int    `json:"generation,omitempty"`
+	SelfLink     string `json:"selfLink,omitempty"`
+	Enabled      bool   `json:"enabled,omitempty"`
+	MemberOrder  int    `json:"memberOrder,omitempty"`
+	Ratio        int    `json:"ratio,omitempty"`
+	StaticTarget string `json:"staticTarget,omitempty"`
+}
+
+// GetGTMCNamePoolMembers returns a list of all Pool/CName member records.
+func (b *BigIP) GetGTMCNamePoolMembers(fullPathToCNamePool string) (*GTMCNamePoolMembers, error) {
+	var m GTMCNamePoolMembers
+	err, _ := b.getForEntity(&m, uriGtm, uriPool, string(CNAMERecord), fullPathToCNamePool, uriPoolMembers)
+	if err != nil {
+		return nil, err
+	}
+
+	return &m, nil
+}
+
+// GetGTMCNamePoolMember gets a Pool/CNAME member by name.
+func (b *BigIP) GetGTMCNamePoolMember(fullPathToAPool, poolMemberFullPath string) (*GTMCNamePoolMember, error) {
+	var w GTMCNamePoolMember
+
+	err, ok := b.getForEntity(&w, uriGtm, uriPool, string(CNAMERecord), fullPathToAPool, uriPoolMember, poolMemberFullPath)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, nil
+	}
+
+	return &w, nil
+}
+
 /*
 
 These are here for later use -- so no one has to do this painful work!!!
@@ -322,39 +428,6 @@ type GTMAAAAPool struct {
 	QosVsScore                int    `json:"qosVsScore,omitempty"`
 	TTL                       int    `json:"ttl,omitempty"`
 	VerifyMemberAvailability  string `json:"verifyMemberAvailability,omitempty"`
-}
-
-// GTMCNamePools contains a list of every gtm/pool/cname on the BIG-IP system.
-type GTMCNamePools struct {
-	GTMCNamePools []GTMCNamePool `json:"items"`
-}
-
-// GTMCNamePool contains information about each gtm/pool/cname
-type GTMCNamePool struct {
-	Name                     string `json:"name,omitempty"`
-	Partition                string `json:"partition,omitempty"`
-	FullPath                 string `json:"fullPath,omitempty"`
-	Generation               int    `json:"generation,omitempty"`
-	AppService               string `json:"appService,omitempty"`
-	Description              string `json:"description,omitempty"`
-	Disabled                 bool   `json:"disabled,omitempty"`
-	DynamicRatio             string `json:"dynamicRatio,omitempty"`
-	Enabled                  bool   `json:"enabled,omitempty"`
-	FallbackMode             string `json:"fallbackMode,omitempty"`
-	LoadBalancingMode        string `json:"loadBalancingMode,omitempty"`
-	ManualResume             string `json:"manualResume,omitempty"`
-	TmPartition              string `json:"tmPartition,omitempty"`
-	QosHitRatio              int    `json:"qosHitRatio,omitempty"`
-	QosHops                  int    `json:"qosHops,omitempty"`
-	QosKilobytesSecond       int    `json:"qosKilobytesSecond,omitempty"`
-	QosLcs                   int    `json:"qosLcs,omitempty"`
-	QosPacketRate            int    `json:"qosPacketRate,omitempty"`
-	QosRtt                   int    `json:"qosRtt,omitempty"`
-	QosTopology              int    `json:"qosTopology,omitempty"`
-	QosVsCapacity            int    `json:"qosVsCapacity,omitempty"`
-	QosVsScore               int    `json:"qosVsScore,omitempty"`
-	TTL                      int    `json:"ttl,omitempty"`
-	VerifyMemberAvailability string `json:"verifyMemberAvailability,omitempty"`
 }
 
 // GTMMXPools contains a list of every gtm/pool/mx on the BIG-IP system.
