@@ -1003,6 +1003,7 @@ type Monitor struct {
 	Mode           string
 	Adaptive       string
 	AdaptiveLimit  int
+        Database       string
 }
 
 type monitorDTO struct {
@@ -1014,6 +1015,7 @@ type monitorDTO struct {
 	ParentMonitor  string `json:"defaultsFrom,omitempty"`
 	Description    string `json:"description,omitempty"`
 	Destination    string `json:"destination,omitempty"`
+        Database       string `json:"database,omitempty"`
 	Interval       int    `json:"interval,omitempty"`
 	IPDSCP         int    `json:"ipDscp,omitempty"`
 	ManualResume   string `json:"manualResume,omitempty"`
@@ -2053,15 +2055,12 @@ func (b *BigIP) AddInternalDataGroup(config *DataGroup) error {
 
 func (b *BigIP) DeleteInternalDataGroup(name string) error {
 	return b.delete(uriLtm, uriDatagroup, uriInternal, name)
+
 }
 
 // Modify a named internal data group, REPLACING all the records
-func (b *BigIP) ModifyInternalDataGroupRecords(name, dgtype string, records []DataGroupRecord) error {
-	config := &DataGroup{
-		Records: records,
-		Type:    dgtype,
-	}
-	return b.put(config, uriLtm, uriDatagroup, uriInternal, name)
+func (b *BigIP) ModifyInternalDataGroupRecords(config *DataGroup) error {
+	return b.put(config, uriLtm, uriDatagroup, uriInternal, config.Name)
 }
 
 // Get an internal data group by name, returns nil if the data group does not exist
