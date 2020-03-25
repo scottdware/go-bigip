@@ -439,3 +439,43 @@ func (s *SysTestSuite) TestDeleteKey() {
 	assert.Equal(s.T(), fmt.Sprintf("/mgmt/tm/%s/%s/%s/%s", uriSys, uriFile, uriSslKey, "~Common~test.key"), s.LastRequest.URL.Path, "Wrong uri to delete key")
 	assert.Equal(s.T(), "DELETE", s.LastRequest.Method)
 }
+
+func (s *SysTestSuite) TestSaveSysConfig() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+	}
+	err := s.Client.SaveSysConfig("", "")
+	assert.Nil(s.T(), err)
+
+	err = s.Client.SaveSysConfig("backup.scf", "")
+	assert.Nil(s.T(), err)
+
+	err = s.Client.SaveSysConfig("backup.scf", "secret-key")
+	assert.Nil(s.T(), err)
+
+	err = s.Client.SaveSysConfig("backup.tar", "")
+	assert.Nil(s.T(), err)
+
+	err = s.Client.SaveSysConfig("backup.tar", "secret-key")
+	assert.Nil(s.T(), err)
+}
+
+func (s *SysTestSuite) TestLodSysConfig() {
+	s.ResponseFunc = func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+	}
+	err := s.Client.LoadSysConfig("", "")
+	assert.Nil(s.T(), err)
+
+	err = s.Client.LoadSysConfig("backup.scf", "")
+	assert.Nil(s.T(), err)
+
+	err = s.Client.LoadSysConfig("backup.scf", "secret-key")
+	assert.Nil(s.T(), err)
+
+	err = s.Client.LoadSysConfig("backup.tar", "")
+	assert.Nil(s.T(), err)
+
+	err = s.Client.LoadSysConfig("backup.tar", "secret-key")
+	assert.Nil(s.T(), err)
+}
