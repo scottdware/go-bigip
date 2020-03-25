@@ -1,6 +1,9 @@
 package bigip
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+)
 
 const (
 	uriSys            = "sys"
@@ -15,6 +18,7 @@ const (
 	uriSslCert        = "ssl-cert"
 	uriSslKey         = "ssl-key"
 	//uriPlatform = "?$select=platform"
+	uriConfig = "config"
 )
 
 type Volumes struct {
@@ -356,4 +360,46 @@ func (b *BigIP) GetKey(name string) (*Key, error) {
 // DeleteKey removes a key.
 func (b *BigIP) DeleteKey(name string) error {
 	return b.delete(uriSys, uriFile, uriSslKey, name)
+}
+
+type SysConfig struct {
+	Command string                   `json:"command"`
+	Options []map[string]interface{} `json:"options, omitempty"`
+}
+
+//SaveSysConfig saves the running configuration to file. The file can be either an .scf file or a .tar file
+func (b *BigIP) SaveSysConfig(fileName, passphrase string) error {
+	options := buildSysConfigOptions(fileName, passphrase)
+	config := &SysConfig{
+		Command: "save",
+		Options: options,
+	}
+	return b.post(config, uriSys, uriConfig)
+}
+
+//LoadSysConfig loads system configuration from a file.  The file can be either an .scf file or a .tar file
+func (b *BigIP) LoadSysConfig(fileName, passphrase string) error {
+	options := buildSysConfigOptions(fileName, passphrase)
+	config := &SysConfig{
+		Command: "load",
+		Options: options,
+	}
+	return b.post(config, uriSys, uriConfig)
+}
+
+func buildSysConfigOptions(fileName string, passphrase string) []map[string]interface{} {
+	options := make([]map[string]interface{}, 0, 0)
+	if fileName != "" {
+		if strings.HasSuffix(fileName, ".tar") {
+			options = append(options, map[string]interface{}{"tar-file": fileName})
+		} else {
+			options = append(options, map[string]interface{}{"file": fileName})
+		}
+		if passphrase != "" { //passphrase is needed only when file is present
+			options = append(options, map[string]interface{}{"passphrase": passphrase})
+		} else {
+			options = append(options, map[string]interface{}{"no-passphrase": ""})
+		}
+	}
+	return options
 }
