@@ -286,6 +286,17 @@ type poolMember struct {
 	Name string `json:"name"`
 }
 
+type PoolMemberFqdn struct {
+	Name string `json:"name"`
+	FQDN struct {
+		AddressFamily string `json:"addressFamily,omitempty"`
+		AutoPopulate  string `json:"autopopulate,omitempty"`
+		DownInterval  int    `json:"downInterval,omitempty"`
+		Interval      string `json:"interval,omitempty"`
+		Name          string `json:"tmName,omitempty"`
+	} `json:"fqdn,omitempty"`
+}
+
 // poolMembers is used only when modifying members on a pool.
 type poolMembers struct {
 	Members []PoolMember `json:"members"`
@@ -1003,7 +1014,7 @@ type Monitor struct {
 	Mode           string
 	Adaptive       string
 	AdaptiveLimit  int
-        Database       string
+	Database       string
 }
 
 type monitorDTO struct {
@@ -1015,7 +1026,7 @@ type monitorDTO struct {
 	ParentMonitor  string `json:"defaultsFrom,omitempty"`
 	Description    string `json:"description,omitempty"`
 	Destination    string `json:"destination,omitempty"`
-        Database       string `json:"database,omitempty"`
+	Database       string `json:"database,omitempty"`
 	Interval       int    `json:"interval,omitempty"`
 	IPDSCP         int    `json:"ipDscp,omitempty"`
 	ManualResume   string `json:"manualResume,omitempty"`
@@ -2120,6 +2131,10 @@ func (b *BigIP) AddPoolMember(pool, member string) error {
 	return b.post(config, uriLtm, uriPool, pool, uriPoolMember)
 }
 
+func (b *BigIP) AddPoolMemberFQDN(pool string, config *PoolMemberFqdn) error {
+	return b.post(config, uriLtm, uriPool, pool, uriPoolMember)
+}
+
 // GetPoolMember returns the details of a member in the specified pool.
 func (b *BigIP) GetPoolMember(pool string, member string) (*PoolMember, error) {
 	var poolMember PoolMember
@@ -2249,11 +2264,22 @@ func (b *BigIP) VirtualServers() (*VirtualServers, error) {
 // in CIDR notation or decimal, i.e.: "24" or "255.255.255.0". A CIDR mask of "0" is the same
 // as "0.0.0.0".
 func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, vlans_enabled bool, port int, translate_address, translate_port string) error {
-	subnetMask := cidr[mask]
 
-	if strings.Contains(mask, ".") {
-		subnetMask = mask
+	if strings.Contains(destination, ":") {
+		subnetMask := mask
+
+		config := &VirtualServer{
+			Name:             name,
+			Destination:      fmt.Sprintf("%s.%d", destination, port),
+			Mask:             subnetMask,
+			Pool:             pool,
+			TranslateAddress: translate_address,
+			TranslatePort:    translate_port,
+		}
+
+		return b.post(config, uriLtm, uriVirtual)
 	}
+	subnetMask := cidr[mask]
 
 	config := &VirtualServer{
 		Name:             name,
