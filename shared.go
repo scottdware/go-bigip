@@ -31,6 +31,7 @@ const (
 	uriVirtual         = "virtual"
 	uriVirtualAddress  = "virtual-address"
 	uriGtm             = "gtm"
+	uriGtmServer       = "server"
 	uriWideIp          = "wideip"
 	uriARecord         = "a"
 	uriAAAARecord      = "aaaa"
