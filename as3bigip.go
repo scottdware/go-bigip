@@ -16,6 +16,7 @@ import (
 )
 
 const as3SchemaLatestURL = "https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/master/schema/latest/as3-schema.json"
+const doSchemaLatestURL = "https://raw.githubusercontent.com/F5Networks/terraform-provider-bigip/master/schemas/doschema.json"
 
 const (
 	uriSha          = "shared"
@@ -30,6 +31,11 @@ const (
 type as3Validate struct {
 	as3SchemaURL    string
 	as3SchemaLatest string
+}
+
+type doValidate struct {
+	doSchemaURL    string
+	doSchemaLatest string
 }
 
 type as3Version struct {
@@ -94,6 +100,57 @@ func (as3 *as3Validate) fetchAS3Schema() error {
 			return err
 		}
 		as3.as3SchemaLatest = string(byteJSON)
+		return err
+	}
+	return nil
+}
+
+func ValidateDOTemplate(doExampleJson string) bool {
+	myDO := &doValidate{
+		doSchemaLatestURL,
+		"",
+	}
+	log.Printf("[DEBUG] validating DO json against DO schema")
+	err := myDO.fetchDOSchema()
+	if err != nil {
+		fmt.Errorf("DO Schema Fetch failed: %s", err)
+		return false
+	}
+
+	schemaLoader := gojsonschema.NewStringLoader(myDO.doSchemaLatest)
+	documentLoader := gojsonschema.NewStringLoader(doExampleJson)
+
+	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+	if err != nil {
+		fmt.Errorf("%s", err)
+		return false
+	}
+	if !result.Valid() {
+		log.Printf("DO JSON is not valid. see errors :\n")
+		for _, desc := range result.Errors() {
+			log.Printf("- %s\n", desc)
+		}
+		return false
+	} else {
+		log.Printf("[DEBUG] DO Json  is valid\n")
+	}
+	return true
+}
+
+func (do *doValidate) fetchDOSchema() error {
+	res, resErr := http.Get(do.doSchemaURL)
+	if resErr != nil {
+		log.Printf("Error while fetching latest DO schema : %v", resErr)
+		return resErr
+	}
+	if res.StatusCode == http.StatusOK {
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			log.Printf("Unable to read the DO template from json response body : %v", err)
+			return err
+		}
+		defer res.Body.Close()
+		do.doSchemaLatest = string(body)
 		return err
 	}
 	return nil
@@ -179,6 +236,7 @@ func (b *BigIP) PostAs3Bigip(as3NewJson string, tenantFilter string) (error, str
 				}
 			}
 		}
+		time.Sleep(3 * time.Second)
 	}
 
 	return nil, strings.Join(successfulTenants[:], ",")
@@ -216,6 +274,7 @@ func (b *BigIP) DeleteAs3Bigip(tenantName string) error {
 				}
 			}
 		}
+		time.Sleep(3 * time.Second)
 	}
 
 	return nil
@@ -350,7 +409,7 @@ func (b *BigIP) GetTenantList(body interface{}) (string, int) {
 	tenant_list := strings.Join(s[:], ",")
 	return tenant_list, len(s)
 }
-func (b *BigIP) AddTeemAgent(body interface{}) string {
+func (b *BigIP) AddTeemAgent(body interface{}) (string, error) {
 	var s string
 	as3json := body.(string)
 	resp := []byte(as3json)
@@ -359,7 +418,10 @@ func (b *BigIP) AddTeemAgent(body interface{}) string {
 	//jsonRef["controls"] = map[string]interface{}{"class": "Controls", "userAgent": "Terraform Configured AS3"}
 	as3ver, err := b.getAs3version()
 	if err != nil {
-		log.Println(err)
+		return "", fmt.Errorf("Getting AS3 Version failed with %v", err)
+	}
+	if as3ver.Version == "" {
+		return "", fmt.Errorf("Getting AS3 Version failed,please check AS3 installed?")
 	}
 	log.Printf("[DEBUG] AS3 Version:%+v", as3ver.Version)
 	log.Printf("[DEBUG] Terraform Version:%+v", b.UserAgent)
@@ -375,10 +437,11 @@ func (b *BigIP) AddTeemAgent(body interface{}) string {
 	}
 	jsonData, err := json.Marshal(jsonRef)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
+		return "", fmt.Errorf("Getting AS3 Version failed with %v", err)
 	}
 	s = string(jsonData)
-	return s
+	return s, nil
 }
 func intConvert(v interface{}) int {
 	if s, err := strconv.Atoi(v.(string)); err == nil {
