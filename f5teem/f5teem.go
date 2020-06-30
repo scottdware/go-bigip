@@ -29,8 +29,8 @@ import (
 )
 
 func AnonymousClient(assetInfo AssetInfo, apiKey string) *TeemObject {
-	teemServer := getEndpointInfo()
-	if apiKey == "" {
+	envTeem, teemServer := getEndpointInfo()
+	if envTeem != "staging" {
 		apiKey = teemServer.(map[string]string)["api_key"]
 	}
 	serviceHost := teemServer.(map[string]string)["endpoint"]
@@ -46,12 +46,12 @@ func AnonymousClient(assetInfo AssetInfo, apiKey string) *TeemObject {
 	return &teemClient
 }
 
-func getEndpointInfo() interface{} {
+func getEndpointInfo() (string, interface{}) {
 	environment := envVar["published"].([]string)[0]
 	if len(os.Getenv(envVar["env_var"].(string))) > 0 {
 		environment = os.Getenv(envVar["env_var"].(string))
 	}
-	return endPoints["anonymous"].(map[string]interface{})[environment]
+	return environment, endPoints["anonymous"].(map[string]interface{})[environment]
 }
 
 func genUUID() string {
