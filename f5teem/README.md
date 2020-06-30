@@ -1,4 +1,4 @@
-# f5-teem
+# f5teem
 Go Module providing an interface for F5's TEEM infrastructure to provide usage analytics to F5.
 
 # Usage (Anonymous API)
@@ -8,7 +8,8 @@ Go Module providing an interface for F5's TEEM infrastructure to provide usage a
 package main
 
 import (
-	"github.com/RavinderReddyF5/f5-teem"
+	//"github.com/RavinderReddyF5/f5-teem"
+	"github.com/f5devcentral/go-bigip/f5teem"
 	"log"
 )
 
