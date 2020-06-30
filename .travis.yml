@@ -9,4 +9,4 @@ matrix:
     - go: tip
 
 env:
-  - TEEM_API_ENVIRONMENT="staging"
+  - TEEM_API_ENVIRONMENT=staging
