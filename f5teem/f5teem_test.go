@@ -1,6 +1,7 @@
 package f5teem
 
 import (
+	"os"
 	"testing"
 )
 
@@ -10,7 +11,8 @@ func TestTeemTelemetryRequest(t *testing.T) {
 		"1.2.0",
 		"",
 	}
-	teemDevice := AnonymousClient(assetInfo, "")
+	apiKey := os.Getenv("TEEM_API_KEY")
+	teemDevice := AnonymousClient(assetInfo, apiKey)
 	d := map[string]interface{}{
 		"Device":          1,
 		"Tenant":          1,
@@ -24,7 +26,10 @@ func TestTeemTelemetryRequest(t *testing.T) {
 		"platformVersion": "15.1.0.5",
 	}
 	err := teemDevice.Report(d, "Terraform BIGIP-ravinder-latest", "1")
-	if err != nil {
+	if apiKey == "" && err == nil {
+		t.Errorf("Error:%v", err)
+	}
+	if apiKey != "" && err != nil {
 		t.Errorf("Error:%v", err)
 	}
 }
