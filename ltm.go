@@ -312,14 +312,21 @@ type PoolMember struct {
 	Address         string `json:"address,omitempty"`
 	ConnectionLimit int    `json:"connectionLimit,omitempty"`
 	DynamicRatio    int    `json:"dynamicRatio,omitempty"`
-	InheritProfile  string `json:"inheritProfile,omitempty"`
-	Logging         string `json:"logging,omitempty"`
-	Monitor         string `json:"monitor,omitempty"`
-	PriorityGroup   int    `json:"priorityGroup,omitempty"`
-	RateLimit       string `json:"rateLimit,omitempty"`
-	Ratio           int    `json:"ratio,omitempty"`
-	Session         string `json:"session,omitempty"`
-	State           string `json:"state,omitempty"`
+	FQDN            struct {
+		AddressFamily string `json:"addressFamily,omitempty"`
+		AutoPopulate  string `json:"autopopulate,omitempty"`
+		DownInterval  int    `json:"downInterval,omitempty"`
+		Interval      string `json:"interval,omitempty"`
+		Name          string `json:"tmName,omitempty"`
+	} `json:"fqdn,omitempty"`
+	InheritProfile string `json:"inheritProfile,omitempty"`
+	Logging        string `json:"logging,omitempty"`
+	Monitor        string `json:"monitor,omitempty"`
+	PriorityGroup  int    `json:"priorityGroup,omitempty"`
+	RateLimit      string `json:"rateLimit,omitempty"`
+	Ratio          int    `json:"ratio,omitempty"`
+	Session        string `json:"session,omitempty"`
+	State          string `json:"state,omitempty"`
 }
 
 // Pool transfer object so we can mask the bool data munging
@@ -573,7 +580,7 @@ type VirtualAddress struct {
 	ICMPEcho              bool
 	InheritedTrafficGroup bool
 	Mask                  string
-	RouteAdvertisement    bool
+	RouteAdvertisement    string
 	ServerScope           string
 	TrafficGroup          string
 	Unit                  int
@@ -593,7 +600,7 @@ type virtualAddressDTO struct {
 	ICMPEcho              string `json:"icmpEcho,omitempty" bool:"enabled"`
 	InheritedTrafficGroup string `json:"inheritedTrafficGroup,omitempty" bool:"yes"`
 	Mask                  string `json:"mask,omitempty"`
-	RouteAdvertisement    string `json:"routeAdvertisement,omitempty" bool:"enabled"`
+	RouteAdvertisement    string `json:"routeAdvertisement,omitempty"`
 	ServerScope           string `json:"serverScope,omitempty"`
 	TrafficGroup          string `json:"trafficGroup,omitempty"`
 	Unit                  int    `json:"unit,omitempty"`
@@ -2123,11 +2130,7 @@ func (b *BigIP) PoolMembers(name string) (*PoolMembers, error) {
 
 // AddPoolMember adds a node/member to the given pool. <member> must be in the form
 // of <node>:<port>, i.e.: "web-server1:443".
-func (b *BigIP) AddPoolMember(pool, member string) error {
-	config := &poolMember{
-		Name: member,
-	}
-
+func (b *BigIP) AddPoolMember(pool string, config *PoolMember) error {
 	return b.post(config, uriLtm, uriPool, pool, uriPoolMember)
 }
 
@@ -2166,7 +2169,7 @@ func (b *BigIP) ModifyPoolMember(pool string, config *PoolMember) error {
 	// This cannot be modified for an existing pool member.
 	config.Address = ""
 
-	return b.put(config, uriLtm, uriPool, pool, uriPoolMember, member)
+	return b.patch(config, uriLtm, uriPool, pool, uriPoolMember, member)
 }
 
 // UpdatePoolMembers does a replace-all-with for the members of a pool.
@@ -2263,7 +2266,7 @@ func (b *BigIP) VirtualServers() (*VirtualServers, error) {
 // CreateVirtualServer adds a new virtual server to the BIG-IP system. <mask> can either be
 // in CIDR notation or decimal, i.e.: "24" or "255.255.255.0". A CIDR mask of "0" is the same
 // as "0.0.0.0".
-func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, vlans_enabled bool, port int, translate_address, translate_port string) error {
+/*func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, vlans_enabled bool, port int, translate_address, translate_port string) error {
 
 	if strings.Contains(destination, ":") {
 		subnetMask := mask
@@ -2290,6 +2293,9 @@ func (b *BigIP) CreateVirtualServer(name, destination, mask, pool string, vlans_
 		TranslatePort:    translate_port,
 	}
 
+	return b.post(config, uriLtm, uriVirtual)
+}*/
+func (b *BigIP) CreateVirtualServer(config *VirtualServer) error {
 	return b.post(config, uriLtm, uriVirtual)
 }
 
@@ -2427,7 +2433,7 @@ func (b *BigIP) Monitors() ([]Monitor, error) {
 
 // CreateMonitor adds a new monitor to the BIG-IP system. <parent> must be one of "http", "https",
 // "icmp", "gateway icmp", or "tcp".
-func (b *BigIP) CreateMonitor(name, parent, defaults_from string, interval, timeout int, send, receive, receive_disable, compatibility string) error {
+func (b *BigIP) CreateMonitor(name, parent, defaults_from string, interval, timeout int, send, receive, receive_disable, compatibility string, destination string) error {
 	config := &Monitor{
 		Name:           name,
 		ParentMonitor:  parent,
@@ -2438,6 +2444,7 @@ func (b *BigIP) CreateMonitor(name, parent, defaults_from string, interval, time
 		ReceiveString:  receive,
 		ReceiveDisable: receive_disable,
 		Compatibility:  compatibility,
+		Destination:    destination,
 	}
 
 	return b.AddMonitor(config)
@@ -3564,7 +3571,7 @@ func (b *BigIP) DeleteHttpProfile(name string) error {
 // ModifyHttpProfile allows you to change any attribute of a http profile.
 // Fields that can be modified are referenced in the HttpProfile struct.
 func (b *BigIP) ModifyHttpProfile(name string, config *HttpProfile) error {
-	return b.put(config, uriLtm, uriProfile, uriHttp, name)
+	return b.patch(config, uriLtm, uriProfile, uriHttp, name)
 }
 
 // OneconnectProfiles returns a list of HTTP profiles
