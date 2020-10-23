@@ -2145,7 +2145,7 @@ func (b *BigIP) PoolMembers(name string) (*PoolMembers, error) {
 }
 
 func (b *BigIP) AddPoolMemberNode(pool, member string) error {
-	config := &poolMember{	
+	config := &poolMember{
 		Name: member,
 	}
 	return b.post(config, uriLtm, uriPool, pool, uriPoolMember)
@@ -2669,9 +2669,9 @@ func (b *BigIP) PublishPolicy(name, publish string) error {
 func (b *BigIP) UpdatePolicy(name string, partition string, p *Policy) error {
 	normalizePolicy(p)
 	values := []string{}
-        values = append(values, "~")
-        values = append(values, partition)
-        values = append(values, "~Drafts~")
+	values = append(values, "~")
+	values = append(values, partition)
+	values = append(values, "~Drafts~")
 	values = append(values, name)
 	// Join three strings into one.
 	result := strings.Join(values, "")
@@ -2744,18 +2744,18 @@ func (b *BigIP) ModifyOneconnect(name string, oneconnect *Oneconnect) error {
 
 //func (b *BigIP) CreateTcp(name, partition, defaultsFrom string, idleTimeout, closeWaitTimeout, finWait_2Timeout, finWaitTimeout, keepAliveInterval int, deferredAccept, fastOpen string) error {
 func (b *BigIP) CreateTcp(tcp *Tcp) error {
-//	tcp := &Tcp{
-//		Name:              name,
-//		Partition:         partition,
-//		DefaultsFrom:      defaultsFrom,
-//		IdleTimeout:       idleTimeout,
-//		CloseWaitTimeout:  closeWaitTimeout,
-//		FinWait_2Timeout:  finWait_2Timeout,
-//		FinWaitTimeout:    finWaitTimeout,
-//		KeepAliveInterval: keepAliveInterval,
-//		DeferredAccept:    deferredAccept,
-//		FastOpen:          fastOpen,
-//	}
+	//	tcp := &Tcp{
+	//		Name:              name,
+	//		Partition:         partition,
+	//		DefaultsFrom:      defaultsFrom,
+	//		IdleTimeout:       idleTimeout,
+	//		CloseWaitTimeout:  closeWaitTimeout,
+	//		FinWait_2Timeout:  finWait_2Timeout,
+	//		FinWaitTimeout:    finWaitTimeout,
+	//		KeepAliveInterval: keepAliveInterval,
+	//		DeferredAccept:    deferredAccept,
+	//		FastOpen:          fastOpen,
+	//	}
 	return b.post(tcp, uriLtm, uriProfile, uriTcp)
 }
 
@@ -2902,14 +2902,14 @@ func (b *BigIP) GetHttpcompress(name string) (*Httpcompress, error) {
 
 //func (b *BigIP) CreateHttp2(name, defaultsFrom string, concurrentStreamsPerConnection, connectionIdleTimeout, headerTableSize int, activationModes []string) error {
 func (b *BigIP) CreateHttp2(http2 *Http2) error {
-//	http2 := &Http2{
-//		Name:                           name,
-//		DefaultsFrom:                   defaultsFrom,
-//		ConcurrentStreamsPerConnection: concurrentStreamsPerConnection,
-//		ConnectionIdleTimeout:          connectionIdleTimeout,
-//		HeaderTableSize:                headerTableSize,
-//		ActivationModes:                activationModes,
-//	}
+	//	http2 := &Http2{
+	//		Name:                           name,
+	//		DefaultsFrom:                   defaultsFrom,
+	//		ConcurrentStreamsPerConnection: concurrentStreamsPerConnection,
+	//		ConnectionIdleTimeout:          connectionIdleTimeout,
+	//		HeaderTableSize:                headerTableSize,
+	//		ActivationModes:                activationModes,
+	//	}
 	return b.post(http2, uriLtm, uriProfile, uriHttp2)
 }
 
