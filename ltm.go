@@ -1220,11 +1220,19 @@ type Httpcompress struct {
 
 type http2DTO struct {
 	Name                           string   `json:"name,omitempty"`
+	FullPath                       string   `json:"fullPath,omitempty"`
 	DefaultsFrom                   string   `json:"defaultsFrom,omitempty"`
 	ConcurrentStreamsPerConnection int      `json:"concurrentStreamsPerConnection,omitempty"`
 	ConnectionIdleTimeout          int      `json:"connectionIdleTimeout,omitempty"`
 	HeaderTableSize                int      `json:"headerTableSize,omitempty"`
 	ActivationModes                []string `json:"activationModes,omitempty"`
+	EnforceTLSRequirements         string   `json:"enforceTlsRequirements,omitempty"`
+	FrameSize                      int      `json:"frameSize,omitempty"`
+	IncludeContentLength           string   `json:"includeContentLength,omitempty"`
+	InsertHeader                   string   `json:"insertHeader,omitempty"`
+	InsertHeaderName               string   `json:"insertHeaderName,omitempty"`
+	ReceiveWindow                  int      `json:"receiveWindow,omitempty"`
+	WriteSize                      int      `json:"writeSize,omitempty"`
 }
 
 type Http2s struct {
@@ -1233,11 +1241,19 @@ type Http2s struct {
 
 type Http2 struct {
 	Name                           string
+	FullPath                       string
 	DefaultsFrom                   string
 	ConcurrentStreamsPerConnection int
 	ConnectionIdleTimeout          int
 	HeaderTableSize                int
 	ActivationModes                []string
+	EnforceTLSRequirements         string
+	FrameSize                      int
+	IncludeContentLength           string
+	InsertHeader                   string
+	InsertHeaderName               string
+	ReceiveWindow                  int
+	WriteSize                      int
 }
 
 type Recordss struct {
@@ -2128,6 +2144,13 @@ func (b *BigIP) PoolMembers(name string) (*PoolMembers, error) {
 	return &poolMembers, nil
 }
 
+func (b *BigIP) AddPoolMemberNode(pool, member string) error {
+	config := &poolMember{	
+		Name: member,
+	}
+	return b.post(config, uriLtm, uriPool, pool, uriPoolMember)
+}
+
 // AddPoolMember adds a node/member to the given pool. <member> must be in the form
 // of <node>:<port>, i.e.: "web-server1:443".
 func (b *BigIP) AddPoolMember(pool string, config *PoolMember) error {
@@ -2565,14 +2588,15 @@ func (b *BigIP) Policies() (*Policies, error) {
 }
 
 //Load a fully policy definition. Policies seem to be best dealt with as one big entity.
-func (b *BigIP) GetPolicy(name string) (*Policy, error) {
+func (b *BigIP) GetPolicy(name string, partition string) (*Policy, error) {
 	var p Policy
 	values := []string{}
 	values = append(values, "Drafts/")
 	values = append(values, name)
 	// Join three strings into one.
 	//result := strings.Join(values, "")
-	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, name)
+	policy_name := "~" + partition + "~" + name
+	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, policy_name)
 	if err != nil {
 		return nil, err
 	}
@@ -2581,7 +2605,7 @@ func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 	}
 
 	var rules PolicyRules
-	err, _ = b.getForEntity(&rules, uriLtm, uriPolicy, name, "rules")
+	err, _ = b.getForEntity(&rules, uriLtm, uriPolicy, policy_name, "rules")
 	if err != nil {
 		return nil, err
 	}
@@ -2591,11 +2615,11 @@ func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 		var a PolicyRuleActions
 		var c PolicyRuleConditions
 
-		err, _ = b.getForEntity(&a, uriLtm, uriPolicy, name, "rules", p.Rules[i].Name, "actions")
+		err, _ = b.getForEntity(&a, uriLtm, uriPolicy, policy_name, "rules", p.Rules[i].Name, "actions")
 		if err != nil {
 			return nil, err
 		}
-		err, _ = b.getForEntity(&c, uriLtm, uriPolicy, name, "rules", p.Rules[i].Name, "conditions")
+		err, _ = b.getForEntity(&c, uriLtm, uriPolicy, policy_name, "rules", p.Rules[i].Name, "conditions")
 		if err != nil {
 			return nil, err
 		}
@@ -2642,10 +2666,12 @@ func (b *BigIP) PublishPolicy(name, publish string) error {
 }
 
 //Update an existing policy.
-func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
+func (b *BigIP) UpdatePolicy(name string, partition string, p *Policy) error {
 	normalizePolicy(p)
 	values := []string{}
-	values = append(values, "Drafts/")
+        values = append(values, "~")
+        values = append(values, partition)
+        values = append(values, "~Drafts~")
 	values = append(values, name)
 	// Join three strings into one.
 	result := strings.Join(values, "")
@@ -2653,20 +2679,22 @@ func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
 }
 
 //Delete a policy by name.
-func (b *BigIP) DeletePolicy(name string) error {
+func (b *BigIP) DeletePolicy(name string, partition string) error {
 	values := []string{}
 	values = append(values, "Drafts/")
 	values = append(values, name)
 	// Join three strings into one.
 	//result := strings.Join(values, "")
-	return b.delete(uriLtm, uriPolicy, name)
+	policy_name := "~" + partition + "~" + name
+	return b.delete(uriLtm, uriPolicy, policy_name)
 }
 
 //Create a draft from an existing policy
-func (b *BigIP) CreatePolicyDraft(name string) error {
+func (b *BigIP) CreatePolicyDraft(name string, partition string) error {
 	var s struct{}
+	policy_name := "~" + partition + "~" + name
 	values := []string{}
-	values = append(values, name)
+	values = append(values, policy_name)
 	values = append(values, uriCreateDraft)
 	result := strings.Join(values, "")
 	return b.patch(s, uriLtm, uriPolicy, result)
@@ -2714,19 +2742,20 @@ func (b *BigIP) ModifyOneconnect(name string, oneconnect *Oneconnect) error {
 
 // Create TCP profile for WAN or LAN
 
-func (b *BigIP) CreateTcp(name, partition, defaultsFrom string, idleTimeout, closeWaitTimeout, finWait_2Timeout, finWaitTimeout, keepAliveInterval int, deferredAccept, fastOpen string) error {
-	tcp := &Tcp{
-		Name:              name,
-		Partition:         partition,
-		DefaultsFrom:      defaultsFrom,
-		IdleTimeout:       idleTimeout,
-		CloseWaitTimeout:  closeWaitTimeout,
-		FinWait_2Timeout:  finWait_2Timeout,
-		FinWaitTimeout:    finWaitTimeout,
-		KeepAliveInterval: keepAliveInterval,
-		DeferredAccept:    deferredAccept,
-		FastOpen:          fastOpen,
-	}
+//func (b *BigIP) CreateTcp(name, partition, defaultsFrom string, idleTimeout, closeWaitTimeout, finWait_2Timeout, finWaitTimeout, keepAliveInterval int, deferredAccept, fastOpen string) error {
+func (b *BigIP) CreateTcp(tcp *Tcp) error {
+//	tcp := &Tcp{
+//		Name:              name,
+//		Partition:         partition,
+//		DefaultsFrom:      defaultsFrom,
+//		IdleTimeout:       idleTimeout,
+//		CloseWaitTimeout:  closeWaitTimeout,
+//		FinWait_2Timeout:  finWait_2Timeout,
+//		FinWaitTimeout:    finWaitTimeout,
+//		KeepAliveInterval: keepAliveInterval,
+//		DeferredAccept:    deferredAccept,
+//		FastOpen:          fastOpen,
+//	}
 	return b.post(tcp, uriLtm, uriProfile, uriTcp)
 }
 
@@ -2738,7 +2767,7 @@ func (b *BigIP) DeleteTcp(name string) error {
 // ModifyTcp updates the given Oneconnect profile with any changed values.
 func (b *BigIP) ModifyTcp(name string, tcp *Tcp) error {
 	tcp.Name = name
-	return b.put(tcp, uriLtm, uriProfile, uriTcp, name)
+	return b.patch(tcp, uriLtm, uriProfile, uriTcp, name)
 }
 
 func (b *BigIP) GetTcp(name string) (*Tcp, error) {
@@ -2871,15 +2900,16 @@ func (b *BigIP) GetHttpcompress(name string) (*Httpcompress, error) {
 	return &httpcompress, nil
 }
 
-func (b *BigIP) CreateHttp2(name, defaultsFrom string, concurrentStreamsPerConnection, connectionIdleTimeout, headerTableSize int, activationModes []string) error {
-	http2 := &Http2{
-		Name:                           name,
-		DefaultsFrom:                   defaultsFrom,
-		ConcurrentStreamsPerConnection: concurrentStreamsPerConnection,
-		ConnectionIdleTimeout:          connectionIdleTimeout,
-		HeaderTableSize:                headerTableSize,
-		ActivationModes:                activationModes,
-	}
+//func (b *BigIP) CreateHttp2(name, defaultsFrom string, concurrentStreamsPerConnection, connectionIdleTimeout, headerTableSize int, activationModes []string) error {
+func (b *BigIP) CreateHttp2(http2 *Http2) error {
+//	http2 := &Http2{
+//		Name:                           name,
+//		DefaultsFrom:                   defaultsFrom,
+//		ConcurrentStreamsPerConnection: concurrentStreamsPerConnection,
+//		ConnectionIdleTimeout:          connectionIdleTimeout,
+//		HeaderTableSize:                headerTableSize,
+//		ActivationModes:                activationModes,
+//	}
 	return b.post(http2, uriLtm, uriProfile, uriHttp2)
 }
 
@@ -2890,8 +2920,8 @@ func (b *BigIP) DeleteHttp2(name string) error {
 
 // Modify http2 updates the given http2 profile with any changed values.
 func (b *BigIP) ModifyHttp2(name string, http2 *Http2) error {
-	http2.Name = name
-	return b.put(http2, uriLtm, uriProfile, uriHttp2, name)
+	http2.FullPath = name
+	return b.patch(http2, uriLtm, uriProfile, uriHttp2, name)
 }
 
 func (b *BigIP) GetHttp2(name string) (*Http2, error) {
