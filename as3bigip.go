@@ -414,7 +414,6 @@ func (b *BigIP) AddTeemAgent(body interface{}) (string, error) {
 	return s, nil
 }
 
-
 func (b *BigIP) AddServiceDiscoveryNodes(taskid string, config []interface{}) error {
 	resp, err := b.postReq(config, uriMgmt, uriShared, "service-discovery", "task", taskid, "nodes")
 	if err != nil {
