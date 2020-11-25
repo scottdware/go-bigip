@@ -20,6 +20,7 @@ const (
 	uriMembers     = "members"
 	uriTasks       = "tasks"
 	uriManagement  = "member-management"
+	uriPurchased   = "purchased-pool"
 )
 
 type BigiqDevice struct {
@@ -195,6 +196,15 @@ func (b *BigIP) GetPoolType(poolName string) (*regKeyPool, error) {
 		}
 	}
 	err, _ = b.getForEntity(&self, uriMgmt, uriCm, uriDevice, uriLicensing, uriPool, uriUtility, uriLicenses)
+	if err != nil {
+		return nil, err
+	}
+	for _, pool := range self.RegKeyPoollist {
+		if pool.Name == poolName {
+			return &pool, nil
+		}
+	}
+	err, _ = b.getForEntity(&self, uriMgmt, uriCm, uriDevice, uriLicensing, uriPool, uriPurchased, uriLicenses)
 	if err != nil {
 		return nil, err
 	}
