@@ -58,3 +58,17 @@ func TestTeemNotAuthorized(t *testing.T) {
 		t.Errorf("Error:%v", err)
 	}
 }
+
+func TestUniqueUUID(t *testing.T) {
+	expected := "a837ce9d-d34c-e5c1-9fe0-581e2b46c029"
+	oldOS := osHostname
+	defer func() { osHostname = oldOS }()
+
+	osHostname = func() (hostname string, err error) {
+		return "foobar.local.lab", nil
+	}
+	result := uniqueUUID()
+	if result != expected {
+		t.Errorf("Expected UUID to be: %s, got %s", expected, result)
+	}
+}

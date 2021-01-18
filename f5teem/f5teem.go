@@ -17,10 +17,12 @@ package f5teem
 
 import (
 	"bytes"
+	"crypto/md5"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	uuid "github.com/google/uuid"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -59,6 +61,24 @@ func genUUID() string {
 	return id.String()
 }
 
+var osHostname = os.Hostname
+
+func uniqueUUID() string {
+	hostname, err := osHostname()
+	hash := md5.New()
+	if err != nil {
+		return genUUID()
+	}
+	_, _ = io.WriteString(hash, hostname)
+	seed := hash.Sum(nil)
+	uid, err := uuid.FromBytes(seed[0:16])
+	if err != nil {
+		return genUUID()
+	}
+	result := uid.String()
+	return result
+}
+
 func (b *TeemObject) Report(telemetry map[string]interface{}, telemetryType, telemetryTypeVersion string) error {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
@@ -74,11 +94,8 @@ func (b *TeemObject) Report(telemetry map[string]interface{}, telemetryType, tel
 		return fmt.Errorf("Json Unmarshall failed with:%v", err)
 	}*/
 
-	uniqueID := genUUID()
+	uniqueID := uniqueUUID()
 
-	if b.ClientInfo.Id != "" {
-		uniqueID = b.ClientInfo.Id
-	}
 	log.Printf("[DEBUG] digitalAssetId:%+v", uniqueID)
 
 	b.TelemetryType = telemetryType
