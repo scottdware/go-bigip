@@ -153,7 +153,7 @@ func (b *BigIP) APICall(options *APIRequest) ([]byte, error) {
 	data, _ := ioutil.ReadAll(res.Body)
 
 	if res.StatusCode >= 400 {
-		if res.Header.Get("Content-Type") == "application/json" {
+		if strings.HasPrefix(res.Header.Get("Content-Type"), "application/json") {
 			return data, b.checkError(data)
 		}
 
