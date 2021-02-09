@@ -47,6 +47,67 @@ type GTMWideIP struct {
 	Pools *[]GTMWideIPPool `json:"pools,omitempty"`
 }
 
+// GTMServer represents a GTM server
+type GTMServer struct {
+	Name                      string `json:"name,omitempty"`
+	Partition                 string `json:"partition,omitempty"`
+	FullPath                  string `json:"fullPath,omitempty"`
+	Generation                int    `json:"generation,omitempty"`
+	Datacenter                string `json:"datacenter,omitempty"`
+	Enabled                   bool   `json:"enabled,omitempty"`
+	ExposeRouteDomains        string `json:"exposeRouteDomains,omitempty"`
+	IqAllowPath               string `json:"iqAllowPath,omitempty"`
+	IqAllowServiceCheck       string `json:"iqAllowServiceCheck,omitempty"`
+	IqAllowSnmp               string `json:"iqAllowSnmp,omitempty"`
+	LimitCpuUsage             int    `json:"limitCpuUsage,omitempty"`
+	LimitCpuUsageStatus       string `json:"limitCpuUsageStatus,omitempty"`
+	LimitMaxBps               int    `json:"limitMaxBps,omitempty"`
+	LimitMaxBpsStatus         string `json:"limitMaxBpsStatus,omitempty"`
+	LimitMaxConnections       int    `json:"limitMaxConnections,omitempty"`
+	LimitMaxConnectionsStatus string `json:"limitMaxConnectionsStatus,omitempty"`
+	LimitMaxPps               int    `json:"limitMaxPps,omitempty"`
+	LimitMaxPpsStatus         string `json:"limitMaxPpsStatus,omitempty"`
+	LimitMemAvail             int    `json:"limitMemAvail,omitempty"`
+	LimitMemAvailStatus       string `json:"limitMemAvailStatus,omitempty"`
+	LinkDiscovery             string `json:"linkDiscovery,omitempty"`
+	ProberPool                string `json:"proberPool,omitempty"`
+	Product                   string `json:"product,omitempty"`
+	VirtualServerDiscovery    string `json:"virtualServerDiscovery,omitempty"`
+	Addresses                 []struct {
+		Name        string `json:"name,omitempty"`
+		DeviceName  string `json:"deviceName,omitempty"`
+		Translation string `json:"translation,omitempty"`
+	} `json:"addresses,omitempty"`
+}
+
+// GTMServers represents a collection of GTMServers
+type GTMServers struct {
+	Items []GTMServer `json:"items,omitempty"`
+}
+
+// GTMVirtualServer represents a VirtualServer assigned to a GTM Server.
+type GTMVirtualServer struct {
+	Name                      string `json:"name,omitempty"`
+	FullPath                  string `json:"fullPath,omitempty"`
+	Generation                int    `json:"generation,omitempty"`
+	Destination               string `json:"destination,omitempty"`
+	Enabled                   bool   `json:"enabled,omitempty"`
+	LimitMaxBps               int    `json:"limitMaxBps,omitempty"`
+	LimitMaxBpsStatus         string `json:"limitMaxBpsStatus,omitempty"`
+	LimitMaxConnections       int    `json:"limitMaxConnections,omitempty"`
+	LimitMaxConnectionsStatus string `json:"limitMaxConnectionsStatus,omitempty"`
+	LimitMaxPps               int    `json:"limitMaxPps,omitempty"`
+	LimitMaxPpsStatus         string `json:"limitMaxPpsStatus,omitempty"`
+	Monitor                   string `json:"monitor,omitempty"`
+	TranslationAddress        string `json:"translationAddress,omitempty"`
+	TranslationPort           int    `json:"translationPort,omitempty"`
+}
+
+// GTMVirtualServers represents a collection of GTM VirtualServers assigned to a GTM Server.
+type GTMVirtualServers struct {
+	Items []GTMVirtualServer `json:"items,omitempty"`
+}
+
 // GTMWideIPPool Pool Structure
 type GTMWideIPPool struct {
 	Name          string `json:"name,omitempty"`
@@ -56,6 +117,28 @@ type GTMWideIPPool struct {
 	NameReference struct {
 		Link string `json:"link,omitempty"`
 	} `json:"nameReference,omitempty"`
+}
+
+// GTMServers returns a list of GTM servers.
+func (b *BigIP) GTMServers() (*GTMServers, error) {
+	var out GTMServers
+	err, _ := b.getForEntity(&out, uriGtm, uriGtmServer)
+	if err != nil {
+		return nil, err
+	}
+
+	return &out, nil
+}
+
+// GetGTMServerVirtualServers returns a list of all Virtual Servers assigned to a GTM server.
+func (b *BigIP) GetGTMServerVirtualServers(fullPath string) (*GTMVirtualServers, error) {
+	var out GTMVirtualServers
+	err, _ := b.getForEntity(&out, uriGtm, uriGtmServer, fullPath, uriGtmVirtualServer)
+	if err != nil {
+		return nil, err
+	}
+
+	return &out, nil
 }
 
 // GetGTMWideIPs returns a list of all WideIps for a provided type
