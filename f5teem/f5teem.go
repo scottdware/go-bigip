@@ -56,6 +56,13 @@ func getEndpointInfo() (string, interface{}) {
 	return environment, endPoints["anonymous"].(map[string]interface{})[environment]
 }
 
+func inDocker() bool {
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		return true
+	}
+	return false
+}
+
 func genUUID() string {
 	id := uuid.New()
 	return id.String()
@@ -97,12 +104,14 @@ func (b *TeemObject) Report(telemetry map[string]interface{}, telemetryType, tel
 	uniqueID := uniqueUUID()
 
 	log.Printf("[DEBUG] digitalAssetId:%+v", uniqueID)
-
+	telemetry["RunningInDocker"] = inDocker()
 	b.TelemetryType = telemetryType
 	b.TelemetryTypeVersion = telemetryTypeVersion
 	telemetryData, _ := json.Marshal(telemetry)
 	telemetryDatalist := []string{string(telemetryData[:])}
 	log.Printf("[DEBUG] telemetryDatalist:%+v", telemetryDatalist)
+
+	log.Printf("[DEBUG] ControllerAsDocker:#{docker}")
 
 	telemetrynew := []map[string]interface{}{}
 	telemetrynew = append(telemetrynew, telemetry)
