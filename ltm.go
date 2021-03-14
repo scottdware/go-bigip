@@ -35,11 +35,11 @@ type ServerSSLProfile struct {
 	AlertTimeout               string   `json:"alertTimeout,omitempty"`
 	Authenticate               string   `json:"authenticate,omitempty"`
 	AuthenticateDepth          int      `json:"authenticateDepth,omitempty"`
-	C3dCaCert                  string   `json:"C3dCaCert,omitempty"`
-	C3dCaKey                   string   `json:"C3dCaKey,omitempty"`
-	C3dCaPassphrase            string   `json:"C3dCaPassphrase,omitempty"`
+	C3dCaCert                  string   `json:"c3dCaCert,omitempty"`
+	C3dCaKey                   string   `json:"c3dCaKey,omitempty"`
+	C3dCaPassphrase            string   `json:"c3dCaPassphrase,omitempty"`
 	C3dCertExtensionCustomOids []string `json:"c3dCertExtensionCustomOids,omitempty"`
-	C3dCertExtensionIncludes   string   `json:"cdCertExtensionIncludes,omitempty"`
+	C3dCertExtensionIncludes   []string `json:"c3dCertExtensionIncludes,omitempty"`
 	C3dCertLifespan            int      `json:"c3dCertLifespan,omitempty"`
 	CaFile                     string   `json:"caFile,omitempty"`
 	CacheSize                  int      `json:"cacheSize,omitempty"`
