@@ -488,7 +488,11 @@ func (s *NetTestSuite) TestGetTunnel() {
 }
 
 func (s *NetTestSuite) TestCreateTunnel() {
-	err := s.Client.CreateTunnel("some-foo-tunnel", "/Common/some-foo-profile")
+	testTunnel := Tunnel{
+		Name:    "some-foo-tunnel",
+		Profile: "/Common/some-foo-profile",
+	}
+	err := s.Client.CreateTunnel(&testTunnel)
 
 	assert.Nil(s.T(), err)
 	assertRestCall(s, "POST", "/mgmt/tm/net/tunnels/tunnel", `{"name":"some-foo-tunnel", "profile":"/Common/some-foo-profile"}`)
