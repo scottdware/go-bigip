@@ -219,18 +219,57 @@ type Vxlan struct {
 	Port              int    `json:"port,omitempty"`
 }
 
+//TrafficSelector is the structure used for Creating IPSec Traffic selectors
+//https://clouddocs.f5.com/api/icontrol-rest/APIRef_tm_net_ipsec_traffic-selector.html
+type TrafficSelector struct {
+	Name                 string `json:"name,omitempty"`
+	FullPath             string `json:"fullPath,omitempty"`
+	Action               string `json:"action,omitempty"`
+	Description          string `json:"description,omitempty"`
+	DestinationAddress   string `json:"destinationAddress,omitempty"`
+	DestinationPort      int    `json:"destinationPort,omitempty"`
+	Direction            string `json:"direction,omitempty"`
+	IPProtocol           int    `json:"ipProtocol,omitempty"`
+	IpsecPolicy          string `json:"ipsecPolicy,omitempty"`
+	IpsecPolicyReference struct {
+		Link string `json:"link,omitempty"`
+	} `json:"ipsecPolicyReference,omitempty"`
+	Order         int    `json:"order,omitempty"`
+	SourceAddress string `json:"sourceAddress,omitempty"`
+	SourcePort    int    `json:"sourcePort,omitempty"`
+}
+
+type IPSecPolicy struct {
+	Name                           string `json:"name,omitempty"`
+	FullPath                       string `json:"fullPath,omitempty"`
+	Description                    string `json:"description,omitempty"`
+	IkePhase2AuthAlgorithm         string `json:"ikePhase2AuthAlgorithm,omitempty"`
+	IkePhase2EncryptAlgorithm      string `json:"ikePhase2EncryptAlgorithm,omitempty"`
+	IkePhase2Lifetime              int    `json:"ikePhase2Lifetime,omitempty"`
+	IkePhase2LifetimeKilobytes     int    `json:"ikePhase2LifetimeKilobytes,omitempty"`
+	IkePhase2PerfectForwardSecrecy string `json:"ikePhase2PerfectForwardSecrecy,omitempty"`
+	Ipcomp                         string `json:"ipcomp,omitempty"`
+	Mode                           string `json:"mode,omitempty"`
+	Protocol                       string `json:"protocol,omitempty"`
+	TunnelLocalAddress             string `json:"tunnelLocalAddress,omitempty"`
+	TunnelRemoteAddress            string `json:"tunnelRemoteAddress,omitempty"`
+}
+
 const (
-	uriNet            = "net"
-	uriInterface      = "interface"
-	uriSelf           = "self"
-	uriTrunk          = "trunk"
-	uriTunnels        = "tunnels"
-	uriTunnel         = "tunnel"
-	uriVxlan          = "vxlan"
-	uriVlan           = "vlan"
-	uriVlanInterfaces = "interfaces"
-	uriRoute          = "route"
-	uriRouteDomain    = "route-domain"
+	uriNet             = "net"
+	uriInterface       = "interface"
+	uriSelf            = "self"
+	uriTrunk           = "trunk"
+	uriTunnels         = "tunnels"
+	uriTunnel          = "tunnel"
+	uriVxlan           = "vxlan"
+	uriVlan            = "vlan"
+	uriVlanInterfaces  = "interfaces"
+	uriRoute           = "route"
+	uriRouteDomain     = "route-domain"
+	uriIpsec           = "ipsec"
+	uriTrafficselector = "traffic-selector"
+	uriIpsecPolicy     = "ipsec-policy"
 )
 
 // formatResourceID takes the resource name to
@@ -555,11 +594,11 @@ func (b *BigIP) AddTunnel(config *Tunnel) error {
 }
 
 // CreateTunnel adds a new tunnel to the BIG-IP system.
-func (b *BigIP) CreateTunnel(name, profile string) error {
-	config := &Tunnel{
+func (b *BigIP) CreateTunnel(config *Tunnel) error {
+	/*config := &Tunnel{
 		Name:    name,
 		Profile: profile,
-	}
+	}*/
 
 	return b.post(config, uriNet, uriTunnels, uriTunnel)
 }
@@ -622,4 +661,60 @@ func (b *BigIP) DeleteVxlan(name string) error {
 // ModifyVxlan allows you to change any attribute of a vxlan profile.
 func (b *BigIP) ModifyVxlan(name string, config *Vxlan) error {
 	return b.put(config, uriNet, uriTunnels, uriVxlan, name)
+}
+
+// CreateTrafficSelector adds a new IPsec Traffic-selctor to the BIG-IP system.
+func (b *BigIP) CreateTrafficSelector(config *TrafficSelector) error {
+	return b.post(config, uriNet, uriIpsec, uriTrafficselector)
+}
+
+// ModifyTrafficSelector allows you to change any attribute of a Traffic-selector.
+// Fields that can be modified are referenced in the TrafficSelector struct.
+func (b *BigIP) ModifyTrafficSelector(name string, config *TrafficSelector) error {
+	return b.patch(config, uriNet, uriIpsec, uriTrafficselector, name)
+}
+
+// DeleteTrafficSelector removes specified Traffic-selector.
+func (b *BigIP) DeleteTrafficSelector(name string) error {
+	return b.delete(uriNet, uriIpsec, uriTrafficselector, name)
+}
+
+// GetTrafficselctor returns a named IPsec Traffic selctor.
+func (b *BigIP) GetTrafficselctor(name string) (*TrafficSelector, error) {
+	var ts TrafficSelector
+	err, _ := b.getForEntity(&ts, uriNet, uriIpsec, uriTrafficselector, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &ts, nil
+}
+
+// CreateIPSecPolicy adds a new IPSec policy to the BIG-IP system.
+func (b *BigIP) CreateIPSecPolicy(config *IPSecPolicy) error {
+	return b.post(config, uriNet, uriIpsec, uriIpsecPolicy)
+}
+
+// ModifyIPSecPolicy allows you to change any attribute of a IPSec policy.
+// Fields that can be modified are referenced in the IPSec policy struct.
+func (b *BigIP) ModifyIPSecPolicy(name string, config *IPSecPolicy) error {
+	return b.patch(config, uriNet, uriIpsec, uriIpsecPolicy, name)
+}
+
+// DeleteIPSecPolicy removes specified IPSec policy.
+func (b *BigIP) DeleteIPSecPolicy(name string) error {
+	return b.delete(uriNet, uriIpsec, uriIpsecPolicy, name)
+}
+
+// GetIPSecPolicy returns a named IPsec policy.
+func (b *BigIP) GetIPSecPolicy(name string) (*IPSecPolicy, error) {
+	var ipsec IPSecPolicy
+	err, _ := b.getForEntity(&ipsec, uriNet, uriIpsec, uriIpsecPolicy, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &ipsec, nil
 }
