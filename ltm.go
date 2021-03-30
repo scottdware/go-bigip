@@ -591,7 +591,7 @@ type VirtualAddress struct {
 	ConnectionLimit       int
 	Enabled               bool
 	Floating              bool
-	ICMPEcho              bool
+	ICMPEcho              string
 	InheritedTrafficGroup bool
 	Mask                  string
 	RouteAdvertisement    string
@@ -611,7 +611,7 @@ type virtualAddressDTO struct {
 	ConnectionLimit       int    `json:"connectionLimit,omitempty"`
 	Enabled               string `json:"enabled,omitempty" bool:"yes"`
 	Floating              string `json:"floating,omitempty" bool:"enabled"`
-	ICMPEcho              string `json:"icmpEcho,omitempty" bool:"enabled"`
+	ICMPEcho              string `json:"icmpEcho,omitempty"`
 	InheritedTrafficGroup string `json:"inheritedTrafficGroup,omitempty" bool:"yes"`
 	Mask                  string `json:"mask,omitempty"`
 	RouteAdvertisement    string `json:"routeAdvertisement,omitempty"`
@@ -2309,7 +2309,6 @@ func (b *BigIP) VirtualServers() (*VirtualServers, error) {
 
 	if strings.Contains(destination, ":") {
 		subnetMask := mask
-
 		config := &VirtualServer{
 			Name:             name,
 			Destination:      fmt.Sprintf("%s.%d", destination, port),
@@ -2331,7 +2330,6 @@ func (b *BigIP) VirtualServers() (*VirtualServers, error) {
 		TranslateAddress: translate_address,
 		TranslatePort:    translate_port,
 	}
-
 	return b.post(config, uriLtm, uriVirtual)
 }*/
 func (b *BigIP) CreateVirtualServer(config *VirtualServer) error {
@@ -3169,11 +3167,11 @@ func (b *BigIP) GetDestAddrPersistenceProfile(name string) (*DestAddrPersistence
 }
 
 // CreateDestAddrPersistenceProfile creates a new dest-addr persist profile on the BIG-IP system.
-func (b *BigIP) CreateDestAddrPersistenceProfile(name string, parent string) error {
-	config := &PersistenceProfile{
+func (b *BigIP) CreateDestAddrPersistenceProfile(config *PersistenceProfile) error {
+	/*config := &PersistenceProfile{
 		Name:         name,
 		DefaultsFrom: parent,
-	}
+	}*/
 
 	return b.post(config, uriLtm, uriPersistence, uriDestAddr)
 }
@@ -3191,7 +3189,7 @@ func (b *BigIP) DeleteDestAddrPersistenceProfile(name string) error {
 // ModifyDestAddrPersistenceProfile allows you to change any attribute of a dest-addr persist profile.
 // Fields that can be modified are referenced in the DestAddrPersistenceProfile struct.
 func (b *BigIP) ModifyDestAddrPersistenceProfile(name string, config *DestAddrPersistenceProfile) error {
-	return b.put(config, uriLtm, uriPersistence, uriDestAddr, name)
+	return b.patch(config, uriLtm, uriPersistence, uriDestAddr, name)
 }
 
 // HashPersistenceProfiles returns a list of hash persist profiles
