@@ -660,7 +660,7 @@ func (b *BigIP) ModifyTunnel(name string, config *Tunnel) error {
 func (b *BigIP) GetIkePeer(name string) (*IkePeer, error) {
 	var ikepeer IkePeer
 	//result := formatResourceID(name)
-	log.Printf("[DEBUG] Reading IKE Peer:%+v", name)
+	//log.Printf("[DEBUG] Reading IKE Peer:%+v", name)
 	//log.Printf("[DEBUG] Reading IKE Peer from result:%+v",result)
 	err, ok := b.getForEntity(&ikepeer, uriNet, uriIpsec, uriIkePeer, name)
 	if err != nil {
