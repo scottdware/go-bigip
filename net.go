@@ -57,17 +57,17 @@ type SelfIPs struct {
 // SelfIP contains information about each individual self IP. You can use all of
 // these fields when modifying a self IP.
 type SelfIP struct {
-	Name                  string `json:"name,omitempty"`
-	Partition             string `json:"partition,omitempty"`
-	FullPath              string `json:"fullPath,omitempty"`
-	Generation            int    `json:"generation,omitempty"`
-	Address               string `json:"address,omitempty"`
-	Floating              string `json:"floating,omitempty"`
-	InheritedTrafficGroup string `json:"inheritedTrafficGroup,omitempty"`
-	TrafficGroup          string `json:"trafficGroup,omitempty"`
-	Unit                  int    `json:"unit,omitempty"`
-	Vlan                  string `json:"vlan,omitempty"`
-	// AllowService          []string `json:"allowService"`
+	Name                  string      `json:"name,omitempty"`
+	Partition             string      `json:"partition,omitempty"`
+	FullPath              string      `json:"fullPath,omitempty"`
+	Generation            int         `json:"generation,omitempty"`
+	Address               string      `json:"address,omitempty"`
+	Floating              string      `json:"floating,omitempty"`
+	InheritedTrafficGroup string      `json:"inheritedTrafficGroup,omitempty"`
+	TrafficGroup          string      `json:"trafficGroup,omitempty"`
+	Unit                  int         `json:"unit,omitempty"`
+	Vlan                  string      `json:"vlan,omitempty"`
+	AllowService          interface{} `json:"allowService"`
 }
 
 // Trunks contains a list of every trunk on the BIG-IP system.
@@ -300,6 +300,15 @@ type IPSecPolicy struct {
 	TunnelRemoteAddress            string `json:"tunnelRemoteAddress,omitempty"`
 }
 
+type IPSecProfile struct {
+	Name            string `json:"name,omitempty"`
+	Partition       string `json:"partition,omitempty"`
+	FullPath        string `json:"fullPath,omitempty"`
+	DefaultsFrom    string `json:"defaultsFrom,omitempty"`
+	Description     string `json:"description"`
+	TrafficSelector string `json:"trafficSelector,omitempty"`
+}
+
 const (
 	uriNet             = "net"
 	uriInterface       = "interface"
@@ -394,13 +403,7 @@ func (b *BigIP) SelfIP(selfip string) (*SelfIP, error) {
 
 // CreateSelfIP adds a new self IP to the BIG-IP system. For <address>, you
 // must include the subnet mask in CIDR notation, i.e.: "10.1.1.1/24".
-func (b *BigIP) CreateSelfIP(name, address, vlan string) error {
-	config := &SelfIP{
-		Name:    name,
-		Address: address,
-		Vlan:    vlan,
-	}
-
+func (b *BigIP) CreateSelfIP(config *SelfIP) error {
 	return b.post(config, uriNet, uriSelf)
 }
 
@@ -780,6 +783,34 @@ func (b *BigIP) DeleteIPSecPolicy(name string) error {
 func (b *BigIP) GetIPSecPolicy(name string) (*IPSecPolicy, error) {
 	var ipsec IPSecPolicy
 	err, _ := b.getForEntity(&ipsec, uriNet, uriIpsec, uriIpsecPolicy, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &ipsec, nil
+}
+
+// CreateIPSecProfile adds a new IPSec profile to the BIG-IP system.
+func (b *BigIP) CreateIPSecProfile(config *IPSecProfile) error {
+	return b.post(config, uriNet, uriTunnels, uriIpsec)
+}
+
+// ModifyIPSecProfile allows you to change any attribute of a IPSec profile.
+// Fields that can be modified are referenced in the IPSec profile struct.
+func (b *BigIP) ModifyIPSecProfile(name string, config *IPSecProfile) error {
+	return b.patch(config, uriNet, uriTunnels, uriIpsec, name)
+}
+
+// DeleteIPSecProfile removes specified IPSec profile.
+func (b *BigIP) DeleteIPSecProfile(name string) error {
+	return b.delete(uriNet, uriTunnels, uriIpsec, name)
+}
+
+// GetIPSecProfile returns a named IPsec profile.
+func (b *BigIP) GetIPSecProfile(name string) (*IPSecProfile, error) {
+	var ipsec IPSecProfile
+	err, _ := b.getForEntity(&ipsec, uriNet, uriTunnels, uriIpsec, name)
 
 	if err != nil {
 		return nil, err
