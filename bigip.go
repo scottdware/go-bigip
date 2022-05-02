@@ -317,7 +317,7 @@ func marshal(to, from interface{}) error {
 			toField.Set(fromField)
 		} else if toField.Kind() == reflect.Bool && fromField.Kind() == reflect.String {
 			switch fromField.Interface() {
-			case "yes", "enabled", "true":
+			case "yes", "enabled", "true", "selective":
 				toField.SetBool(true)
 				break
 			case "no", "disabled", "false", "":
@@ -328,7 +328,7 @@ func marshal(to, from interface{}) error {
 			}
 		} else if _, ok := toField.Interface().(*bool); ok && fromField.Kind() == reflect.String {
 			switch fromField.Interface() {
-			case "yes", "enabled", "true":
+			case "yes", "enabled", "true", "selective":
 				toField.Set(reflect.ValueOf(Bool(true)))
 				break
 			case "no", "disabled", "false":
