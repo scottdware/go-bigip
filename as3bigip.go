@@ -269,7 +269,7 @@ func (b *BigIP) GetAs3(name, appList string) (string, error) {
 	tenantList := strings.Split(appList, ",")
 	found := 0
 	for _, item := range tenantList {
-		if item == "Shared" {
+		if item == "Shared" && name == "Common" {
 			found = 1
 		}
 	}
@@ -290,7 +290,9 @@ func (b *BigIP) GetAs3(name, appList string) (string, error) {
 							}
 						}
 					}
-					delete(rec, sharedTenant)
+					if sharedTenant == "Common" && sharedTenant != name {
+						delete(rec, sharedTenant)
+					}
 				}
 			}
 		}
@@ -513,19 +515,16 @@ func getVersion(tfBinary string) (string, error) {
 }
 func (b *BigIP) TenantDifference(slice1 []string, slice2 []string) string {
 	var diff []string
-	for i := 0; i < 2; i++ {
-		for _, s1 := range slice1 {
-			found := false
-			for _, s2 := range slice2 {
-				if s1 == s2 {
-					found = true
-					break
-				}
+	for _, s1 := range slice1 {
+		found := false
+		for _, s2 := range slice2 {
+			if s1 == s2 {
+				found = true
+				break
 			}
-			if !found {
-				diff = append(diff, s1)
-			}
-
+		}
+		if !found {
+			diff = append(diff, s1)
 		}
 	}
 	diff_tenant_list := strings.Join(diff[:], ",")
