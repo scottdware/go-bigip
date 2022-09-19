@@ -1960,6 +1960,22 @@ func (b *BigIP) CreateMonitor(name, parent string, interval, timeout int, send, 
 	return b.AddMonitor(config, monitorType)
 }
 
+// CreateMonitorAdv is like CreateMonitor but can create monitors for wildcard services. Specify "*:<port>"
+// as destination to create such a monitor.
+func (b *BigIP) CreateMonitorAdv(name, parent string, interval, timeout int, send, receive, monitorType, destination string) error {
+	config := &Monitor{
+		Name:          name,
+		ParentMonitor: parent,
+		Interval:      interval,
+		Timeout:       timeout,
+		SendString:    send,
+		ReceiveString: receive,
+		Destination:   destination,
+	}
+
+	return b.AddMonitor(config, monitorType)
+}
+
 // Create a monitor by supplying a config
 func (b *BigIP) AddMonitor(config *Monitor, monitorType string) error {
 	if strings.Contains(config.ParentMonitor, "gateway") {
