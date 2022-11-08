@@ -925,6 +925,7 @@ type PolicyRuleCondition struct {
 	CountryCode           bool     `json:"countryCode,omitempty"`
 	CountryName           bool     `json:"countryName,omitempty"`
 	CpuUsage              bool     `json:"cpuUsage,omitempty"`
+	Datagroup             string   `json:"datagroup,omitempty"`
 	DeviceMake            bool     `json:"deviceMake,omitempty"`
 	DeviceModel           bool     `json:"deviceModel,omitempty"`
 	Domain                bool     `json:"domain,omitempty"`
@@ -1151,6 +1152,17 @@ type tcpDTO struct {
 	FinWaitTimeout    int    `json:"finWaitTimeout,omitempty"`
 	KeepAliveInterval int    `json:"keepAliveInterval,omitempty"`
 	DeferredAccept    string `json:"deferredAccept,omitempty"`
+	CongestionControl string `json:"congestionControl,omitempty"`
+	DelayedAcks       string `json:"delayedAcks,omitempty"`
+	Nagle             string `json:"nagle,omitempty"`
+	EarlyRetransmit   string `json:"earlyRetransmit,omitempty"`
+	TailLossProbe     string `json:"tailLossProbe,omitempty"`
+	TimeWaitRecycle   string `json:"timeWaitRecycle,omitempty"`
+	ProxyBufferHigh   int    `json:"proxyBufferHigh,omitempty"`
+	ReceiveWindowSize int    `json:"receiveWindowSize,omitempty"`
+	SendBufferSize    int    `json:"sendBufferSize,omitempty"`
+	ZeroWindowTimeout int    `json:"zeroWindowTimeout,omitempty"`
+	InitCwnd          int    `json:"initCwnd,omitempty"`
 	FastOpen          string `json:"fastOpen,omitempty"`
 }
 
@@ -1168,6 +1180,17 @@ type Tcp struct {
 	FinWaitTimeout    int
 	KeepAliveInterval int
 	DeferredAccept    string
+	CongestionControl string
+	DelayedAcks       string
+	Nagle             string
+	EarlyRetransmit   string
+	TailLossProbe     string
+	ProxyBufferHigh   int
+	ReceiveWindowSize int
+	SendBufferSize    int
+	TimeWaitRecycle   string
+	ZeroWindowTimeout int
+	InitCwnd          int
 	FastOpen          string
 }
 
@@ -1260,43 +1283,69 @@ type Fasthttp struct {
 	MaxHeaderSize               int
 }
 
-type fastl4DTO struct {
-	Name                  string `json:"name,omitempty"`
-	DefaultsFrom          string `json:"defaultsFrom,omitempty"`
-	Partition             string `json:"partition,omitempty"`
-	ExplicitFlowMigration string `json:"explicitFlowMigration,omitempty"`
-	HardwareSynCookie     string `json:"hardwareSynCookie,omitempty"`
-	IdleTimeout           string `json:"idleTimeout,omitempty"`
-	ClientTimeout         int    `json:"clientTimeout,omitempty"`
-	IpTosToClient         string `json:"ipTosToClient,omitempty"`
-	IpTosToServer         string `json:"ipTosToServer,omitempty"`
-	KeepAliveInterval     string `json:"keepAliveInterval,omitempty"`
-}
-
 type Fastl4s struct {
 	Fastl4s []Fastl4 `json:"items"`
 }
 
 type Fastl4 struct {
-	Name                  string
-	Partition             string
-	DefaultsFrom          string
-	ExplicitFlowMigration string
-	HardwareSynCookie     string
-	IdleTimeout           string
-	ClientTimeout         int
-	IpTosToClient         string
-	IpTosToServer         string
-	KeepAliveInterval     string
-}
-
-type httpcompressDTO struct {
-	Name               string   `json:"name,omitempty"`
-	DefaultsFrom       string   `json:"defaultsFrom,omitempty"`
-	UriExclude         []string `json:"uriExclude,omitempty"`
-	UriInclude         []string `json:"uriInclude,omitempty"`
-	ContentTypeInclude []string `json:"contentTypeInclude,omitempty"`
-	ContentTypeExclude []string `json:"contentTypeExclude,omitempty"`
+	Name                        string `json:"name"`
+	FullPath                    string `json:"fullPath"`
+	ClientTimeout               int    `json:"clientTimeout,omitempty"`
+	DefaultsFrom                string `json:"defaultsFrom,omitempty"`
+	Description                 string `json:"description,omitempty"`
+	ExplicitFlowMigration       string `json:"explicitFlowMigration,omitempty"`
+	HardwareSynCookie           string `json:"hardwareSynCookie,omitempty"`
+	IdleTimeout                 string `json:"idleTimeout,omitempty"`
+	IPDfMode                    string `json:"ipDfMode,omitempty"`
+	IpTosToClient               string `json:"ipTosToClient,omitempty"`
+	IpTosToServer               string `json:"ipTosToServer,omitempty"`
+	IPTTLMode                   string `json:"ipTtlMode,omitempty"`
+	IPTTLV4                     int    `json:"ipTtlV4,omitempty"`
+	IPTTLV6                     int    `json:"ipTtlV6,omitempty"`
+	KeepAliveInterval           string `json:"keepAliveInterval,omitempty"`
+	LateBinding                 string `json:"lateBinding,omitempty"`
+	LinkQosToClient             string `json:"linkQosToClient,omitempty"`
+	LinkQosToServer             string `json:"linkQosToServer,omitempty"`
+	LooseClose                  string `json:"looseClose,omitempty"`
+	LooseInitialization         string `json:"looseInitialization,omitempty"`
+	MssOverride                 int    `json:"mssOverride,omitempty"`
+	OtherPvaClientpktsThreshold int    `json:"otherPvaClientpktsThreshold,omitempty"`
+	OtherPvaOffloadDirection    string `json:"otherPvaOffloadDirection,omitempty"`
+	OtherPvaServerpktsThreshold int    `json:"otherPvaServerpktsThreshold,omitempty"`
+	OtherPvaWhentoOffload       string `json:"otherPvaWhentoOffload,omitempty"`
+	PriorityToClient            string `json:"priorityToClient,omitempty"`
+	PriorityToServer            string `json:"priorityToServer,omitempty"`
+	PvaAcceleration             string `json:"pvaAcceleration,omitempty"`
+	PvaDynamicClientPackets     int    `json:"pvaDynamicClientPackets,omitempty"`
+	PvaDynamicServerPackets     int    `json:"pvaDynamicServerPackets,omitempty"`
+	PvaFlowAging                string `json:"pvaFlowAging,omitempty"`
+	PvaFlowEvict                string `json:"pvaFlowEvict,omitempty"`
+	PvaOffloadDynamic           string `json:"pvaOffloadDynamic,omitempty"`
+	PvaOffloadDynamicPriority   string `json:"pvaOffloadDynamicPriority,omitempty"`
+	PvaOffloadInitialPriority   string `json:"pvaOffloadInitialPriority,omitempty"`
+	PvaOffloadState             string `json:"pvaOffloadState,omitempty"`
+	ReassembleFragments         string `json:"reassembleFragments,omitempty"`
+	ReceiveWindowSize           int    `json:"receiveWindowSize,omitempty"`
+	ResetOnTimeout              string `json:"resetOnTimeout,omitempty"`
+	RttFromClient               string `json:"rttFromClient,omitempty"`
+	RttFromServer               string `json:"rttFromServer,omitempty"`
+	ServerSack                  string `json:"serverSack,omitempty"`
+	ServerTimestamp             string `json:"serverTimestamp,omitempty"`
+	SoftwareSynCookie           string `json:"softwareSynCookie,omitempty"`
+	SynCookieDsrFlowResetBy     string `json:"synCookieDsrFlowResetBy,omitempty"`
+	SynCookieEnable             string `json:"synCookieEnable,omitempty"`
+	SynCookieMss                int    `json:"synCookieMss,omitempty"`
+	SynCookieWhitelist          string `json:"synCookieWhitelist,omitempty"`
+	TCPCloseTimeout             string `json:"tcpCloseTimeout,omitempty"`
+	TCPGenerateIsn              string `json:"tcpGenerateIsn,omitempty"`
+	TCPHandshakeTimeout         string `json:"tcpHandshakeTimeout,omitempty"`
+	TCPPvaOffloadDirection      string `json:"tcpPvaOffloadDirection,omitempty"`
+	TCPPvaWhentoOffload         string `json:"tcpPvaWhentoOffload,omitempty"`
+	TCPStripSack                string `json:"tcpStripSack,omitempty"`
+	TCPTimeWaitTimeout          int    `json:"tcpTimeWaitTimeout,omitempty"`
+	TCPTimestampMode            string `json:"tcpTimestampMode,omitempty"`
+	TCPWscaleMode               string `json:"tcpWscaleMode,omitempty"`
+	TimeoutRecovery             string `json:"timeoutRecovery,omitempty"`
 }
 
 type Httpcompresss struct {
@@ -1304,12 +1353,27 @@ type Httpcompresss struct {
 }
 
 type Httpcompress struct {
-	Name               string
-	DefaultsFrom       string
-	UriExclude         []string
-	UriInclude         []string
-	ContentTypeInclude []string
-	ContentTypeExclude []string
+	Name               string   `json:"name,omitempty"`
+	FullPath           string   `json:"fullPath,omitempty"`
+	BrowserWorkarounds string   `json:"browserWorkarounds,omitempty"`
+	BufferSize         int      `json:"bufferSize,omitempty"`
+	ContentTypeExclude []string `json:"contentTypeExclude,omitempty"`
+	ContentTypeInclude []string `json:"contentTypeInclude,omitempty"`
+	CPUSaver           string   `json:"cpuSaver,omitempty"`
+	CPUSaverHigh       int      `json:"cpuSaverHigh,omitempty"`
+	CPUSaverLow        int      `json:"cpuSaverLow,omitempty"`
+	DefaultsFrom       string   `json:"defaultsFrom,omitempty"`
+	Description        string   `json:"description,omitempty"`
+	GzipLevel          int      `json:"gzipLevel,omitempty"`
+	GzipMemoryLevel    int      `json:"gzipMemoryLevel,omitempty"`
+	GzipWindowSize     int      `json:"gzipWindowSize,omitempty"`
+	KeepAcceptEncoding string   `json:"keepAcceptEncoding,omitempty"`
+	MethodPrefer       string   `json:"methodPrefer,omitempty"`
+	MinSize            int      `json:"minSize,omitempty"`
+	Selective          string   `json:"selective,omitempty"`
+	UriExclude         []string `json:"uriExclude,omitempty"`
+	UriInclude         []string `json:"uriInclude,omitempty"`
+	VaryHeader         string   `json:"varyHeader,omitempty"`
 }
 
 type http2DTO struct {
@@ -1467,36 +1531,6 @@ func (p *Fasthttp) MarshalJSON() ([]byte, error) {
 
 func (p *Fasthttp) UnmarshalJSON(b []byte) error {
 	var dto fasthttpDTO
-	err := json.Unmarshal(b, &dto)
-	if err != nil {
-		return err
-	}
-	return marshal(p, &dto)
-}
-
-func (p *Fastl4) MarshalJSON() ([]byte, error) {
-	var dto fastl4DTO
-	marshal(&dto, p)
-	return json.Marshal(dto)
-}
-
-func (p *Fastl4) UnmarshalJSON(b []byte) error {
-	var dto fastl4DTO
-	err := json.Unmarshal(b, &dto)
-	if err != nil {
-		return err
-	}
-	return marshal(p, &dto)
-}
-
-func (p *Httpcompress) MarshalJSON() ([]byte, error) {
-	var dto httpcompressDTO
-	marshal(&dto, p)
-	return json.Marshal(dto)
-}
-
-func (p *Httpcompress) UnmarshalJSON(b []byte) error {
-	var dto httpcompressDTO
 	err := json.Unmarshal(b, &dto)
 	if err != nil {
 		return err
@@ -2965,20 +2999,23 @@ func (b *BigIP) GetFasthttp(name string) (*Fasthttp, error) {
 	return &fasthttp, nil
 }
 
-func (b *BigIP) CreateFastl4(name, partition, defaultsFrom string, clientTimeout int, explicitFlowMigration, hardwareSynCookie string, idleTimeout string, ipTosToClient, ipTosToServer, keepAliveInterval string) error {
-	fastl4 := &Fastl4{
-		Name:                  name,
-		Partition:             partition,
-		DefaultsFrom:          defaultsFrom,
-		ClientTimeout:         clientTimeout,
-		ExplicitFlowMigration: explicitFlowMigration,
-		HardwareSynCookie:     hardwareSynCookie,
-		IdleTimeout:           idleTimeout,
-		IpTosToClient:         ipTosToClient,
-		IpTosToServer:         ipTosToServer,
-		KeepAliveInterval:     keepAliveInterval,
-	}
-	return b.post(fastl4, uriLtm, uriProfile, uriFastl4)
+func (b *BigIP) CreateFastl4(configFastl4 *Fastl4) error {
+	//
+	//}
+	//	name, partition, defaultsFrom string, clientTimeout int, explicitFlowMigration, hardwareSynCookie string, idleTimeout string, ipTosToClient, ipTosToServer, keepAliveInterval string) error {
+	//	fastl4 := &Fastl4{
+	//		Name:                  name,
+	//		Partition:             partition,
+	//		DefaultsFrom:          defaultsFrom,
+	//		ClientTimeout:         clientTimeout,
+	//		ExplicitFlowMigration: explicitFlowMigration,
+	//		HardwareSynCookie:     hardwareSynCookie,
+	//		IdleTimeout:           idleTimeout,
+	//		IpTosToClient:         ipTosToClient,
+	//		IpTosToServer:         ipTosToServer,
+	//		KeepAliveInterval:     keepAliveInterval,
+	//	}
+	return b.post(configFastl4, uriLtm, uriProfile, uriFastl4)
 }
 
 // Delete Fast http removes an Fasthttp profile from the system.
@@ -3004,8 +3041,6 @@ func (b *BigIP) GetFastl4(name string) (*Fastl4, error) {
 
 	return &fastl4, nil
 }
-
-// ===============
 
 func (b *BigIP) CreateHttpcompress(httpcompress *Httpcompress) error {
 	//	httpcompress := &Httpcompress{
