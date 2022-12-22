@@ -292,6 +292,12 @@ type Parameter struct {
 	PerformStaging                 bool                     `json:"performStaging,omitempty"`
 	SensitiveParameter             bool                     `json:"sensitiveParameter,omitempty"`
 	SignatureOverrides             []map[string]interface{} `json:"signatureOverrides,omitempty"`
+	URL                            struct {
+		Method   string `json:"method,omitempty"`
+		Name     string `json:"name,omitempty"`
+		Protocol string `json:"protocol,omitempty"`
+		Type     string `json:"type,omitempty"`
+	} `json:"url,omitempty"`
 }
 
 func (b *BigIP) GetWafSignature(signatureid int) (*Signatures, error) {
@@ -376,7 +382,7 @@ func (b *BigIP) ExportPolicy(policyID string) (*PolicyStruct, error) {
 	exportPayload.Inline = true
 	exportPayload.PolicyReference.Link = fmt.Sprintf("https://localhost/mgmt/tm/asm/policies/%s", policyID)
 
-	log.Printf("payload:%+v", exportPayload)
+	log.Printf("[INFO]payload:%+v", exportPayload)
 	resp, err := b.postReq(exportPayload, uriMgmt, uriTm, uriAsm, uriTasks, uriExportpolicy)
 	if err != nil {
 		return nil, err
@@ -399,6 +405,31 @@ func (b *BigIP) ExportPolicy(policyID string) (*PolicyStruct, error) {
 	}
 
 	return &exportData, nil
+}
+
+func (b *BigIP) ExportPolicyFull(policyID string) (*string, error) {
+	//export JSON policy
+	var exportPayload ExportPayload
+	exportPayload.Format = "json"
+	exportPayload.Inline = true
+	exportPayload.PolicyReference.Link = fmt.Sprintf("https://localhost/mgmt/tm/asm/policies/%s", policyID)
+
+	log.Printf("[INFO]payload:%+v", exportPayload)
+	resp, err := b.postReq(exportPayload, uriMgmt, uriTm, uriAsm, uriTasks, uriExportpolicy)
+	if err != nil {
+		return nil, err
+	}
+	var taskStatus ImportStatus
+	err = json.Unmarshal(resp, &taskStatus)
+	if err != nil {
+		return nil, err
+	}
+	//check export status
+	exportStatus, err := b.GetExportStatus(taskStatus.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &exportStatus.Result.File, nil
 }
 
 func (b *BigIP) GetExportStatus(taskId string) (*ImportStatus, error) {
