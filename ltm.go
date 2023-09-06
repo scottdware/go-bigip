@@ -1664,6 +1664,10 @@ func (b *BigIP) ModifyPoolMember(pool string, config *PoolMember) error {
 	config.Partition = ""
 	config.FullPath = ""
 
+	// These fields are rejected, even when unchanged.
+	config.Session = ""
+	config.State = ""
+
 	// This cannot be modified for an existing pool member.
 	config.Address = ""
 
@@ -1673,6 +1677,10 @@ func (b *BigIP) ModifyPoolMember(pool string, config *PoolMember) error {
 // PatchPoolMember will update the configuration of a particular pool member.
 // this requires at least PoolMember{FullPath: foo} and additional fields
 func (b *BigIP) PatchPoolMember(pool string, config *PoolMember) error {
+	// These fields are rejected, even when unchanged.
+	config.Session = ""
+	config.State = ""
+
 	return b.patch(config, uriLtm, uriPool, pool, uriPoolMember, config.FullPath)
 }
 
