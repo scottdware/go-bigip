@@ -1664,6 +1664,10 @@ func (b *BigIP) ModifyPoolMember(pool string, config *PoolMember) error {
 	config.Partition = ""
 	config.FullPath = ""
 
+	// These fields are rejected, even when unchanged.
+	config.Session = ""
+	config.State = ""
+
 	// This cannot be modified for an existing pool member.
 	config.Address = ""
 
@@ -1673,6 +1677,10 @@ func (b *BigIP) ModifyPoolMember(pool string, config *PoolMember) error {
 // PatchPoolMember will update the configuration of a particular pool member.
 // this requires at least PoolMember{FullPath: foo} and additional fields
 func (b *BigIP) PatchPoolMember(pool string, config *PoolMember) error {
+	// These fields are rejected, even when unchanged.
+	config.Session = ""
+	config.State = ""
+
 	return b.patch(config, uriLtm, uriPool, pool, uriPoolMember, config.FullPath)
 }
 
@@ -1852,7 +1860,7 @@ func (b *BigIP) VirtualServerProfiles(vs string) (*Profiles, error) {
 	return &p, nil
 }
 
-//Get the names of policies associated with a particular virtual server
+// Get the names of policies associated with a particular virtual server
 func (b *BigIP) VirtualServerPolicyNames(vs string) ([]string, error) {
 	var policies Policies
 	err, _ := b.getForEntity(&policies, uriLtm, uriVirtual, vs, "policies")
@@ -2068,7 +2076,7 @@ func (b *BigIP) Policies() (*Policies, error) {
 	return &p, nil
 }
 
-//Load a fully policy definition. Policies seem to be best dealt with as one big entity.
+// Load a fully policy definition. Policies seem to be best dealt with as one big entity.
 func (b *BigIP) GetPolicy(name string) (*Policy, error) {
 	var p Policy
 	err, ok := b.getForEntity(&p, uriLtm, uriPolicy, name, policyVersionSuffix)
@@ -2118,19 +2126,19 @@ func normalizePolicy(p *Policy) {
 	}
 }
 
-//Create a new policy. It is not necessary to set the Ordinal fields on subcollections.
+// Create a new policy. It is not necessary to set the Ordinal fields on subcollections.
 func (b *BigIP) CreatePolicy(p *Policy) error {
 	normalizePolicy(p)
 	return b.post(p, uriLtm, uriPolicy, policyVersionSuffix)
 }
 
-//Update an existing policy.
+// Update an existing policy.
 func (b *BigIP) UpdatePolicy(name string, p *Policy) error {
 	normalizePolicy(p)
 	return b.put(p, uriLtm, uriPolicy, name, policyVersionSuffix)
 }
 
-//Delete a policy by name.
+// Delete a policy by name.
 func (b *BigIP) DeletePolicy(name string) error {
 	return b.delete(uriLtm, uriPolicy, name, policyVersionSuffix)
 }
