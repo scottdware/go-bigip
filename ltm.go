@@ -1886,12 +1886,21 @@ type HttpCompressionProfile struct {
 	VaryHeader         string   `json:"varyHeader,omitempty"`
 }
 
+type CipherRule struct {
+	Name                string `json:"name,omitempty"`
+	Partition           string `json:"partition,omitempty"`
+	Cipher              string `json:"cipher,omitempty"`
+	DHGroups            string `json:"dhGroups,omitempty"`
+	SignatureAlgorithms string `json:"signatureAlgorithms,omitempty"`
+}
+
 const (
 	uriLtm            = "ltm"
 	uriNode           = "node"
 	uriPool           = "pool"
 	uriPoolMember     = "members"
 	uriProfile        = "profile"
+	uriCipher         = "cipher"
 	uriServerSSL      = "server-ssl"
 	uriClientSSL      = "client-ssl"
 	uriVirtual        = "virtual"
@@ -1928,6 +1937,7 @@ const (
 	uriSSL            = "ssl"
 	uriUniversal      = "universal"
 	uriCreateDraft    = "?options=create-draft"
+	uriRule           = "rule"
 )
 
 var cidr = map[string]string{
@@ -3917,4 +3927,83 @@ func (b *BigIP) DeleteHttpCompressionProfile(name string) error {
 // Fields that can be modified are referenced in the HttpCompressionProfile struct.
 func (b *BigIP) ModifyHttpCompressionProfile(name string, config *HttpCompressionProfile) error {
 	return b.put(config, uriLtm, uriProfile, uriHttpcompress, name)
+}
+
+type CipherRuleReq struct {
+	Name                string `json:"name,omitempty"`
+	Partition           string `json:"partition,omitempty"`
+	FullPath            string `json:"fullPath,omitempty"`
+	Cipher              string `json:"cipher,omitempty"`
+	Description         string `json:"description,omitempty"`
+	DhGroups            string `json:"dhGroups,omitempty"`
+	SignatureAlgorithms string `json:"signatureAlgorithms,omitempty"`
+}
+
+func (b *BigIP) AddLtmCipherRule(config *CipherRuleReq) error {
+	return b.post(config, uriLtm, uriCipher, "rule")
+}
+
+func (b *BigIP) ModifyLtmCipherRule(name string, config *CipherRuleReq) error {
+	return b.put(config, uriLtm, uriCipher, "rule", name)
+}
+
+func (b *BigIP) DeleteLtmCipherRule(name string) error {
+	return b.delete(uriLtm, uriCipher, "rule", name)
+}
+
+func (b *BigIP) GetLtmCipherRule(name string) (*CipherRuleReq, error) {
+	var cipherRule CipherRuleReq
+	err, ok := b.getForEntity(&cipherRule, uriLtm, uriCipher, "rule", name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !ok {
+		return nil, nil
+	}
+	return &cipherRule, nil
+}
+
+//
+//type PolicyRule struct {
+//Name          string `json:"name,omitempty"`
+//Partition     string `json:"partition,omitempty"`
+//NameReference struct {
+//Link string `json:"link,omitempty"`
+//} `json:"nameReference,omitempty"`
+//}
+
+type CipherGroupReq struct {
+	Name      string        `json:"name,omitempty"`
+	Partition string        `json:"partition,omitempty"`
+	FullPath  string        `json:"fullPath,omitempty"`
+	Ordering  string        `json:"ordering,omitempty"`
+	Allow     []interface{} `json:"allow,omitempty"`
+	Require   []interface{} `json:"require,omitempty"`
+}
+
+func (b *BigIP) AddLtmCipherGroup(config *CipherGroupReq) error {
+	return b.post(config, uriLtm, uriCipher, "group")
+}
+
+func (b *BigIP) ModifyLtmCipherGroup(name string, config *CipherGroupReq) error {
+	return b.put(config, uriLtm, uriCipher, "group", name)
+}
+
+func (b *BigIP) DeleteLtmCipherGroup(name string) error {
+	return b.delete(uriLtm, uriCipher, "group", name)
+}
+
+func (b *BigIP) GetLtmCipherGroup(name string) (*CipherGroupReq, error) {
+	var cipherGroup CipherGroupReq
+	err, ok := b.getForEntity(&cipherGroup, uriLtm, uriCipher, "group", name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !ok {
+		return nil, nil
+	}
+
+	return &cipherGroup, nil
 }
