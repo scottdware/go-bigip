@@ -942,61 +942,71 @@ type Monitors struct {
 
 // Monitor contains information about each individual monitor.
 type Monitor struct {
-	Name           string
-	Partition      string
-	FullPath       string
-	Generation     int
-	ParentMonitor  string
-	Database       string
-	Description    string
-	Destination    string
-	Interval       int
-	IPDSCP         int
-	ManualResume   bool
-	MonitorType    string
-	Password       string
-	ReceiveColumn  string
-	ReceiveRow     string
-	ReceiveString  string
-	ReceiveDisable string
-	Reverse        bool
-	ResponseTime   int
-	RetryTime      int
-	SendString     string
-	TimeUntilUp    int
-	Timeout        int
-	Transparent    bool
-	UpInterval     int
-	Username       string
+	Name                string
+	Partition           string
+	FullPath            string
+	Generation          int
+	ParentMonitor       string
+	Database            string
+	Description         string
+	Destination         string
+	Interval            int
+	IPDSCP              int
+	ManualResume        bool
+	MonitorType         string
+	Password            string
+	ReceiveColumn       string
+	ReceiveRow          string
+	ReceiveString       string
+	ReceiveDisable      string
+	Reverse             bool
+	ResponseTime        int
+	RetryTime           int
+	SendString          string
+	TimeUntilUp         int
+	Timeout             int
+	Transparent         bool
+	UpInterval          int
+	Username            string
+	Filter              string
+	Base                string
+	MandatoryAttributes string
+	ChaseReferrals      string
+	Security            string
 }
 
 type monitorDTO struct {
-	Name           string `json:"name,omitempty"`
-	Partition      string `json:"partition,omitempty"`
-	FullPath       string `json:"fullPath,omitempty"`
-	Generation     int    `json:"generation,omitempty"`
-	ParentMonitor  string `json:"defaultsFrom,omitempty"`
-	Database       string `json:"database,omitempty"`
-	Description    string `json:"description,omitempty"`
-	Destination    string `json:"destination,omitempty"`
-	Interval       int    `json:"interval,omitempty"`
-	IPDSCP         int    `json:"ipDscp,omitempty"`
-	ManualResume   string `json:"manualResume,omitempty" bool:"enabled"`
-	MonitorType    string `json:"monitorType,omitempty"`
-	Password       string `json:"password,omitempty"`
-	ReceiveColumn  string `json:"recvColumn,omitempty"`
-	ReceiveRow     string `json:"recvRow,omitempty"`
-	ReceiveString  string `json:"recv,omitempty"`
-	ReceiveDisable string `json:"recvDisable,omitempty"`
-	Reverse        string `json:"reverse,omitempty" bool:"enabled"`
-	ResponseTime   int    `json:"responseTime"`
-	RetryTime      int    `json:"retryTime"`
-	SendString     string `json:"send,omitempty"`
-	TimeUntilUp    int    `json:"timeUntilUp,omitempty"`
-	Timeout        int    `json:"timeout,omitempty"`
-	Transparent    string `json:"transparent,omitempty" bool:"enabled"`
-	UpInterval     int    `json:"upInterval,omitempty"`
-	Username       string `json:"username,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Partition           string `json:"partition,omitempty"`
+	FullPath            string `json:"fullPath,omitempty"`
+	Generation          int    `json:"generation,omitempty"`
+	ParentMonitor       string `json:"defaultsFrom,omitempty"`
+	Database            string `json:"database,omitempty"`
+	Description         string `json:"description,omitempty"`
+	Destination         string `json:"destination,omitempty"`
+	Interval            int    `json:"interval,omitempty"`
+	IPDSCP              int    `json:"ipDscp,omitempty"`
+	ManualResume        string `json:"manualResume,omitempty" bool:"enabled"`
+	MonitorType         string `json:"monitorType,omitempty"`
+	Password            string `json:"password,omitempty"`
+	ReceiveColumn       string `json:"recvColumn,omitempty"`
+	ReceiveRow          string `json:"recvRow,omitempty"`
+	ReceiveString       string `json:"recv,omitempty"`
+	ReceiveDisable      string `json:"recvDisable,omitempty"`
+	Reverse             string `json:"reverse,omitempty" bool:"enabled"`
+	ResponseTime        int    `json:"responseTime"`
+	RetryTime           int    `json:"retryTime"`
+	SendString          string `json:"send,omitempty"`
+	TimeUntilUp         int    `json:"timeUntilUp,omitempty"`
+	Timeout             int    `json:"timeout,omitempty"`
+	Transparent         string `json:"transparent,omitempty" bool:"enabled"`
+	UpInterval          int    `json:"upInterval,omitempty"`
+	Username            string `json:"username,omitempty"`
+	Filter              string `json:"filter,omitempty"`
+	Base                string `json:"base,omitempty"`
+	MandatoryAttributes string `json:"mandatoryAttributes,omitempty"`
+	ChaseReferrals      string `json:"chaseReferrals,omitempty"`
+	Security            string `json:"security,omitempty"`
 }
 
 func (p *Monitor) MarshalJSON() ([]byte, error) {
