@@ -37,10 +37,10 @@ func main() {
 
 	// Create a pool, and add members to it. When adding a member, you must
 	// specify the port in the format of <node name>:<port>.
-	f5.CreatePool("web_farm_80_pool")
+	f5.CreatePool("web_farm_80_pool", "Common")
 	f5.AddPoolMember("web_farm_80_pool", "web-server-1:80")
 	f5.AddPoolMember("web_farm_80_pool", "web-server-2:80")
-	f5.CreatePool("ssl_443_pool")
+	f5.CreatePool("ssl_443_pool", "Common")
 	f5.AddPoolMember("ssl_443_pool", "ssl-web-server-1:443")
 	f5.AddPoolMember("ssl_443_pool", "ssl-web-server-2:443")
 
